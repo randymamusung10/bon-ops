@@ -46,6 +46,13 @@
     <!-- Header Page -->
     <div class="row align-items-center mb-4">
         <div class="col-12 col-md-6">
+            <!-- Breadcrumb Navigation -->
+            <nav aria-label="breadcrumb" class="mb-2">
+                <ol class="breadcrumb mb-0" style="font-size: 12px; font-weight: 500;">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color: var(--primary-accent);">Dashboard</li>
+                </ol>
+            </nav>
             <h1 class="h4 fw-bold mb-1" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">Dashboard Utama</h1>
             <p class="mb-0" style="color: var(--text-light); font-size: 13.5px;">Selamat datang kembali, <b class="text-primary">{{ Auth::user()->name ?? 'Dev Admin' }}</b>. Berikut performa sistem BonOps Anda hari ini.</p>
         </div>
@@ -63,20 +70,20 @@
 
     <!-- METRICS CARDS WITH SPARKLINES -->
     <div class="row g-4 mb-4">
-        <!-- Metric: Total Tenant -->
+        <!-- Metric: Transaksi Hari Ini -->
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="card h-100 rounded-4" style="padding: 18px 20px;">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Total Tenant</span>
+                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Transaksi Hari Ini</span>
                     <div class="metric-icon-box" style="background-color: rgba(59, 130, 246, 0.08);">
-                        <i class="bi bi-building" style="font-size: 16px; color: var(--primary-accent);"></i>
+                        <i class="bi bi-cart-check" style="font-size: 16px; color: var(--primary-accent);"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
-                        <h3 class="fw-bold mb-1 count-up" data-target="124" style="color: var(--text-heading); font-size: 26px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">0</h3>
+                        <h3 class="fw-bold mb-1 count-up" data-target="142" style="color: var(--text-heading); font-size: 26px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">0</h3>
                         <span class="text-success fw-semibold d-flex align-items-center gap-1" style="font-size: 11.5px;">
-                            <i class="bi bi-arrow-up-right"></i>+12% bulan ini
+                            <i class="bi bi-arrow-up-right"></i>+12% vs kemarin
                         </span>
                     </div>
                     <!-- Sparkline SVG (Royal Blue CSS variable mapped) -->
@@ -89,72 +96,72 @@
             </div>
         </div>
 
-        <!-- Metric: Total Cabang -->
+        <!-- Metric: Pendapatan Hari Ini -->
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="card h-100 rounded-4" style="padding: 18px 20px;">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Cabang Aktif</span>
-                    <div class="metric-icon-box" style="background-color: rgba(13, 148, 136, 0.08);">
-                        <i class="bi bi-geo-alt" style="font-size: 16px; color: var(--secondary-accent);"></i>
+                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Pendapatan Hari Ini</span>
+                    <div class="metric-icon-box" style="background-color: rgba(16, 185, 129, 0.08);">
+                        <i class="bi bi-cash-stack" style="font-size: 16px; color: #10b981;"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
-                        <h3 class="fw-bold mb-1 count-up" data-target="512" style="color: var(--text-heading); font-size: 26px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">0</h3>
+                        <h3 class="fw-bold mb-1 count-up-decimal" data-target="4.2" data-prefix="Rp " data-suffix=" jt" style="color: var(--text-heading); font-size: 26px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">Rp 0</h3>
                         <span class="text-success fw-semibold d-flex align-items-center gap-1" style="font-size: 11.5px;">
-                            <i class="bi bi-arrow-up-right"></i>+8% minggu ini
+                            <i class="bi bi-arrow-up-right"></i>+8% vs kemarin
                         </span>
                     </div>
                     <!-- Sparkline SVG (Teal) -->
                     <div class="mb-1">
                         <svg width="60" height="28" viewBox="0 0 60 28" style="overflow: visible;">
-                            <polyline fill="none" style="stroke: var(--secondary-accent);" stroke-width="2" points="0,22 10,16 20,20 30,10 40,9 50,4 60,6" />
+                            <polyline fill="none" style="stroke: #10b981;" stroke-width="2" points="0,22 10,16 20,20 30,10 40,9 50,4 60,6" />
                         </svg>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Metric: Transaksi Hari Ini -->
+        <!-- Metric: Pesanan Aktif -->
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="card h-100 rounded-4" style="padding: 18px 20px;">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Transaksi POS</span>
-                    <div class="metric-icon-box" style="background-color: rgba(16, 185, 129, 0.08);">
-                        <i class="bi bi-cart-check" style="font-size: 16px; color: #10b981;"></i>
+                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Pesanan Aktif (Kitchen)</span>
+                    <div class="metric-icon-box" style="background-color: rgba(13, 148, 136, 0.08);">
+                        <i class="bi bi-fire" style="font-size: 16px; color: var(--secondary-accent);"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
-                        <h3 class="fw-bold mb-1 count-up" data-target="8432" data-format="comma" style="color: var(--text-heading); font-size: 26px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">0</h3>
-                        <span class="text-success fw-semibold d-flex align-items-center gap-1" style="font-size: 11.5px;">
-                            <i class="bi bi-arrow-up-right"></i>+18.3% vs kemarin
+                        <h3 class="fw-bold mb-1 count-up" data-target="18" style="color: var(--text-heading); font-size: 26px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">0</h3>
+                        <span class="text-warning fw-semibold d-flex align-items-center gap-1" style="font-size: 11.5px;">
+                            <i class="bi bi-clock-history"></i>Rata-rata 12 mnt
                         </span>
                     </div>
                     <!-- Sparkline SVG (Green) -->
                     <div class="mb-1">
                         <svg width="60" height="28" viewBox="0 0 60 28" style="overflow: visible;">
-                            <polyline fill="none" stroke="#10b981" stroke-width="2" points="0,26 10,20 20,24 30,14 40,18 50,8 60,2" />
+                            <polyline fill="none" stroke="var(--secondary-accent)" stroke-width="2" points="0,26 10,20 20,24 30,14 40,18 50,8 60,2" />
                         </svg>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Metric: GMV Harian -->
+        <!-- Metric: Peringatan Stok -->
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="card h-100 rounded-4" style="padding: 18px 20px;">
                 <div class="d-flex align-items-center justify-content-between mb-3">
-                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Estimasi GMV</span>
+                    <span class="fw-semibold" style="color: var(--text-muted); font-size: 12.5px; letter-spacing: 0.2px;">Stok Menipis</span>
                     <div class="metric-icon-box" style="background-color: rgba(245, 158, 11, 0.08);">
-                        <i class="bi bi-wallet2" style="font-size: 16px; color: #f59e0b;"></i>
+                        <i class="bi bi-exclamation-triangle" style="font-size: 16px; color: #f59e0b;"></i>
                     </div>
                 </div>
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
-                        <h3 class="fw-bold mb-1 count-up-decimal" data-target="348.5" data-prefix="Rp " data-suffix=" M" style="color: var(--text-heading); font-size: 24px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">Rp 0 M</h3>
-                        <span class="text-success fw-semibold d-flex align-items-center gap-1" style="font-size: 11.5px;">
-                            <i class="bi bi-arrow-up-right"></i>+4.2% bulan ini
+                        <h3 class="fw-bold mb-1 count-up" data-target="4" style="color: var(--text-heading); font-size: 24px; font-family: 'Outfit', sans-serif; letter-spacing: -0.5px; line-height: 1;">0</h3>
+                        <span class="text-danger fw-semibold d-flex align-items-center gap-1" style="font-size: 11.5px;">
+                            <i class="bi bi-arrow-right"></i>Perlu restock segera
                         </span>
                     </div>
                     <!-- Sparkline SVG (Orange) -->
@@ -226,7 +233,7 @@
 
                     <div class="d-flex align-items-center gap-2 mt-2 mt-md-0" style="flex-grow: 1; max-width: 400px; justify-content: flex-end;">
                         <div class="position-relative" style="width: 150px;">
-                            <select class="form-select" style="font-size: 12px; height: 36px; padding: 0 24px 0 12px; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 8px; background-color: rgba(255, 255, 255, 0.6); cursor: pointer; transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary-accent)';" onblur="this.style.borderColor='rgba(226, 232, 240, 0.8)';">
+                            <select class="form-select custom-form-control" style="font-size: 12.5px; padding-left: 12px;">
                                 <option>Semua Status</option>
                                 <option>Selesai</option>
                                 <option>Proses</option>
@@ -234,11 +241,11 @@
                             </select>
                         </div>
                         <div class="position-relative" style="width: 160px;">
-                            <input type="text" placeholder="Cari modul..." style="font-size: 12px; height: 36px; width: 100%; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 8px; padding: 0 12px 0 32px; background-color: rgba(255, 255, 255, 0.6); transition: all 0.2s;" onfocus="this.style.borderColor='var(--primary-accent)';" onblur="this.style.borderColor='rgba(226, 232, 240, 0.8)';">
-                            <i class="bi bi-search position-absolute text-muted" style="left: 12px; top: 9px; font-size: 12px; opacity: 0.5;"></i>
+                            <x-form.input placeholder="Cari modul..." style="font-size: 12.5px; padding-left: 34px;" />
+                            <i class="bi bi-search position-absolute text-muted" style="left: 12px; top: 50%; transform: translateY(-50%); font-size: 12px; opacity: 0.7;"></i>
                         </div>
-                        <button class="btn btn-primary d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; border: none; border-radius: 8px; background-color: var(--primary-accent);">
-                            <i class="bi bi-search" style="font-size: 12px;"></i>
+                        <button class="btn btn-primary custom-btn d-flex align-items-center justify-content-center" style="width: 38px; height: 38px; border: none; border-radius: 8px; background-color: var(--primary-accent); padding: 0;">
+                            <i class="bi bi-search" style="font-size: 14px; margin: 0;"></i>
                         </button>
                     </div>
                 </div>
@@ -331,11 +338,11 @@
                     <div class="d-flex flex-column gap-2">
                         <div class="d-flex align-items-center gap-2.5 p-2.5 rounded-3" style="background-color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.6); font-size: 12.5px;">
                             <i class="bi bi-check-circle-fill text-success" style="font-size: 15px;"></i>
-                            <span class="text-muted text-decoration-line-through">Buat Perusahaan (PT Kopi Nusantara)</span>
+                            <span class="text-muted text-decoration-line-through">Konfigurasi Profil Perusahaan</span>
                         </div>
                         <div class="d-flex align-items-center gap-2.5 p-2.5 rounded-3" style="background-color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.6); font-size: 12.5px;">
                             <i class="bi bi-check-circle-fill text-success" style="font-size: 15px;"></i>
-                            <span class="text-muted text-decoration-line-through">Daftarkan Cabang (Jakarta Outlet)</span>
+                            <span class="text-muted text-decoration-line-through">Daftarkan Cabang Outlet Baru</span>
                         </div>
                         <div class="d-flex align-items-center gap-2.5 p-2.5 rounded-3" style="background-color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.6); font-size: 12.5px;">
                             <i class="bi bi-check-circle-fill text-success" style="font-size: 15px;"></i>
@@ -374,8 +381,8 @@
                                     <i class="bi bi-cart-check-fill" style="font-size: 13px;"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark" style="font-size: 12px;">Kasir Jakarta 1: Transaksi #2910</div>
-                                    <div class="text-muted mt-0.5" style="font-size: 10.5px;">Baru saja &bull; PT Kopi Nusantara</div>
+                                    <div class="fw-bold text-dark" style="font-size: 12px;">Kasir Utama: Transaksi #2910</div>
+                                    <div class="text-muted mt-0.5" style="font-size: 10.5px;">Baru saja &bull; Cabang Pusat</div>
                                 </div>
                             </div>
                             <span class="fw-bold text-success" style="font-size: 11.5px;">+Rp 85.000</span>
@@ -387,8 +394,8 @@
                                     <i class="bi bi-box-seam-fill" style="font-size: 13px;"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark" style="font-size: 12px;">Gudang Pusat: Pengiriman Bahan</div>
-                                    <div class="text-muted mt-0.5" style="font-size: 10.5px;">4 menit lalu &bull; Jakarta Outlet</div>
+                                    <div class="fw-bold text-dark" style="font-size: 12px;">Gudang: Penerimaan Barang</div>
+                                    <div class="text-muted mt-0.5" style="font-size: 10.5px;">4 menit lalu &bull; Cabang Pusat</div>
                                 </div>
                             </div>
                             <span class="badge bg-secondary-subtle text-secondary" style="font-size: 10px;">PO #9102</span>
@@ -400,7 +407,7 @@
                                     <i class="bi bi-exclamation-triangle-fill" style="font-size: 13px;"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-bold text-dark" style="font-size: 12px;">Stok Kopi Arabika Menipis</div>
+                                    <div class="fw-bold text-dark" style="font-size: 12px;">Stok Bahan Baku Menipis</div>
                                     <div class="text-muted mt-0.5" style="font-size: 10.5px;">10 menit lalu &bull; Gudang Utama</div>
                                 </div>
                             </div>
@@ -622,8 +629,8 @@
         // Live Activities Log simulation
         const mockActivities = [
             {
-                title: "Kasir Bandung 2: Transaksi #2911",
-                desc: "Baru saja &bull; PT Kopi Nusantara",
+                title: "Kasir Cabang B: Transaksi #2911",
+                desc: "Baru saja &bull; Pembayaran Selesai",
                 badge: "+Rp 112.000",
                 isSuccess: true,
                 icon: "bi-cart-check-fill",
@@ -641,7 +648,7 @@
             },
             {
                 title: "Gudang Utama: Supplier PO #8022",
-                desc: "1 menit lalu &bull; Jakarta Outlet",
+                desc: "1 menit lalu &bull; Pembelian",
                 badge: "Diterima",
                 isSuccess: false,
                 icon: "bi-truck",
@@ -649,8 +656,8 @@
                 colorClass: "border-info"
             },
             {
-                title: "Kasir Jakarta 2: Refund Transaksi #2890",
-                desc: "2 menit lalu &bull; PT Kopi Nusantara",
+                title: "Kasir Utama: Refund Transaksi #2890",
+                desc: "2 menit lalu &bull; Pembatalan Pesanan",
                 badge: "-Rp 45.000",
                 isSuccess: false,
                 isDanger: true,
@@ -659,8 +666,8 @@
                 colorClass: "border-danger"
             },
             {
-                title: "Tenant Baru: PT Kopi Malabar",
-                desc: "3 menit lalu &bull; Sistem Core",
+                title: "Cabang Baru Ditambahkan",
+                desc: "3 menit lalu &bull; Cabang Outlet 2",
                 badge: "Aktif",
                 isSuccess: true,
                 icon: "bi-building-fill-add",

@@ -251,10 +251,28 @@
             color: #c9d1d9 !important;
         }
 
+        /* Global Form Controls Focus Overlay */
+        .form-control:focus,
+        .form-select:focus,
+        select:focus,
+        input[type="text"]:focus,
+        input[type="search"]:focus,
+        textarea:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+        }
+
         html.dark-mode .form-select:focus,
         html.dark-mode input[type="text"]:focus {
             border-color: var(--primary-accent) !important;
-            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 20%, transparent) !important;
+        }
+
+        /* Native Option selected state coloring fallback */
+        select option:checked,
+        select option:hover {
+            background-color: var(--primary-accent) !important;
+            color: #ffffff !important;
         }
 
         /* Dark mode: badge soft colors adjusted */
@@ -604,6 +622,13 @@
             color: var(--sidebar-text);
         }
 
+        .nav-link-custom > span:first-of-type {
+            flex-grow: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .nav-link-custom:hover {
             color: var(--sidebar-text-hover);
             background-color: var(--sidebar-hover-bg);
@@ -656,9 +681,10 @@
         }
 
         .submenu-btn .chevron-icon {
-            margin-left: auto;
-            font-size: 10px !important;
-            transition: transform 0.2s ease;
+            margin-left: 8px; /* Let the ms-auto badge push both to the right */
+            margin-right: 0 !important; /* Override the default 12px margin for nav icons */
+            font-size: 10.5px !important;
+            transition: transform 0.3s ease;
         }
 
         .submenu-list {
@@ -1200,6 +1226,44 @@
         }
 
         /* ============================================
+           MODAL ENHANCEMENTS & ANIMATIONS
+           ============================================ */
+        .modal.fade .modal-dialog {
+            transform: scale(0.95) translateY(-10px);
+            opacity: 0;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .modal-header .btn-close {
+            background-color: color-mix(in srgb, var(--primary-accent) 8%, transparent) !important;
+            border: 1.5px solid color-mix(in srgb, var(--primary-accent) 20%, transparent) !important;
+            border-radius: 50%;
+            padding: 10px;
+            margin: -0.5rem -0.5rem -0.5rem auto !important; /* Proper right alignment */
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.8;
+        }
+
+        .modal-header .btn-close:hover {
+            background-color: color-mix(in srgb, var(--danger) 12%, transparent) !important;
+            border-color: color-mix(in srgb, var(--danger) 30%, transparent) !important;
+            opacity: 1;
+            transform: rotate(90deg);
+        }
+
+        .modal-header .btn-close:focus {
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-accent) 25%, transparent) !important;
+            outline: none !important;
+            opacity: 1;
+        }
+
+
+        /* ============================================
            ENHANCED FOOTER STYLES
            ============================================ */
         .dashboard-footer {
@@ -1392,4 +1456,683 @@
 
         html.dark-mode .btn-close {
             filter: invert(1);
+        }
+
+        /* ============================================
+           UI COMPONENTS (BUTTONS, FORMS, RIPPLE)
+           ============================================ */
+
+        /* Custom Button & Ripple Interaction */
+        .custom-btn {
+            position: relative;
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform: translateZ(0); /* Hardware acceleration */
+            overflow: hidden;
+        }
+        
+        /* Modern Shine/Glare Effect */
+        .custom-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            z-index: 1;
+        }
+
+        @keyframes btnShine {
+            0% { left: -150%; }
+            100% { left: 200%; }
+        }
+
+        .custom-btn:hover::after {
+            animation: btnShine 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .custom-btn:hover {
+            box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-accent) 25%, transparent);
+            filter: brightness(1.04);
+        }
+
+        .custom-btn:active {
+            transform: scale(0.97) translateZ(0);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-btn .ripple-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 10.01%);
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transform: scale(10, 10);
+            opacity: 0;
+            transition: transform .5s, opacity 1s;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .custom-btn:active .ripple-overlay {
+            transform: scale(0, 0);
+            opacity: 0.5;
+            transition: 0s;
+        }
+
+        /* Form Components */
+        .custom-form-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-bottom: 6px;
+            letter-spacing: 0.2px;
+        }
+
+        .custom-form-control {
+            font-size: 13.5px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1.5px solid rgba(226, 232, 240, 0.8);
+            background-color: var(--bg-light);
+            color: var(--text-heading);
+            transition: all 0.2s ease;
+            box-shadow: none !important;
+        }
+
+        .custom-form-control:focus {
+            background-color: #ffffff !important;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent) 20%, transparent) !important;
+            outline: none;
+        }
+
+        .custom-form-control:disabled,
+        .custom-form-control[readonly] {
+            background-color: rgba(241, 245, 249, 0.7); /* slate-100 */
+            color: var(--text-muted);
+            cursor: not-allowed;
+            border-color: rgba(226, 232, 240, 0.6);
+            opacity: 1;
+        }
+
+        html.dark-mode .custom-form-control {
+            border-color: rgba(255, 255, 255, 0.08);
+            background-color: rgba(0, 0, 0, 0.2) !important;
+            color: #e2e8f0;
+        }
+
+        html.dark-mode .custom-form-control:focus {
+            border-color: var(--primary-accent);
+            background-color: rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* ============================================
+           BOOTSTRAP COMPONENT THEME OVERRIDES
+           ============================================ */
+        .btn-primary {
+            background-color: var(--primary-accent) !important;
+            border-color: var(--primary-accent) !important;
+        }
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: var(--primary-hover) !important;
+            border-color: var(--primary-hover) !important;
+        }
+        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+            background-color: var(--primary-accent) !important;
+            color: #ffffff !important;
+        }
+        .text-primary {
+            color: var(--primary-accent) !important;
+        }
+        .bg-primary {
+            background-color: var(--primary-accent) !important;
+        }
+
+        html.dark-mode .custom-form-control:disabled,
+        html.dark-mode .custom-form-control[readonly] {
+            background-color: rgba(255, 255, 255, 0.03) !important;
+            color: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ==========================================================================
+           GLOBAL PREMIUM DATATABLES THEME OVERRIDES (ERP STANDARD)
+           ========================================================================== */
+
+        /* Modern Icon Button */
+        .btn-icon-modern {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            padding: 0;
+            cursor: pointer;
+        }
+        .btn-icon-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            filter: brightness(0.95);
+        }
+        html.dark-mode .btn-icon-modern:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .btn-icon-modern:active {
+            transform: translateY(0);
+        }
+
+        /* Minimalist Bordered Grid for ERP Standard DataTables */
+        .dataTables_wrapper table.dataTable {
+            border-collapse: separate !important;
+            border-spacing: 0 !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            border-radius: 10px !important;
+            overflow: hidden !important;
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+        html.dark-mode .dataTables_wrapper table.dataTable {
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+        .dataTables_wrapper table.dataTable th,
+        .dataTables_wrapper table.dataTable td {
+            border-right: 1px solid rgba(226, 232, 240, 0.8) !important;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+            padding-top: 12px !important;
+            padding-bottom: 12px !important;
+        }
+        html.dark-mode .dataTables_wrapper table.dataTable th,
+        html.dark-mode .dataTables_wrapper table.dataTable td {
+            border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+        /* Remove borders on last column/row elements for rounded corner containment */
+        .dataTables_wrapper table.dataTable th:last-child,
+        .dataTables_wrapper table.dataTable td:last-child {
+            border-right: none !important;
+        }
+        .dataTables_wrapper table.dataTable tbody tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* Interactive Row Hover effect */
+        .dataTables_wrapper table.dataTable tbody tr {
+            transition: background-color 0.15s ease-in-out;
+            cursor: pointer;
+        }
+        .dataTables_wrapper table.dataTable tbody tr:hover {
+            background-color: rgba(226, 232, 240, 0.25) !important;
+        }
+        html.dark-mode .dataTables_wrapper table.dataTable tbody tr:hover {
+            background-color: rgba(255, 255, 255, 0.045) !important;
+        }
+
+        /* Table Footer styling */
+        .dataTables_wrapper .row:last-child {
+            margin-top: 16px !important;
+            align-items: center !important;
+        }
+        .dataTables_info {
+            font-size: 13px !important;
+            color: var(--text-light) !important;
+            padding-top: 0 !important;
+        }
+        .dataTables_paginate {
+            display: flex !important;
+            justify-content: flex-end !important;
+            padding-top: 0 !important;
+        }
+        .dataTables_paginate .pagination {
+            margin: 0 !important;
+            display: flex !important;
+            gap: 6px !important;
+        }
+        .dataTables_paginate .page-link {
+            background: transparent !important;
+            color: var(--text-heading) !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            border-radius: 8px !important;
+            padding: 0.45rem 0.85rem !important;
+            font-size: 12.5px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease-in-out !important;
+            box-shadow: none !important;
+        }
+        html.dark-mode .dataTables_paginate .page-link {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        .dataTables_paginate .page-link:hover {
+            background: rgba(226, 232, 240, 0.25) !important;
+            border-color: rgba(226, 232, 240, 0.9) !important;
+            color: var(--text-heading) !important;
+        }
+        html.dark-mode .dataTables_paginate .page-link:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            color: white !important;
+        }
+        .dataTables_paginate .page-item.active .page-link {
+            background: var(--primary-accent) !important;
+            color: white !important;
+            border-color: var(--primary-accent) !important;
+            font-weight: 600 !important;
+        }
+        .dataTables_paginate .page-item.disabled .page-link {
+            background: transparent !important;
+            border-color: rgba(226, 232, 240, 0.4) !important;
+            color: var(--text-muted) !important;
+            opacity: 0.5 !important;
+            cursor: not-allowed !important;
+        }
+        html.dark-mode .dataTables_paginate .page-item.disabled .page-link {
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+
+        /* Length menu styling */
+        .dataTables_length select {
+            padding: 0.375rem 2.25rem 0.375rem 0.75rem !important;
+            font-size: 13px !important;
+            border-radius: 8px !important;
+            border-color: rgba(226, 232, 240, 0.8) !important;
+            background-color: var(--bg-dark-secondary) !important;
+            color: var(--text-heading) !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .dataTables_length select:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+            outline: none !important;
+        }
+        html.dark-mode .dataTables_length select {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        .dataTables_length label {
+            font-size: 13px !important;
+            color: var(--text-light) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+        }
+
+        /* Custom Select2 Styling for Premium and Dark Mode compatibility */
+        .select2-container--bootstrap-5 .select2-selection {
+            border-color: var(--border-color) !important;
+            background-color: var(--bg-dark-secondary) !important;
+            color: var(--text-heading) !important;
+            height: 38px !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+        }
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            color: var(--text-heading) !important;
+            font-size: 13.5px !important;
+        }
+        .select2-container--bootstrap-5.select2-container--focus .select2-selection,
+        .select2-container--bootstrap-5.select2-container--open .select2-selection {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+        }
+        .select2-container--bootstrap-5 .select2-dropdown {
+            background-color: var(--bg-dark-secondary) !important;
+            border-color: var(--border-color) !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+        }
+        html.dark-mode .select2-container--bootstrap-5 .select2-dropdown {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+        }
+        /* Style search input inside select2 dropdown */
+        .select2-container--bootstrap-5 .select2-search__field {
+            background-color: var(--bg-dark-tertiary) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-heading) !important;
+            border-radius: 6px !important;
+        }
+        .select2-container--bootstrap-5 .select2-search__field:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+            outline: none !important;
+        }
+        .select2-container--bootstrap-5 .select2-results__option {
+            color: var(--text-heading) !important;
+            font-size: 13.0px !important;
+            padding: 8px 12px !important;
+        }
+        /* Style for highlighted (hovered) option */
+        .select2-container--bootstrap-5 .select2-results__option--highlighted {
+            background-color: var(--primary-accent) !important;
+            color: #ffffff !important;
+        }
+        /* Style for selected option (not hovered) */
+        .select2-container--bootstrap-5 .select2-results__option[aria-selected=true] {
+            background-color: color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+            color: var(--primary-accent) !important;
+            font-weight: 600 !important;
+        }
+        /* Style for selected option when highlighted (hovered) */
+        .select2-container--bootstrap-5 .select2-results__option[aria-selected=true].select2-results__option--highlighted {
+            background-color: var(--primary-accent) !important;
+            color: #ffffff !important;
+        }
+        
+        /* EXACT OVERRIDES FOR THEME SELECTORS (BLUE HIGHLIGHT OVERRIDES) */
+        .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected, 
+        .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true]:not(.select2-results__option--highlighted) {
+            background-color: color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+            color: var(--primary-accent) !important;
+            font-weight: 600 !important;
+        }
+        
+        .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option.select2-results__option--selected.select2-results__option--highlighted, 
+        .select2-container--bootstrap-5 .select2-dropdown .select2-results__options .select2-results__option[aria-selected=true].select2-results__option--highlighted {
+            background-color: var(--primary-accent) !important;
+            color: #ffffff !important;
+        }
+
+        /* Bulletproof Global Select2 Overrides */
+        .select2-results__option[aria-selected=true] {
+            background-color: color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+            color: var(--primary-accent) !important;
+            font-weight: 600 !important;
+        }
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--primary-accent) !important;
+            color: #ffffff !important;
+        }
+
+        /* Custom SweetAlert2 Border Radius */
+        .swal2-popup.rounded-4 {
+            border-radius: 1.25rem !important;
+            background-color: var(--bg-dark-secondary) !important;
+            color: var(--text-heading) !important;
+        }
+        .swal2-title, .swal2-html-container {
+            color: var(--text-heading) !important;
+        }
+
+        /* Global Search styling */
+        .dataTables_filter {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .dataTables_filter input {
+            border-radius: 8px !important;
+            border: 1px solid rgba(226, 232, 240, 0.8) !important;
+            background-color: var(--bg-dark-secondary) !important;
+            color: var(--text-heading) !important;
+            padding: 0.375rem 0.75rem 0.375rem 2.25rem !important;
+            font-size: 13px !important;
+            outline: none !important;
+            height: 38px !important;
+            width: 260px !important;
+            transition: all 0.2s ease;
+        }
+        .dataTables_filter input:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+        }
+        .dataTables_filter label {
+            position: relative;
+            font-size: 13px !important;
+            color: var(--text-light) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            margin-bottom: 0 !important;
+        }
+        .dataTables_filter label::before {
+            content: "\F52A";
+            font-family: "bootstrap-icons" !important;
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            opacity: 0.7;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 5;
+        }
+        html.dark-mode .dataTables_filter input {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        /* Column-wise filters styling */
+        .column-filter {
+            border: 1px solid rgba(226, 232, 240, 0.6) !important;
+            background-color: rgba(226, 232, 240, 0.05) !important;
+            color: var(--text-heading) !important;
+            font-size: 12px !important;
+            font-weight: normal !important;
+            border-radius: 6px !important;
+            height: 32px !important;
+            padding: 0.25rem 0.5rem !important;
+            transition: all 0.2s ease-in-out;
+        }
+        .column-filter::placeholder {
+            color: var(--text-muted) !important;
+            opacity: 0.6;
+        }
+        .column-filter:focus {
+            border-color: var(--primary-accent) !important;
+            background-color: var(--bg-dark-secondary) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+        }
+        html.dark-mode .column-filter {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            background-color: rgba(255, 255, 255, 0.03) !important;
+        }
+        html.dark-mode .column-filter:focus {
+            background-color: rgba(255, 255, 255, 0.06) !important;
+        }
+
+        /* Disable sorting indicators on any table filter row */
+        .dataTables_wrapper table.dataTable thead tr.filter-row th::before,
+        .dataTables_wrapper table.dataTable thead tr.filter-row th::after {
+            display: none !important;
+            content: "" !important;
+        }
+        .dataTables_wrapper table.dataTable thead tr.filter-row th {
+            padding-right: 8px !important;
+        }
+
+        /* ERP Modal Loading Overlay */
+        .erp-loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        .erp-loader-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .erp-loader-card {
+            background: color-mix(in srgb, var(--bg-dark-secondary) 80%, transparent);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid color-mix(in srgb, var(--border-color) 40%, transparent);
+            padding: 24px 32px;
+            border-radius: 20px;
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.15), 0 0 50px -10px color-mix(in srgb, var(--primary-accent) 20%, transparent);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transform: scale(0.9);
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .erp-loader-overlay.active .erp-loader-card {
+            transform: scale(1);
+        }
+
+        .modern-loader-spinner {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary-accent);
+            border-right-color: color-mix(in srgb, var(--primary-accent) 40%, transparent);
+            border-radius: 50%;
+            animation: spin-clockwise 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .spinner-inner {
+            position: absolute;
+            width: 70%;
+            height: 70%;
+            border: 2px solid transparent;
+            border-bottom-color: var(--secondary-accent);
+            border-left-color: color-mix(in srgb, var(--secondary-accent) 30%, transparent);
+            border-radius: 50%;
+            animation: spin-counter-clockwise 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .spinner-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--primary-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--primary-accent);
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        .erp-loader-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .loader-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-heading);
+            letter-spacing: -0.2px;
+        }
+
+        .loader-subtitle {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            animation: pulse-text 1.5s ease-in-out infinite;
+        }
+
+        @keyframes spin-clockwise {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spin-counter-clockwise {
+            to { transform: rotate(-360deg); }
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.65; }
+            50% { opacity: 1; }
+        }
+
+        /* Custom DataTable Processing Styles */
+        .dataTables_wrapper {
+            position: relative;
+        }
+
+        .dataTables_processing {
+            position: absolute;
+            top: 55px !important;
+            left: 0;
+            width: 100%;
+            height: calc(100% - 55px);
+            background: color-mix(in srgb, var(--bg-dark-secondary) 50%, transparent) !important;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 10;
+            display: flex !important;
+            justify-content: center;
+            align-items: center;
+            border: none !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 0 0 16px 16px;
+            
+            /* Hidden by default, animated on active state */
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
+        }
+
+        /* Show processing overlay when active */
+        .dataTables_wrapper.is-processing .dataTables_processing {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Blur table body during processing state */
+        .dataTables_wrapper.is-processing table tbody {
+            filter: blur(2px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Prevent the container from collapsing when empty and processing */
+        .dataTables_wrapper.is-processing {
+            min-height: 200px;
+        }
+
+        /* Smooth transition for loading effects */
+        .dataTables_wrapper table tbody {
+            transition: filter 0.2s ease, opacity 0.2s ease;
+        }
+
+        /* Global Custom Color Utilities mapped to Slate CSS variables */
+        .text-heading {
+            color: var(--text-heading) !important;
+        }
+        .text-light {
+            color: var(--text-light) !important;
+        }
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Ensure default table cell text scales beautifully in dark mode */
+        html.dark-mode .table td {
+            color: var(--text-light) !important;
         }

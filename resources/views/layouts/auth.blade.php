@@ -241,7 +241,7 @@
             color: var(--text-dark);
             background-color: rgba(255, 255, 255, 0.85) !important;
             border: 1.5px solid #e2e8f0; /* Slate 200 - softer */
-            border-radius: 10px;
+            border-radius: 8px;
             transition: all 0.25s ease;
             line-height: 1.5;
         }
@@ -254,7 +254,7 @@
             background-color: #ffffff !important;
             border-color: var(--primary-accent);
             border-width: 1.5px;
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-accent) 12%, transparent);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent) 20%, transparent);
             outline: none;
         }
 
@@ -272,8 +272,13 @@
         }
 
         .form-check-input:checked {
-            background-color: var(--primary-accent);
-            border-color: var(--primary-accent);
+            background-color: var(--primary-accent) !important;
+            border-color: var(--primary-accent) !important;
+        }
+
+        .form-check-input:focus {
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-accent) 20%, transparent) !important;
+            border-color: var(--primary-accent) !important;
         }
 
         /* Solid Custom Button */

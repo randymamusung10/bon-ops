@@ -92,6 +92,13 @@ Route::middleware('auth')->group(function () {
         Route::prefix('master')->name('master.')->group(function () {
             Route::get('company', [CompanyController::class, 'index'])->name('company');
             Route::get('branch', [BranchController::class, 'index'])->name('branch');
+            Route::get('branch/data', [BranchController::class, 'data'])->name('branch.data');
+            Route::get('branch/create', [BranchController::class, 'create'])->name('branch.create');
+            Route::post('branch', [BranchController::class, 'store'])->name('branch.store');
+            Route::get('branch/{uuid}', [BranchController::class, 'show'])->name('branch.show');
+            Route::get('branch/{uuid}/edit', [BranchController::class, 'edit'])->name('branch.edit');
+            Route::put('branch/{uuid}', [BranchController::class, 'update'])->name('branch.update');
+            Route::delete('branch/{uuid}', [BranchController::class, 'destroy'])->name('branch.destroy');
             Route::get('warehouse', [WarehouseController::class, 'index'])->name('warehouse');
             Route::get('customer', [CustomerController::class, 'index'])->name('customer');
             Route::get('supplier', [SupplierController::class, 'index'])->name('supplier');

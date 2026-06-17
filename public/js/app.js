@@ -161,3 +161,93 @@
                 }
             });
         });
+
+        // Global ERP Loader Utility (Frosted Glass & Morphing Dual-Ring Spinner)
+        window.ERPLoader = {
+            _startTime: null,
+
+            show: function(title = 'Memuat Form', subtitle = 'Mohon tunggu sebentar...') {
+                this._startTime = Date.now();
+                let overlay = $('#erp-loader-overlay');
+                
+                if (overlay.length === 0) {
+                    overlay = $(`
+                        <div id="erp-loader-overlay" class="erp-loader-overlay">
+                            <div class="erp-loader-card">
+                                <div class="modern-loader-spinner">
+                                    <div class="spinner-outer"></div>
+                                    <div class="spinner-inner"></div>
+                                    <div class="spinner-dot"></div>
+                                </div>
+                                <div class="erp-loader-text">
+                                    <span class="loader-title">${title}</span>
+                                    <span class="loader-subtitle">${subtitle}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+                    $('body').append(overlay);
+                } else {
+                    overlay.find('.loader-title').text(title);
+                    overlay.find('.loader-subtitle').text(subtitle);
+                }
+                
+                // Force reflow
+                overlay[0].offsetHeight;
+                overlay.addClass('active');
+            },
+
+            hide: function(callback) {
+                const elapsed = Date.now() - (this._startTime || 0);
+                const delay = Math.max(0, 400 - elapsed);
+                
+                setTimeout(() => {
+                    const overlay = $('#erp-loader-overlay');
+                    overlay.removeClass('active');
+                    if (callback && typeof callback === 'function') {
+                        setTimeout(callback, 250); // wait for fade out transition (250ms)
+                    }
+                }, delay);
+            },
+
+            loadModal: function(url, modalId, options = {}) {
+                const title = options.title || 'Memuat Form';
+                const subtitle = options.subtitle || 'Mohon tunggu sebentar...';
+                const container = options.container || '#modal-container';
+                
+                this.show(title, subtitle);
+                
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: (html) => {
+                        this.hide(() => {
+                            $(container).html(html);
+                            const modalElement = $(modalId);
+                            modalElement.modal('show');
+                            
+                            if (options.onSuccess && typeof options.onSuccess === 'function') {
+                                options.onSuccess(modalElement);
+                            }
+                        });
+                    },
+                    error: (xhr) => {
+                        this.hide();
+                        setTimeout(() => {
+                            if (options.onError && typeof options.onError === 'function') {
+                                options.onError(xhr);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: options.errorMessage || 'Gagal memuat form. Silakan coba lagi.',
+                                    customClass: {
+                                        popup: 'rounded-4'
+                                    }
+                                });
+                            }
+                        }, 400);
+                    }
+                });
+            }
+        };

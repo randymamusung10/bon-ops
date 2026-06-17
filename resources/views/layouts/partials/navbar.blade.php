@@ -289,7 +289,7 @@
 
         <!-- ===== MODAL PROFIL SAYA ===== -->
         <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-dialog modal-lg" style="margin-top: 3.5rem;">
                 <div class="modal-content" style="border-radius: 20px; border: 1px solid var(--border-color); background: var(--bg-dark-secondary); box-shadow: 0 24px 64px rgba(0,0,0,0.12);">
 
                     <!-- Modal Header -->
@@ -303,7 +303,7 @@
                                 <p class="mb-0" style="font-size: 12px; color: var(--text-muted);">Informasi akun & pengaturan personal</p>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="margin: 0;"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     <!-- Modal Body -->
@@ -315,7 +315,7 @@
                                 <div class="d-flex flex-column align-items-center text-center p-4 rounded-4" style="background: color-mix(in srgb, var(--primary-accent) 4%, transparent); border: 1px solid color-mix(in srgb, var(--primary-accent) 10%, transparent);">
                                     <!-- Avatar -->
                                     <div class="position-relative mb-3">
-                                        <div id="profileAvatarLarge" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-accent), color-mix(in srgb, var(--primary-accent) 70%, #8b5cf6)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; font-size: 28px; font-family: 'Outfit', sans-serif; box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-accent) 30%, transparent);">{{ $userInitials }}</div>
+                                        <div id="profileAvatarLarge" style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-accent), var(--primary-hover)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: white; font-size: 28px; font-family: 'Outfit', sans-serif; box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-accent) 30%, transparent);">{{ $userInitials }}</div>
                                         <div style="position: absolute; bottom: 2px; right: 2px; width: 20px; height: 20px; background: #10b981; border-radius: 50%; border: 2px solid var(--bg-dark-secondary); display: flex; align-items: center; justify-content: center;">
                                             <i class="bi bi-check" style="font-size: 10px; color: white; font-weight: 900;"></i>
                                         </div>
@@ -371,35 +371,35 @@
                                     <div class="tab-pane fade show active" id="tabInfo">
                                         <div class="row g-3">
                                             <div class="col-12 col-sm-6">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Nama Lengkap</label>
-                                                <input type="text" class="form-control" value="{{ $userName }}" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; color: var(--text-heading); padding: 10px 14px;" placeholder="Nama lengkap Anda">
+                                                <x-form.label>Nama Lengkap</x-form.label>
+                                                <x-form.input value="{{ $userName }}" placeholder="Nama lengkap Anda" />
                                             </div>
                                             <div class="col-12 col-sm-6">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Username</label>
-                                                <input type="text" class="form-control" value="{{ strtolower(str_replace(' ', '.', $userName)) }}" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; color: var(--text-heading); padding: 10px 14px;" placeholder="username">
+                                                <x-form.label>Username</x-form.label>
+                                                <x-form.input value="{{ strtolower(str_replace(' ', '.', $userName)) }}" placeholder="username" />
                                             </div>
                                             <div class="col-12">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Alamat Email</label>
+                                                <x-form.label>Alamat Email</x-form.label>
                                                 <div class="position-relative">
-                                                    <input type="email" class="form-control" value="{{ $userEmail }}" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; color: var(--text-heading); padding: 10px 14px 10px 40px;" placeholder="email@bonops.com">
+                                                    <x-form.input type="email" value="{{ $userEmail }}" placeholder="email@bonops.com" style="padding-left: 40px;" />
                                                     <i class="bi bi-envelope position-absolute" style="left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 14px;"></i>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Telepon</label>
-                                                <input type="tel" class="form-control" value="+62 812-XXXX-XXXX" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; color: var(--text-heading); padding: 10px 14px;" placeholder="+62 8xx">
+                                                <x-form.label>Telepon</x-form.label>
+                                                <x-form.input type="tel" value="+62 812-XXXX-XXXX" placeholder="+62 8xx" />
                                             </div>
                                             <div class="col-12 col-sm-6">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Zona Waktu</label>
-                                                <select class="form-select" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; color: var(--text-heading); padding: 10px 14px;">
+                                                <x-form.label>Zona Waktu</x-form.label>
+                                                <select class="form-select custom-form-control">
                                                     <option selected>WIB (UTC+7)</option>
                                                     <option>WITA (UTC+8)</option>
                                                     <option>WIT (UTC+9)</option>
                                                 </select>
                                             </div>
                                             <div class="col-12">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Tentang Saya</label>
-                                                <textarea class="form-control" rows="2" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; color: var(--text-heading); padding: 10px 14px; resize: none;" placeholder="Deskripsi singkat peran Anda...">System Administrator BonOps Multi-Tenant ERP.</textarea>
+                                                <x-form.label>Tentang Saya</x-form.label>
+                                                <x-form.textarea rows="2" placeholder="Deskripsi singkat peran Anda..." style="resize: none;">System Administrator BonOps Multi-Tenant ERP.</x-form.textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -417,23 +417,23 @@
                                                 </div>
                                             </div>
                                             <div class="col-12">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Password Saat Ini</label>
+                                                <x-form.label>Password Saat Ini</x-form.label>
                                                 <div class="position-relative">
-                                                    <input type="password" id="currentPwdModal" class="form-control" placeholder="••••••••" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; padding: 10px 42px 10px 14px;">
+                                                    <x-form.input type="password" id="currentPwdModal" placeholder="••••••••" style="padding-right: 42px;" />
                                                     <button type="button" onclick="togglePwd('currentPwdModal', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px;"><i class="bi bi-eye-slash"></i></button>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Password Baru</label>
+                                                <x-form.label>Password Baru</x-form.label>
                                                 <div class="position-relative">
-                                                    <input type="password" id="newPwdModal" class="form-control" placeholder="Min. 8 karakter" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; padding: 10px 42px 10px 14px;">
+                                                    <x-form.input type="password" id="newPwdModal" placeholder="Min. 8 karakter" style="padding-right: 42px;" />
                                                     <button type="button" onclick="togglePwd('newPwdModal', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px;"><i class="bi bi-eye-slash"></i></button>
                                                 </div>
                                             </div>
                                             <div class="col-12 col-sm-6">
-                                                <label class="form-label" style="font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Konfirmasi Password</label>
+                                                <x-form.label>Konfirmasi Password</x-form.label>
                                                 <div class="position-relative">
-                                                    <input type="password" id="confirmPwdModal" class="form-control" placeholder="Ulangi password baru" style="background: var(--bg-dark-tertiary); border: 1.5px solid var(--border-color); border-radius: 10px; font-size: 13.5px; padding: 10px 42px 10px 14px;">
+                                                    <x-form.input type="password" id="confirmPwdModal" placeholder="Ulangi password baru" style="padding-right: 42px;" />
                                                     <button type="button" onclick="togglePwd('confirmPwdModal', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 15px;"><i class="bi bi-eye-slash"></i></button>
                                                 </div>
                                             </div>
@@ -486,8 +486,8 @@
                         <div class="d-flex align-items-center justify-content-between w-100">
                             <span style="font-size: 11.5px; color: var(--text-muted);"><i class="bi bi-clock me-1"></i>Sesi aktif sejak: <b>{{ now()->format('d M Y, H:i') }} WIB</b></span>
                             <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-sm" data-bs-dismiss="modal" style="background: var(--bg-dark-tertiary); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 8px; padding: 7px 18px; font-size: 13px;">Batal</button>
-                                <button type="button" class="btn btn-sm" onclick="saveProfile()" style="background: var(--primary-accent); border: none; color: white; border-radius: 8px; padding: 7px 20px; font-size: 13px; font-weight: 600;"><i class="bi bi-check2 me-1"></i>Simpan Perubahan</button>
+                                <button type="button" class="btn btn-sm custom-btn" data-bs-dismiss="modal" style="background: var(--bg-dark-tertiary); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 8px; padding: 7px 18px; font-size: 13px;">Batal</button>
+                                <button type="button" class="btn btn-sm btn-primary custom-btn" onclick="saveProfile()" style="border-radius: 8px; padding: 7px 20px; font-size: 13px; font-weight: 600;"><i class="bi bi-check2 me-1"></i>Simpan Perubahan</button>
                             </div>
                         </div>
                     </div>
