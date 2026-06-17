@@ -1,32 +1,21 @@
 @extends('layouts.app')
 
+@section('page_title', 'Manajemen Cabang')
+@section('page_description', 'Kelola daftar cabang atau outlet untuk tenant Anda.')
+@section('page_actions')
+    <x-button id="btn-export-excel" variant="ghost-success" size="sm" icon="bi-file-earmark-excel">
+        Excel
+    </x-button>
+    <x-button id="btn-export-pdf" variant="ghost-danger" size="sm" icon="bi-file-earmark-pdf">
+        PDF
+    </x-button>
+    <x-button id="btn-add-branch" variant="primary" size="sm" icon="bi-plus-lg">
+        Tambah Cabang
+    </x-button>
+@endsection
+
 @section('content')
 <div class="container-fluid px-0">
-    <!-- Breadcrumb & Header -->
-    <div class="row align-items-center mb-4">
-        <div class="col-12 col-md-7">
-            <nav aria-label="breadcrumb" class="mb-2">
-                <ol class="breadcrumb mb-0" style="font-size: 12px; font-weight: 500;">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>Home</a></li>
-                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Master Data</a></li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: var(--primary-accent);">Cabang</li>
-                </ol>
-            </nav>
-            <h1 class="h4 fw-bold mb-1" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">Manajemen Cabang</h1>
-            <p class="mb-0" style="color: var(--text-light); font-size: 13.5px;">Kelola daftar cabang atau outlet untuk tenant Anda.</p>
-        </div>
-        <div class="col-12 col-md-5 text-md-end mt-3 mt-md-0 d-flex flex-wrap justify-content-md-end gap-2">
-            <x-button id="btn-export-excel" variant="ghost-success" size="sm" icon="bi-file-earmark-excel">
-                Excel
-            </x-button>
-            <x-button id="btn-export-pdf" variant="ghost-danger" size="sm" icon="bi-file-earmark-pdf">
-                PDF
-            </x-button>
-            <x-button id="btn-add-branch" variant="primary" size="sm" icon="bi-plus-lg">
-                Tambah Cabang
-            </x-button>
-        </div>
-    </div>
 
     <!-- Data Table Card -->
     <div class="card rounded-4 border-0 shadow-sm p-4" style="background: var(--bg-dark-secondary);">

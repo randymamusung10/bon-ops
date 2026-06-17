@@ -1,5 +1,20 @@
 @extends('layouts.app')
 
+@section('page_title', 'Dashboard Utama')
+@section('page_description')
+Selamat datang kembali, <b class="text-primary">{{ Auth::user()->name ?? 'Dev Admin' }}</b>. Berikut performa sistem BonOps Anda hari ini.
+@endsection
+@section('page_actions')
+            <button class="btn btn-outline-primary btn-sm rounded-3 me-2 px-3 py-2 border-light-subtle" id="refreshDataBtn" style="background-color: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(226, 232, 240, 0.8); color: var(--primary-accent); font-size: 13px;">
+                <i class="bi bi-arrow-repeat me-1" id="refreshIcon"></i>
+                <span id="refreshText">Segarkan Data</span>
+            </button>
+            <button class="btn btn-primary btn-sm rounded-3 px-3 py-2" id="addTenantBtn" style="background-color: var(--primary-accent); border: none; font-size: 13px; font-weight: 500;">
+                <i class="bi bi-plus-lg me-1" id="addTenantIcon"></i>
+                <span id="addTenantText">Tambah Tenant</span>
+            </button>
+@endsection
+
 @section('content')
 <style>
     @keyframes refreshPulse {
@@ -42,31 +57,6 @@
         border-bottom: 1px solid rgba(226, 232, 240, 0.6) !important;
     }
 </style>
-<div class="container-fluid px-0">
-    <!-- Header Page -->
-    <div class="row align-items-center mb-4">
-        <div class="col-12 col-md-6">
-            <!-- Breadcrumb Navigation -->
-            <nav aria-label="breadcrumb" class="mb-2">
-                <ol class="breadcrumb mb-0" style="font-size: 12px; font-weight: 500;">
-                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted"><i class="bi bi-house-door me-1"></i>Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page" style="color: var(--primary-accent);">Dashboard</li>
-                </ol>
-            </nav>
-            <h1 class="h4 fw-bold mb-1" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">Dashboard Utama</h1>
-            <p class="mb-0" style="color: var(--text-light); font-size: 13.5px;">Selamat datang kembali, <b class="text-primary">{{ Auth::user()->name ?? 'Dev Admin' }}</b>. Berikut performa sistem BonOps Anda hari ini.</p>
-        </div>
-        <div class="col-12 col-md-6 text-md-end mt-3 mt-md-0">
-            <button class="btn btn-outline-primary btn-sm rounded-3 me-2 px-3 py-2 border-light-subtle" id="refreshDataBtn" style="background-color: rgba(255, 255, 255, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(226, 232, 240, 0.8); color: var(--primary-accent); font-size: 13px;">
-                <i class="bi bi-arrow-repeat me-1" id="refreshIcon"></i>
-                <span id="refreshText">Segarkan Data</span>
-            </button>
-            <button class="btn btn-primary btn-sm rounded-3 px-3 py-2" id="addTenantBtn" style="background-color: var(--primary-accent); border: none; font-size: 13px; font-weight: 500;">
-                <i class="bi bi-plus-lg me-1" id="addTenantIcon"></i>
-                <span id="addTenantText">Tambah Tenant</span>
-            </button>
-        </div>
-    </div>
 
     <!-- METRICS CARDS WITH SPARKLINES -->
     <div class="row g-4 mb-4">

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Dashboard' }} - BonOps</title>
+    <title>@yield('page_title', 'Dashboard') - BonOps</title>
     <!-- Google Fonts: Inter & Outfit -->
     <link href="{{ asset('vendor/css/google-fonts.css') }}" rel="stylesheet">
     <!-- Bootstrap 5.3.3 CSS -->
@@ -84,6 +84,23 @@
 
         <!-- MAIN CONTENT -->
         <main class="main-content">
+            @hasSection('page_title')
+            <div class="container-fluid px-0">
+                <div class="row align-items-center mb-4">
+                    <div class="col-12 col-md-7">
+                        {{ Breadcrumbs::render() }}
+                        <h1 class="h4 fw-bold mb-1" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">@yield('page_title')</h1>
+                        @hasSection('page_description')
+                        <p class="mb-0" style="color: var(--text-light); font-size: 13.5px;">@yield('page_description')</p>
+                        @endif
+                    </div>
+                    <div class="col-12 col-md-5 text-md-end mt-3 mt-md-0 d-flex flex-wrap justify-content-md-end gap-2">
+                        @yield('page_actions')
+                    </div>
+                </div>
+            </div>
+            @endif
+
             @yield('content')
         </main>
 

@@ -2076,8 +2076,8 @@
 
         /* Column-wise filters styling */
         .column-filter {
-            border: 1px solid rgba(226, 232, 240, 0.6) !important;
-            background-color: rgba(226, 232, 240, 0.05) !important;
+            border: 1px solid #e2e8f0 !important;
+            background-color: #ffffff !important;
             color: var(--text-heading) !important;
             font-size: 12px !important;
             font-weight: normal !important;
@@ -2085,6 +2085,16 @@
             height: 32px !important;
             padding: 0.25rem 0.5rem !important;
             transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+        }
+        select.column-filter {
+            padding-right: 2rem !important;
+            background-position: right 0.5rem center !important;
+            cursor: pointer;
+        }
+        select.column-filter option {
+            background-color: var(--bg-dark-secondary);
+            color: var(--text-heading);
         }
         .column-filter::placeholder {
             color: var(--text-muted) !important;
