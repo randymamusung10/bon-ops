@@ -6,15 +6,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Dashboard' }} - BonOps</title>
     <!-- Google Fonts: Inter & Outfit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="{{ asset('vendor/css/google-fonts.css') }}" rel="stylesheet">
     <!-- Bootstrap 5.3.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/bootstrap-icons.min.css') }}?v={{ filemtime(public_path('vendor/css/bootstrap-icons.min.css')) }}" rel="stylesheet">
     <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('vendor/js/chart.umd.js') }}"></script>
     
     <!-- Accent Color Theme + Dark Mode Preloader (must be synchronous, before render) -->
     <script>
@@ -52,14 +50,14 @@
     </script>
     
     <!-- DataTables Bootstrap 5 CSS -->
-    <link href="https://cdn.datatables.net/1.13.11/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
     <!-- DataTables Buttons CSS -->
-    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/buttons.bootstrap5.min.css') }}" rel="stylesheet">
     <!-- Select2 & Bootstrap 5 Theme CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/select2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/css/select2-bootstrap-5-theme.min.css') }}" rel="stylesheet">
     <!-- SweetAlert2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/sweetalert2.min.css') }}" rel="stylesheet">
     
     <!-- CSS Global (Loaded last to ensure custom overrides win) -->
     <link href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}" rel="stylesheet">
@@ -97,27 +95,27 @@
     @stack('modals')
 
     <!-- jQuery & Bootstrap 5.3.3 Bundle with Popper -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('vendor/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/bootstrap.bundle.min.js') }}"></script>
     
     <!-- Select2 & SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('vendor/js/select2.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/sweetalert2.min.js') }}"></script>
     
     <!-- DataTables Core & Bootstrap 5 Integration JS -->
-    <script src="https://cdn.datatables.net/1.13.11/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.11/js/dataTables.bootstrap5.min.js"></script>
+    <script src="{{ asset('vendor/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/dataTables.bootstrap5.min.js') }}"></script>
 
     <!-- JS Zip (Excel) & PDF Make (PDF) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="{{ asset('vendor/js/jszip.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/pdfmake.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/vfs_fonts.js') }}"></script>
 
     <!-- DataTables Buttons JS -->
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="{{ asset('vendor/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/buttons.bootstrap5.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('vendor/js/buttons.print.min.js') }}"></script>
 
     <!-- JS Global -->
     <script src="{{ asset('js/app.js') }}?v={{ filemtime(public_path('js/app.js')) }}"></script>

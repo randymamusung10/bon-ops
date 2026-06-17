@@ -70,17 +70,17 @@
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
         
-        .btn-primary-custom:hover {
+        .btn-primary-custom:not(:disabled):hover {
             background-color: var(--primary-hover) !important;
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(59, 130, 246, 0.25) !important;
         }
 
-        .btn-primary-custom:hover #submitIcon {
+        .btn-primary-custom:not(:disabled):hover #submitIcon {
             transform: translateX(4px);
         }
 
-        .btn-primary-custom:active {
+        .btn-primary-custom:not(:disabled):active {
             transform: translateY(1px) scale(0.98) !important;
         }
 

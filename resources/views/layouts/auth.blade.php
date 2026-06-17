@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Login' }} - BonOps</title>
     <!-- Google Fonts: Inter & Outfit -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="{{ asset('vendor/css/google-fonts.css') }}" rel="stylesheet">
     <!-- Bootstrap 5.3.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/bootstrap.min.css') }}" rel="stylesheet">
     <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="{{ asset('vendor/css/bootstrap-icons.min.css') }}?v={{ filemtime(public_path('vendor/css/bootstrap-icons.min.css')) }}" rel="stylesheet">
     
     <!-- Theme + Dark Mode Preloader (sync, before render) -->
     <script>
@@ -309,10 +307,12 @@
         }
 
         .btn-primary-custom:disabled {
-            background-color: #cbd5e1 !important;
-            cursor: not-allowed;
+            background-color: var(--primary-accent) !important;
+            opacity: 0.7;
+            cursor: wait;
             transform: none !important;
-            color: #64748b !important;
+            color: #ffffff !important;
+            box-shadow: none !important;
         }
 
         .alert-custom {
@@ -508,7 +508,7 @@
     </div>
 
     <!-- Bootstrap 5.3.3 Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('vendor/js/bootstrap.bundle.min.js') }}"></script>
 
     <!-- Canvas Particle Mesh Script (FullScreen) -->
     <script>
