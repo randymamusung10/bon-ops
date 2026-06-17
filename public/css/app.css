@@ -1240,24 +1240,29 @@
         }
 
         .modal-header .btn-close {
-            background-color: color-mix(in srgb, var(--primary-accent) 8%, transparent) !important;
-            border: 1.5px solid color-mix(in srgb, var(--primary-accent) 20%, transparent) !important;
-            border-radius: 50%;
-            padding: 10px;
-            margin: -0.5rem -0.5rem -0.5rem auto !important; /* Proper right alignment */
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute !important;
+            top: 16px !important;
+            right: 16px !important;
+            margin: 0 !important;
+            background-color: transparent !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 0 !important;
+            width: 36px !important;
+            height: 36px !important;
+            transition: all 0.2s ease !important;
             opacity: 0.8;
+            z-index: 10 !important;
         }
 
         .modal-header .btn-close:hover {
-            background-color: color-mix(in srgb, var(--danger) 12%, transparent) !important;
-            border-color: color-mix(in srgb, var(--danger) 30%, transparent) !important;
+            background-color: rgba(100, 116, 139, 0.1) !important;
+            color: var(--text-heading) !important;
             opacity: 1;
-            transform: rotate(90deg);
         }
 
         .modal-header .btn-close:focus {
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary-accent) 25%, transparent) !important;
+            box-shadow: none !important;
             outline: none !important;
             opacity: 1;
         }
@@ -1849,14 +1854,177 @@
             color: #ffffff !important;
         }
 
-        /* Custom SweetAlert2 Border Radius */
-        .swal2-popup.rounded-4 {
-            border-radius: 1.25rem !important;
+        /* ============================================
+           SWEETALERT2 GLOBAL CUSTOMIZATION
+           ============================================ */
+        .swal2-popup:not(.swal2-toast) {
             background-color: var(--bg-dark-secondary) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.2) !important;
             color: var(--text-heading) !important;
+            font-family: 'Inter', sans-serif !important;
+            padding: 1.5rem !important;
         }
-        .swal2-title, .swal2-html-container {
+        html.dark-mode .swal2-popup:not(.swal2-toast) {
+            box-shadow: 0 15px 50px -10px rgba(0,0,0,0.5) !important;
+        }
+
+        .swal2-popup:not(.swal2-toast) .swal2-title {
+            font-family: 'Outfit', sans-serif !important;
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
             color: var(--text-heading) !important;
+            padding-top: 0 !important;
+        }
+
+        .swal2-popup:not(.swal2-toast) .swal2-close {
+            display: flex !important; /* Force show the close icon */
+            position: absolute !important;
+            top: 12px !important;
+            right: 12px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: var(--text-muted) !important;
+            font-size: 28px !important;
+            font-weight: 300 !important;
+            transition: all 0.2s ease !important;
+            border-radius: 8px !important;
+            width: 40px !important;
+            height: 40px !important;
+            background: transparent !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            z-index: 2 !important;
+        }
+        .swal2-popup:not(.swal2-toast) .swal2-close:hover {
+            color: var(--text-heading) !important;
+            background-color: rgba(100, 116, 139, 0.1) !important;
+        }
+        .swal2-popup:not(.swal2-toast) .swal2-close:focus {
+            box-shadow: none !important;
+            outline: none !important;
+        }
+        html.dark-mode .swal2-close:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            color: #ffffff !important;
+        }
+
+        .swal2-html-container {
+            font-family: 'Inter', sans-serif !important;
+            color: var(--text-light) !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+            margin: 1rem 0 !important;
+        }
+
+        .swal2-icon {
+            border-color: transparent !important;
+            margin-bottom: 1.25rem !important;
+        }
+        .swal2-icon.swal2-success {
+            color: #10b981 !important;
+            border-color: rgba(16, 185, 129, 0.3) !important;
+        }
+        .swal2-icon.swal2-success [class^=swal2-success-line] {
+            background-color: #10b981 !important;
+        }
+        .swal2-icon.swal2-success .swal2-success-ring {
+            border-color: rgba(16, 185, 129, 0.3) !important;
+        }
+        .swal2-icon.swal2-error {
+            color: #ef4444 !important;
+            border-color: rgba(239, 68, 68, 0.3) !important;
+        }
+        .swal2-icon.swal2-error [class^=swal2-x-mark-line] {
+            background-color: #ef4444 !important;
+        }
+        .swal2-icon.swal2-warning {
+            color: #f59e0b !important;
+            border-color: rgba(245, 158, 11, 0.3) !important;
+        }
+        .swal2-icon.swal2-info {
+            color: var(--primary-accent) !important;
+            border-color: color-mix(in srgb, var(--primary-accent) 30%, transparent) !important;
+        }
+        .swal2-icon.swal2-question {
+            color: #6366f1 !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+        }
+
+        .swal2-actions {
+            margin-top: 1.5rem !important;
+            gap: 12px !important;
+            width: 100% !important;
+        }
+
+        .swal2-input, .swal2-file, .swal2-textarea, .swal2-select, .swal2-radio, .swal2-checkbox {
+            border-radius: 8px !important;
+            border: 1px solid var(--border-color) !important;
+            background-color: var(--bg-dark-primary) !important;
+            color: var(--text-heading) !important;
+            font-size: 14px !important;
+            transition: all 0.2s ease !important;
+        }
+        .swal2-input:focus, .swal2-file:focus, .swal2-textarea:focus, .swal2-select:focus {
+            border-color: var(--primary-accent) !important;
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 15%, transparent) !important;
+            outline: none !important;
+        }
+        .swal2-styled:focus {
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 25%, transparent) !important;
+        }
+
+        /* Backdrop & Overlay Overlay */
+        .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+            background: rgba(15, 23, 42, 0.5) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+        }
+
+        /* Timer Progress Bar */
+        .swal2-timer-progress-bar {
+            background: var(--primary-accent) !important;
+            height: 4px !important;
+        }
+
+        /* Validation Message */
+        .swal2-validation-message {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            color: #ef4444 !important;
+            border-radius: 8px !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 13.5px !important;
+            padding: 12px 16px !important;
+            margin-top: 1rem !important;
+            justify-content: center !important;
+        }
+        .swal2-validation-message::before {
+            background-color: #ef4444 !important;
+        }
+
+        /* Toast Specific Styling */
+        .swal2-popup.swal2-toast {
+            border-radius: 12px !important;
+            padding: 12px 20px !important;
+            box-shadow: 0 8px 30px -5px rgba(0,0,0,0.2) !important;
+            width: auto !important;
+        }
+        html.dark-mode .swal2-popup.swal2-toast {
+            box-shadow: 0 8px 30px -5px rgba(0,0,0,0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        .swal2-toast .swal2-title {
+            font-size: 14.5px !important;
+        }
+
+        /* Loading Spinner */
+        .swal2-loader {
+            border-color: #ffffff transparent #ffffff transparent !important;
+        }
+        .swal2-actions.swal2-loading .swal2-confirm.swal2-styled {
+            color: transparent !important;
         }
 
         /* Global Search styling */

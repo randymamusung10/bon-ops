@@ -297,16 +297,7 @@ $(document).ready(function() {
                     $('#addBranchModal').modal('hide');
                     table.ajax.reload();
                     
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 2000,
-                        customClass: {
-                            popup: 'rounded-4'
-                        }
-                    });
+                    AppAlert.success('Data Tersimpan!', response.message);
                 }
             },
             error: function(xhr) {
@@ -317,14 +308,7 @@ $(document).ready(function() {
                         $('#add-' + key + '-error').html(val[0]);
                     });
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Terjadi kesalahan. Silakan coba lagi.',
-                        customClass: {
-                            popup: 'rounded-4'
-                        }
-                    });
+                    AppAlert.error('Error!', 'Terjadi kesalahan. Silakan coba lagi.');
                 }
             },
             complete: function() {
@@ -373,16 +357,7 @@ $(document).ready(function() {
                     $('#editBranchModal').modal('hide');
                     table.ajax.reload();
                     
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: response.message,
-                        showConfirmButton: false,
-                        timer: 2000,
-                        customClass: {
-                            popup: 'rounded-4'
-                        }
-                    });
+                    AppAlert.success('Data Diperbarui!', response.message);
                 }
             },
             error: function(xhr) {
@@ -393,14 +368,7 @@ $(document).ready(function() {
                         $('#edit-' + key + '-error').html(val[0]);
                     });
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: 'Terjadi kesalahan. Silakan coba lagi.',
-                        customClass: {
-                            popup: 'rounded-4'
-                        }
-                    });
+                    AppAlert.error('Error!', 'Terjadi kesalahan. Silakan coba lagi.');
                 }
             },
             complete: function() {
@@ -414,19 +382,7 @@ $(document).ready(function() {
         var uuid = $(this).data('uuid');
         var name = $(this).data('name');
         
-        Swal.fire({
-            title: 'Hapus Cabang?',
-            text: 'Apakah Anda yakin ingin menghapus cabang "' + name + '"? Tindakan ini tidak dapat dibatalkan.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal',
-            customClass: {
-                popup: 'rounded-4'
-            }
-        }).then((result) => {
+        AppAlert.confirmDelete('Hapus Cabang?', 'Apakah Anda yakin ingin menghapus cabang "' + name + '"?').then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
                     url: "{{ url('logistic/master/branch') }}/" + uuid,
@@ -434,27 +390,11 @@ $(document).ready(function() {
                     success: function(response) {
                         if (response.success) {
                             table.ajax.reload();
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Dihapus!',
-                                text: response.message,
-                                showConfirmButton: false,
-                                timer: 1500,
-                                customClass: {
-                                    popup: 'rounded-4'
-                                }
-                            });
+                            AppAlert.success('Data Dihapus!', response.message);
                         }
                     },
                     error: function() {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Gagal!',
-                            text: 'Gagal menghapus cabang.',
-                            customClass: {
-                                popup: 'rounded-4'
-                            }
-                        });
+                        AppAlert.error('Gagal!', 'Gagal menghapus cabang.');
                     }
                 });
             }

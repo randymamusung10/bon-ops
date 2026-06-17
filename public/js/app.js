@@ -237,17 +237,123 @@
                             if (options.onError && typeof options.onError === 'function') {
                                 options.onError(xhr);
                             } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Gagal',
-                                    text: options.errorMessage || 'Gagal memuat form. Silakan coba lagi.',
-                                    customClass: {
-                                        popup: 'rounded-4'
-                                    }
-                                });
+                                AppAlert.error('Gagal Memuat', options.errorMessage || 'Gagal memuat form. Silakan coba lagi.');
                             }
                         }, 400);
                     }
                 });
+            }
+        };
+
+        // Base SweetAlert2 instance with component styling
+        const baseSwal = Swal.mixin({
+            buttonsStyling: false,
+            customClass: {
+                confirmButton: 'btn custom-btn position-relative overflow-hidden btn-size-md btn-variant-primary',
+                cancelButton: 'btn custom-btn position-relative overflow-hidden btn-size-md btn-variant-light',
+                denyButton: 'btn custom-btn position-relative overflow-hidden btn-size-md btn-variant-danger',
+                popup: 'rounded-4'
+            }
+        });
+
+        // Global Alert & Notification Helper (SweetAlert2 Wrapper)
+        window.AppAlert = {
+            success: function(title, text) {
+                return baseSwal.fire({
+                    icon: 'success',
+                    title: title || 'Berhasil!',
+                    text: text || 'Tindakan berhasil diselesaikan.',
+                    confirmButtonText: 'Tutup',
+                    showCloseButton: true
+                });
+            },
+            
+            error: function(title, text) {
+                return baseSwal.fire({
+                    icon: 'error',
+                    title: title || 'Gagal!',
+                    text: text || 'Terjadi kesalahan pada sistem. Silakan coba lagi.',
+                    confirmButtonText: 'Tutup',
+                    showCloseButton: true
+                });
+            },
+            
+            warning: function(title, text) {
+                return baseSwal.fire({
+                    icon: 'warning',
+                    title: title || 'Peringatan',
+                    text: text,
+                    confirmButtonText: 'Tutup',
+                    showCloseButton: true
+                });
+            },
+            
+            info: function(title, text) {
+                return baseSwal.fire({
+                    icon: 'info',
+                    title: title || 'Informasi',
+                    text: text,
+                    confirmButtonText: 'Tutup',
+                    showCloseButton: true
+                });
+            },
+
+            confirm: function(title, text, confirmText = 'Ya, Lanjutkan') {
+                return baseSwal.fire({
+                    icon: 'question',
+                    title: title || 'Apakah Anda yakin?',
+                    text: text || 'Tindakan ini tidak dapat dibatalkan.',
+                    showCancelButton: true,
+                    confirmButtonText: confirmText,
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true, // Confirm button on the right
+                    showCloseButton: true
+                });
+            },
+            
+            confirmDelete: function(title, text) {
+                return baseSwal.fire({
+                    icon: 'warning',
+                    title: title || 'Hapus Data?',
+                    text: text || 'Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dikembalikan.',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true,
+                    showCloseButton: true,
+                    customClass: {
+                        confirmButton: 'btn custom-btn position-relative overflow-hidden btn-size-md btn-variant-danger',
+                        cancelButton: 'btn custom-btn position-relative overflow-hidden btn-size-md btn-variant-light',
+                        popup: 'rounded-4'
+                    }
+                });
+            },
+
+            toast: function(icon, title) {
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showCloseButton: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer);
+                        toast.addEventListener('mouseleave', Swal.resumeTimer);
+                    }
+                });
+
+                return Toast.fire({
+                    icon: icon,
+                    title: title
+                });
+            },
+            
+            toastSuccess: function(title) {
+                return this.toast('success', title || 'Data berhasil disimpan');
+            },
+            
+            toastError: function(title) {
+                return this.toast('error', title || 'Gagal memproses data');
             }
         };
