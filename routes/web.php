@@ -127,6 +127,13 @@ Route::middleware('auth')->group(function () {
             Route::put('category/{uuid}', [ProductCategoryController::class, 'update'])->name('category.update');
             Route::delete('category/{uuid}', [ProductCategoryController::class, 'destroy'])->name('category.destroy');
             Route::get('product', [ProductController::class, 'index'])->name('product');
+            Route::get('product/data', [ProductController::class, 'data'])->name('product.data');
+            Route::get('product/create', [ProductController::class, 'create'])->name('product.create');
+            Route::post('product', [ProductController::class, 'store'])->name('product.store');
+            Route::get('product/{uuid}', [ProductController::class, 'show'])->name('product.show');
+            Route::get('product/{uuid}/edit', [ProductController::class, 'edit'])->name('product.edit');
+            Route::put('product/{uuid}', [ProductController::class, 'update'])->name('product.update');
+            Route::delete('product/{uuid}', [ProductController::class, 'destroy'])->name('product.destroy');
             Route::get('unit', [UnitController::class, 'index'])->name('unit');
             Route::get('unit/data', [UnitController::class, 'data'])->name('unit.data');
             Route::get('unit/select2', [UnitController::class, 'select2'])->name('unit.select2');

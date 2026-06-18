@@ -36,6 +36,11 @@ class Product extends BaseMasterModel
     {
         return $this->belongsTo(Tax::class);
     }
+
+    public function priceHistories()
+    {
+        return $this->hasMany(ProductPriceHistory::class)->latest();
+    }
     
     public function inventoryAccount()
     {

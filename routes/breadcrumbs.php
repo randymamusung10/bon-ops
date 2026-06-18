@@ -62,3 +62,10 @@ Breadcrumbs::for('logistic.master.unit', function (BreadcrumbTrail $trail) {
     $trail->push('Master Data', '#');
     $trail->push('Satuan Produk', route('logistic.master.unit'));
 });
+
+// Master Data > Produk
+Breadcrumbs::for('logistic.master.product', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Data Produk', route('logistic.master.product'));
+});
