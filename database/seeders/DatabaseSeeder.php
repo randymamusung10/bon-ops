@@ -76,5 +76,26 @@ class DatabaseSeeder extends Seeder
         $admin->update([
             'branch_id' => $branch1->id,
         ]);
+
+        // 6. Master Data Financial (Independent)
+        $this->call([
+            CurrencySeeder::class,
+            TaxSeeder::class,
+            ChartOfAccountSeeder::class,
+        ]);
+
+        // 7. Master Data Logistik Dasar
+        $this->call([
+            WarehouseSeeder::class,
+            SupplierSeeder::class,
+            CustomerSeeder::class,
+            ProductCategorySeeder::class,
+            UnitSeeder::class,
+        ]);
+
+        // 8. Master Produk Terintegrasi (Bergantung pada Category, Unit, Tax, COA)
+        $this->call([
+            ProductSeeder::class,
+        ]);
     }
 }
