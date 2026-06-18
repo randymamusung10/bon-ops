@@ -55,3 +55,10 @@ Breadcrumbs::for('logistic.master.category', function (BreadcrumbTrail $trail) {
     $trail->push('Master Data', '#');
     $trail->push('Kategori Produk', route('logistic.master.category'));
 });
+
+// Master Data > Satuan Produk
+Breadcrumbs::for('logistic.master.unit', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Satuan Produk', route('logistic.master.unit'));
+});

@@ -128,6 +128,14 @@ Route::middleware('auth')->group(function () {
             Route::delete('category/{uuid}', [ProductCategoryController::class, 'destroy'])->name('category.destroy');
             Route::get('product', [ProductController::class, 'index'])->name('product');
             Route::get('unit', [UnitController::class, 'index'])->name('unit');
+            Route::get('unit/data', [UnitController::class, 'data'])->name('unit.data');
+            Route::get('unit/select2', [UnitController::class, 'select2'])->name('unit.select2');
+            Route::get('unit/create', [UnitController::class, 'create'])->name('unit.create');
+            Route::post('unit', [UnitController::class, 'store'])->name('unit.store');
+            Route::get('unit/{uuid}', [UnitController::class, 'show'])->name('unit.show');
+            Route::get('unit/{uuid}/edit', [UnitController::class, 'edit'])->name('unit.edit');
+            Route::put('unit/{uuid}', [UnitController::class, 'update'])->name('unit.update');
+            Route::delete('unit/{uuid}', [UnitController::class, 'destroy'])->name('unit.destroy');
             Route::get('warehouse', [WarehouseController::class, 'index'])->name('warehouse');
             Route::get('warehouse/data', [WarehouseController::class, 'data'])->name('warehouse.data');
             Route::get('warehouse/create', [WarehouseController::class, 'create'])->name('warehouse.create');
