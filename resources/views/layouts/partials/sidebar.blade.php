@@ -156,6 +156,8 @@
                 </a>
                 <div class="collapse submenu-list-wrapper {{ Request::is('business/finance*') ? 'show' : '' }}" id="financeMenu">
                     <div class="submenu-list">
+                        <a href="{{ route('business.finance.currency') }}" class="submenu-link {{ Route::is('business.finance.currency') ? 'active' : '' }}"><i class="bi bi-currency-exchange"></i><span>Mata Uang</span></a>
+                        <a href="{{ route('business.finance.tax') }}" class="submenu-link {{ Route::is('business.finance.tax') ? 'active' : '' }}"><i class="bi bi-percent"></i><span>Pajak (Tax)</span></a>
                         <a href="{{ route('business.finance.coa') }}" class="submenu-link {{ Route::is('business.finance.coa') ? 'active' : '' }}"><i class="bi bi-list-stars"></i><span>Bagan Akun (COA)</span></a>
                         <a href="{{ route('business.finance.journal') }}" class="submenu-link {{ Route::is('business.finance.journal') ? 'active' : '' }}"><i class="bi bi-book"></i><span>Jurnal Umum</span></a>
                         <a href="{{ route('business.finance.payable') }}" class="submenu-link {{ Route::is('business.finance.payable') ? 'active' : '' }}"><i class="bi bi-box-arrow-right"></i><span>Hutang (AP)</span></a>

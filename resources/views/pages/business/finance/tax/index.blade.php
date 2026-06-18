@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('page_title', 'Chart of Account (COA)')
-@section('page_description', 'Kelola daftar bagan akun (Chart of Account) untuk keperluan akuntansi dan jurnal.')
+@section('page_title', 'Pajak (Tax)')
+@section('page_description', 'Kelola daftar persentase pajak yang berlaku.')
 @section('page_actions')
     <x-button id="btn-export-excel" variant="ghost-success" size="sm" icon="bi-file-earmark-excel">
         Excel
@@ -9,8 +9,8 @@
     <x-button id="btn-export-pdf" variant="ghost-danger" size="sm" icon="bi-file-earmark-pdf">
         PDF
     </x-button>
-    <x-button id="btn-add-coa" variant="primary" size="sm" icon="bi-plus-lg">
-        Tambah Akun
+    <x-button id="btn-add-tax" variant="primary" size="sm" icon="bi-plus-lg">
+        Tambah Pajak
     </x-button>
 @endsection
 
@@ -18,13 +18,13 @@
 <div class="container-fluid px-0">
     <div class="card rounded-4 border-0 shadow-sm p-4" style="background: var(--bg-dark-secondary);">
         <div class="table-responsive">
-            <table id="coas-table" class="table align-middle mb-0 w-100" style="--bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.6);">
+            <table id="taxes-table" class="table align-middle mb-0 w-100" style="--bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.6);">
                 <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent);">
                     <tr style="font-size: 13px; color: var(--text-muted); letter-spacing: 0.2px;">
                         <th class="ps-4 py-3" style="width: 5%;">No</th>
-                        <th class="py-3" style="width: 15%;">Kode Akun</th>
-                        <th class="py-3" style="width: 30%;">Nama Akun</th>
-                        <th class="py-3" style="width: 20%;">Tipe Akun</th>
+                        <th class="py-3" style="width: 20%;">Kode Pajak</th>
+                        <th class="py-3" style="width: 30%;">Nama Pajak</th>
+                        <th class="py-3" style="width: 15%;">Persentase (%)</th>
                         <th class="py-3" style="width: 15%;">Status</th>
                         <th class="pe-4 text-end py-3" style="width: 15%;">Aksi</th>
                     </tr>
@@ -32,16 +32,7 @@
                         <th class="ps-4 pb-3"></th>
                         <th class="pb-3"><input type="text" class="form-control form-control-sm column-filter" placeholder="Cari Kode..."></th>
                         <th class="pb-3"><input type="text" class="form-control form-control-sm column-filter" placeholder="Cari Nama..."></th>
-                        <th class="pb-3">
-                            <select class="form-select form-select-sm column-filter">
-                                <option value="">Semua Tipe</option>
-                                <option value="asset">Aset (Asset)</option>
-                                <option value="liability">Kewajiban (Liability)</option>
-                                <option value="equity">Ekuitas (Equity)</option>
-                                <option value="revenue">Pendapatan (Revenue)</option>
-                                <option value="expense">Beban (Expense)</option>
-                            </select>
-                        </th>
+                        <th class="pb-3"></th>
                         <th class="pb-3">
                             <select class="form-select form-select-sm column-filter">
                                 <option value="">Semua</option>
@@ -85,36 +76,36 @@ $(document).ready(function() {
         }
     });
 
-    $('#btn-add-coa').on('click', function() {
-        ERPLoader.loadModal("{{ route('business.finance.coa.create') }}", '#addCoaModal', {
-            title: 'Tambah Akun',
-            errorMessage: 'Gagal memuat form tambah akun.'
+    $('#btn-add-tax').on('click', function() {
+        ERPLoader.loadModal("{{ route('business.finance.tax.create') }}", '#addTaxModal', {
+            title: 'Tambah Pajak',
+            errorMessage: 'Gagal memuat form tambah pajak.'
         });
     });
 
-    var table = $('#coas-table').DataTable({
+    var table = $('#taxes-table').DataTable({
         processing: true,
         serverSide: true,
         orderCellsTop: true,
         ajax: {
-            url: "{{ route('business.finance.coa.data') }}"
+            url: "{{ route('business.finance.tax.data') }}"
         },
         dom: '<"d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"lBf>t<"d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4"ip>',
         buttons: [
             {
                 extend: 'excelHtml5',
                 className: 'buttons-excel d-none',
-                title: 'Data_COA_Export',
+                title: 'Data_Pajak_Export',
                 exportOptions: { columns: [0, 1, 2, 3, 4] }
             },
             {
                 extend: 'pdfHtml5',
                 className: 'buttons-pdf d-none',
-                title: 'Data_COA_Export',
+                title: 'Data_Pajak_Export',
                 exportOptions: { columns: [0, 1, 2, 3, 4] }
             }
         ],
-        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
         columns: [
             { 
                 data: null, 
@@ -135,34 +126,14 @@ $(document).ready(function() {
             { 
                 data: 'name', 
                 name: 'name',
-                class: 'text-heading',
-                render: function(data, type, row) {
-                    var nameStr = data;
-                    if (row.is_header) {
-                        nameStr = '<span class="fw-bold">' + data + '</span> <span class="badge bg-light text-dark border ms-1" style="font-size: 10px;">HEADER</span>';
-                    } else {
-                        nameStr = '<span class="fw-semibold">' + data + '</span>';
-                    }
-
-                    if (row.parent_name && row.parent_name !== '-') {
-                        nameStr = '<div class="text-muted mb-1" style="font-size: 11px;"><i class="bi bi-arrow-return-right me-1"></i>Induk: ' + row.parent_name + '</div>' + nameStr;
-                    }
-                    return nameStr;
-                }
+                class: 'fw-semibold text-heading' 
             },
             { 
-                data: 'account_type', 
-                name: 'account_type',
+                data: 'rate_percentage', 
+                name: 'rate_percentage',
+                class: 'text-heading',
                 render: function(data) {
-                    var map = {
-                        'asset': { text: 'Aset', badge: 'bg-primary-subtle text-primary' },
-                        'liability': { text: 'Kewajiban', badge: 'bg-warning-subtle text-warning' },
-                        'equity': { text: 'Ekuitas', badge: 'bg-info-subtle text-info' },
-                        'revenue': { text: 'Pendapatan', badge: 'bg-success-subtle text-success' },
-                        'expense': { text: 'Beban', badge: 'bg-danger-subtle text-danger' }
-                    };
-                    var typeInfo = map[data] || { text: data, badge: 'bg-secondary-subtle text-secondary' };
-                    return '<span class="badge ' + typeInfo.badge + ' px-2.5 py-1.5 rounded" style="font-size: 11px; font-weight: 600;">' + typeInfo.text + '</span>';
+                    return parseFloat(data) + '%';
                 }
             },
             { 
@@ -225,10 +196,10 @@ $(document).ready(function() {
     });
 
     $('.dataTables_length select').select2({ theme: 'bootstrap-5', width: '75px', minimumResultsForSearch: -1 });
-    $('#coas-table thead tr.filter-row select.column-filter').select2({ theme: 'bootstrap-5', width: '100%', minimumResultsForSearch: -1 });
-    $('#coas-table thead tr.filter-row').on('click mousedown keydown', function(e) { e.stopPropagation(); });
+    $('#taxes-table thead tr.filter-row select.column-filter').select2({ theme: 'bootstrap-5', width: '100%', minimumResultsForSearch: -1 });
+    $('#taxes-table thead tr.filter-row').on('click mousedown keydown', function(e) { e.stopPropagation(); });
 
-    $('#coas-table thead tr.filter-row .column-filter').on('keyup change clear', function() {
+    $('#taxes-table thead tr.filter-row .column-filter').on('keyup change clear', function() {
         var th = $(this).closest('th');
         var index = th.index();
         if (table.column(index).search() !== this.value) {
@@ -239,7 +210,7 @@ $(document).ready(function() {
     $('#btn-export-excel').on('click', function(e) { e.preventDefault(); table.button('.buttons-excel').trigger(); });
     $('#btn-export-pdf').on('click', function(e) { e.preventDefault(); table.button('.buttons-pdf').trigger(); });
 
-    $(document).on('submit', '#add-coa-form', function(e) {
+    $(document).on('submit', '#add-tax-form', function(e) {
         e.preventDefault();
         var form = $(this);
         var submitBtn = form.find('button[type="submit"]');
@@ -249,12 +220,12 @@ $(document).ready(function() {
         form.find('.invalid-feedback').html('');
 
         $.ajax({
-            url: "{{ route('business.finance.coa.store') }}",
+            url: "{{ route('business.finance.tax.store') }}",
             type: "POST",
             data: form.serialize(),
             success: function(response) {
                 if (response.success) {
-                    $('#addCoaModal').modal('hide');
+                    $('#addTaxModal').modal('hide');
                     table.ajax.reload();
                     AppAlert.success('Data Tersimpan!', response.message);
                 }
@@ -276,17 +247,17 @@ $(document).ready(function() {
 
     $(document).on('click', '.show-btn', function() {
         var uuid = $(this).data('uuid');
-        var url = "{{ url('business/finance/coa') }}/" + uuid;
-        ERPLoader.loadModal(url, '#showCoaModal', { title: 'Detail Akun', errorMessage: 'Gagal mengambil data detail akun.' });
+        var url = "{{ url('business/finance/tax') }}/" + uuid;
+        ERPLoader.loadModal(url, '#showTaxModal', { title: 'Detail Pajak', errorMessage: 'Gagal mengambil data detail pajak.' });
     });
 
     $(document).on('click', '.edit-btn', function() {
         var uuid = $(this).data('uuid');
-        var url = "{{ url('business/finance/coa') }}/" + uuid + "/edit";
-        ERPLoader.loadModal(url, '#editCoaModal', { title: 'Edit Akun', errorMessage: 'Gagal mengambil data akun.' });
+        var url = "{{ url('business/finance/tax') }}/" + uuid + "/edit";
+        ERPLoader.loadModal(url, '#editTaxModal', { title: 'Edit Pajak', errorMessage: 'Gagal mengambil data pajak.' });
     });
 
-    $(document).on('submit', '#edit-coa-form', function(e) {
+    $(document).on('submit', '#edit-tax-form', function(e) {
         e.preventDefault();
         var form = $(this);
         var uuid = $('#edit-uuid').val();
@@ -297,12 +268,12 @@ $(document).ready(function() {
         form.find('.invalid-feedback').html('');
 
         $.ajax({
-            url: "{{ url('business/finance/coa') }}/" + uuid,
+            url: "{{ url('business/finance/tax') }}/" + uuid,
             type: "POST", // Method spoofing via form
             data: form.serialize(),
             success: function(response) {
                 if (response.success) {
-                    $('#editCoaModal').modal('hide');
+                    $('#editTaxModal').modal('hide');
                     table.ajax.reload();
                     AppAlert.success('Data Diperbarui!', response.message);
                 }
@@ -326,10 +297,10 @@ $(document).ready(function() {
         var uuid = $(this).data('uuid');
         var name = $(this).data('name');
         
-        AppAlert.confirmDelete('Hapus Akun?', 'Apakah Anda yakin ingin menghapus akun "' + name + '"?').then((result) => {
+        AppAlert.confirmDelete('Hapus Pajak?', 'Apakah Anda yakin ingin menghapus pajak "' + name + '"?').then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "{{ url('business/finance/coa') }}/" + uuid,
+                    url: "{{ url('business/finance/tax') }}/" + uuid,
                     type: "DELETE",
                     success: function(response) {
                         if (response.success) {
@@ -337,7 +308,7 @@ $(document).ready(function() {
                             AppAlert.success('Data Dihapus!', response.message);
                         }
                     },
-                    error: function() { AppAlert.error('Gagal!', 'Gagal menghapus akun.'); }
+                    error: function() { AppAlert.error('Gagal!', 'Gagal menghapus pajak.'); }
                 });
             }
         });

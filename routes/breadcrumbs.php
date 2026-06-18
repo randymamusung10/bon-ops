@@ -69,3 +69,24 @@ Breadcrumbs::for('logistic.master.product', function (BreadcrumbTrail $trail) {
     $trail->push('Master Data', '#');
     $trail->push('Data Produk', route('logistic.master.product'));
 });
+
+// Master Data Finansial > Mata Uang
+Breadcrumbs::for('business.finance.currency', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Mata Uang', route('business.finance.currency'));
+});
+
+// Master Data Finansial > Pajak
+Breadcrumbs::for('business.finance.tax', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Pajak', route('business.finance.tax'));
+});
+
+// Master Data Finansial > COA
+Breadcrumbs::for('business.finance.coa', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Chart of Account', route('business.finance.coa'));
+});

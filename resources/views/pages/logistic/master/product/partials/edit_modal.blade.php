@@ -88,9 +88,50 @@
                             <div class="invalid-feedback" id="edit-cost-error"></div>
                         </div>
                         <div class="col-12 mt-4 pt-3" style="border-top: 1px dashed var(--border-color);">
-                            <div class="alert alert-info py-2 px-3 mb-0" style="font-size: 12px; line-height: 1.5; background: rgba(14, 165, 233, 0.05); border-color: rgba(14, 165, 233, 0.2);">
-                                <i class="bi bi-info-circle me-1"></i> Modul pemetaan akun (COA) & Pajak akan diimplementasikan pada Fase 3.
-                            </div>
+                            <h6 class="mb-3 fw-bold" style="color: var(--text-heading); font-size: 13px;"><i class="bi bi-percent me-2 text-warning"></i>Pajak Default</h6>
+                            <x-form.label>Pajak</x-form.label>
+                            <select name="tax_id" id="edit-tax" class="form-select form-select-sm">
+                                @if($product->tax)
+                                    <option value="{{ $product->tax->id }}" selected>[{{ $product->tax->code }}] {{ $product->tax->name }}</option>
+                                @endif
+                            </select>
+                            <div class="invalid-feedback" id="edit-tax_id-error"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pemetaan Akun (COA) -->
+            <div class="col-12">
+                <div class="p-4 rounded-4" style="background: var(--bg-dark-secondary); border: 1px solid var(--border-color);">
+                    <h6 class="mb-3 fw-bold" style="color: var(--text-heading);"><i class="bi bi-wallet2 me-2 text-info"></i>Pemetaan Akun (GL)</h6>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <x-form.label>Akun Persediaan (Asset)</x-form.label>
+                            <select name="inventory_account_id" id="edit-inventory-account" class="form-select form-select-sm">
+                                @if($product->inventoryAccount)
+                                    <option value="{{ $product->inventoryAccount->id }}" selected>[{{ $product->inventoryAccount->code }}] {{ $product->inventoryAccount->name }}</option>
+                                @endif
+                            </select>
+                            <div class="invalid-feedback" id="edit-inventory_account_id-error"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <x-form.label>Akun HPP (COGS)</x-form.label>
+                            <select name="cogs_account_id" id="edit-cogs-account" class="form-select form-select-sm">
+                                @if($product->cogsAccount)
+                                    <option value="{{ $product->cogsAccount->id }}" selected>[{{ $product->cogsAccount->code }}] {{ $product->cogsAccount->name }}</option>
+                                @endif
+                            </select>
+                            <div class="invalid-feedback" id="edit-cogs_account_id-error"></div>
+                        </div>
+                        <div class="col-md-4">
+                            <x-form.label>Akun Pendapatan (Revenue)</x-form.label>
+                            <select name="income_account_id" id="edit-income-account" class="form-select form-select-sm">
+                                @if($product->incomeAccount)
+                                    <option value="{{ $product->incomeAccount->id }}" selected>[{{ $product->incomeAccount->code }}] {{ $product->incomeAccount->name }}</option>
+                                @endif
+                            </select>
+                            <div class="invalid-feedback" id="edit-income_account_id-error"></div>
                         </div>
                     </div>
                 </div>
@@ -172,4 +213,51 @@
             cache: true
         }
     });
+
+    // Select2 Pajak
+    $('#edit-tax').select2({
+        dropdownParent: $('#editProductModal'),
+        theme: 'bootstrap-5',
+        width: '100%',
+        placeholder: 'Pilih Pajak...',
+        allowClear: true,
+        ajax: {
+            url: "{{ route('business.finance.tax.select2') }}",
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return { q: params.term };
+            },
+            processResults: function (data) {
+                return { results: data.results };
+            },
+            cache: true
+        }
+    });
+
+    function initCoaSelect2(selector, placeholder, typeFilter) {
+        $(selector).select2({
+            dropdownParent: $('#editProductModal'),
+            theme: 'bootstrap-5',
+            width: '100%',
+            placeholder: placeholder,
+            allowClear: true,
+            ajax: {
+                url: "{{ route('business.finance.coa.select2') }}",
+                dataType: 'json',
+                delay: 250,
+                data: function (params) {
+                    return { q: params.term, type: typeFilter, only_detail: true };
+                },
+                processResults: function (data) {
+                    return { results: data.results };
+                },
+                cache: true
+            }
+        });
+    }
+
+    initCoaSelect2('#edit-inventory-account', 'Pilih Akun Persediaan...', 'asset');
+    initCoaSelect2('#edit-cogs-account', 'Pilih Akun HPP...', 'expense');
+    initCoaSelect2('#edit-income-account', 'Pilih Akun Pendapatan...', 'revenue');
 </script>

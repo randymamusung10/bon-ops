@@ -180,7 +180,38 @@ Route::middleware('auth')->group(function () {
             Route::get('voucher', [CrmVoucherController::class, 'index'])->name('voucher');
         });
         Route::prefix('finance')->name('finance.')->group(function () {
-            Route::get('coa', [CoaController::class, 'index'])->name('coa');
+            // Currency
+            Route::get('currency', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'index'])->name('currency');
+            Route::get('currency/data', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'data'])->name('currency.data');
+            Route::get('currency/create', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'create'])->name('currency.create');
+            Route::post('currency', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'store'])->name('currency.store');
+            Route::get('currency/{uuid}', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'show'])->name('currency.show');
+            Route::get('currency/{uuid}/edit', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'edit'])->name('currency.edit');
+            Route::put('currency/{uuid}', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'update'])->name('currency.update');
+            Route::delete('currency/{uuid}', [\App\Http\Controllers\Business\Finance\Currency\CurrencyController::class, 'destroy'])->name('currency.destroy');
+
+            // Tax
+            Route::get('tax', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'index'])->name('tax');
+            Route::get('tax/data', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'data'])->name('tax.data');
+            Route::get('tax/select2', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'select2'])->name('tax.select2');
+            Route::get('tax/create', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'create'])->name('tax.create');
+            Route::post('tax', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'store'])->name('tax.store');
+            Route::get('tax/{uuid}', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'show'])->name('tax.show');
+            Route::get('tax/{uuid}/edit', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'edit'])->name('tax.edit');
+            Route::put('tax/{uuid}', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'update'])->name('tax.update');
+            Route::delete('tax/{uuid}', [\App\Http\Controllers\Business\Finance\Tax\TaxController::class, 'destroy'])->name('tax.destroy');
+
+            // COA
+            Route::get('coa', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'index'])->name('coa');
+            Route::get('coa/data', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'data'])->name('coa.data');
+            Route::get('coa/select2', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'select2'])->name('coa.select2');
+            Route::get('coa/create', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'create'])->name('coa.create');
+            Route::post('coa', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'store'])->name('coa.store');
+            Route::get('coa/{uuid}', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'show'])->name('coa.show');
+            Route::get('coa/{uuid}/edit', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'edit'])->name('coa.edit');
+            Route::put('coa/{uuid}', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'update'])->name('coa.update');
+            Route::delete('coa/{uuid}', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'destroy'])->name('coa.destroy');
+
             Route::get('journal', [GeneralJournalController::class, 'index'])->name('journal');
             Route::get('payable', [AccountsPayableController::class, 'index'])->name('payable');
             Route::get('receivable', [AccountsReceivableController::class, 'index'])->name('receivable');
