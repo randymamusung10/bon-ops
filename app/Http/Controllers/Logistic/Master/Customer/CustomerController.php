@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Logistic\Master\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Models\MasterData\Customer;
-use App\Http\Requests\MasterData\CustomerRequest;
-use App\Services\MasterData\CustomerService;
+use App\Models\Logistic\Master\Customer\Customer;
+use App\Http\Requests\Logistic\Master\Customer\CustomerRequest;
+use App\Services\Logistic\Master\Customer\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;

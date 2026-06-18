@@ -3,50 +3,41 @@
 namespace App\Http\Controllers\Logistic\Master\Branch;
 
 use App\Http\Controllers\Controller;
-use App\Models\Branch;
-use App\Services\MasterData\BranchService;
+use App\Models\Logistic\Master\Branch\Branch;
+use App\Services\Logistic\Master\Branch\BranchService;
+use App\Http\Requests\Logistic\Master\Branch\BranchRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Validation\Rule;
 
 class BranchController extends Controller
 {
-    /**
-     * Tampilkan halaman utama manajemen cabang.
-     */
+    protected $branchService;
+
+    public function __construct(BranchService $branchService)
+    {
+        $this->branchService = $branchService;
+    }
+
     public function index()
     {
         return view('pages.logistic.master.branch.index');
     }
 
-    /**
-     * Tampilkan form modal tambah cabang (Create).
-     */
     public function create()
     {
         return view('pages.logistic.master.branch.partials.create_modal');
     }
 
-    /**
-     * Ambil data cabang untuk server-side DataTables.
-     */
     public function data()
     {
-        $user = Auth::user();
+        $tenantId = Auth::user()->tenant_id ?? 1;
         
-        $branches = Branch::with('company')
-            ->where('tenant_id', $user->tenant_id)
-            ->where('company_id', $user->company_id)
-            ->select(['id', 'tenant_id', 'company_id', 'uuid', 'code', 'name', 'city', 'address', 'status'])
+        $branches = Branch::where('tenant_id', $tenantId)
+            ->select(['uuid', 'code', 'name', 'city', 'status'])
             ->latest();
 
         return DataTables::of($branches)
-            ->filterColumn('company.name', function($query, $keyword) {
-                $query->whereHas('company', function($q) use ($keyword) {
-                    $q->where('name', 'like', "%{$keyword}%");
-                });
-            })
             ->filterColumn('status', function($query, $keyword) {
                 if ($keyword !== '') {
                     $query->where('status', $keyword);
@@ -55,31 +46,9 @@ class BranchController extends Controller
             ->make(true);
     }
 
-    /**
-     * Simpan cabang baru ke database.
-     */
-    public function store(Request $request)
+    public function store(BranchRequest $request)
     {
-        $user = Auth::user();
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'address' => 'nullable|string',
-        ]);
-
-        $maxId = Branch::where('tenant_id', $user->tenant_id)->withTrashed()->max('id') ?? 0;
-        $code = 'BRC-' . date('ym') . '-' . str_pad($maxId + 1, 3, '0', STR_PAD_LEFT);
-
-        Branch::create([
-            'tenant_id' => $user->tenant_id,
-            'company_id' => $user->company_id,
-            'code' => $code,
-            'name' => $validated['name'],
-            'city' => $validated['city'],
-            'address' => $validated['address'],
-            'status' => 'active', // default aktif
-        ]);
+        $this->branchService->create($request->validated());
 
         return response()->json([
             'success' => true,
@@ -87,61 +56,25 @@ class BranchController extends Controller
         ]);
     }
 
-    /**
-     * Ambil detail satu cabang berdasarkan UUID.
-     */
     public function show($uuid)
     {
-        $user = Auth::user();
-        
-        $branch = Branch::where('uuid', $uuid)
-            ->where('tenant_id', $user->tenant_id)
-            ->where('company_id', $user->company_id)
-            ->firstOrFail();
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $branch = Branch::where('uuid', $uuid)->where('tenant_id', $tenantId)->firstOrFail();
 
         return view('pages.logistic.master.branch.partials.show_modal', compact('branch'));
     }
 
-    /**
-     * Tampilkan form modal edit cabang (Edit).
-     */
     public function edit($uuid)
     {
-        $user = Auth::user();
-        
-        $branch = Branch::where('uuid', $uuid)
-            ->where('tenant_id', $user->tenant_id)
-            ->where('company_id', $user->company_id)
-            ->firstOrFail();
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $branch = Branch::where('uuid', $uuid)->where('tenant_id', $tenantId)->firstOrFail();
 
         return view('pages.logistic.master.branch.partials.edit_modal', compact('branch'));
     }
 
-    /**
-     * Perbarui data cabang di database.
-     */
-    public function update(Request $request, $uuid)
+    public function update(BranchRequest $request, $uuid)
     {
-        $user = Auth::user();
-
-        $branch = Branch::where('uuid', $uuid)
-            ->where('tenant_id', $user->tenant_id)
-            ->where('company_id', $user->company_id)
-            ->firstOrFail();
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'address' => 'nullable|string',
-            'status' => 'required|in:active,inactive',
-        ]);
-
-        $branch->update([
-            'name' => $validated['name'],
-            'city' => $validated['city'],
-            'address' => $validated['address'],
-            'status' => $validated['status'],
-        ]);
+        $this->branchService->update($uuid, $request->validated());
 
         return response()->json([
             'success' => true,
@@ -149,19 +82,9 @@ class BranchController extends Controller
         ]);
     }
 
-    /**
-     * Hapus cabang (soft delete) berdasarkan UUID.
-     */
     public function destroy($uuid)
     {
-        $user = Auth::user();
-
-        $branch = Branch::where('uuid', $uuid)
-            ->where('tenant_id', $user->tenant_id)
-            ->where('company_id', $user->company_id)
-            ->firstOrFail();
-
-        $branch->delete();
+        $this->branchService->delete($uuid);
 
         return response()->json([
             'success' => true,
@@ -171,29 +94,10 @@ class BranchController extends Controller
 
     public function select2(Request $request)
     {
-        $tenantId = Auth::user()->tenant_id ?? 1;
-        $search = $request->q;
-
-        $branches = Branch::where('tenant_id', $tenantId)
-            ->where('status', 'active')
-            ->when($search, function($query) use ($search) {
-                $query->where(function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('code', 'like', "%{$search}%");
-                });
-            })
-            ->limit(20)
-            ->get();
-
-        $formatted = $branches->map(function($branch) {
-            return [
-                'id' => $branch->id,
-                'text' => '[' . $branch->code . '] ' . $branch->name
-            ];
-        });
+        $results = $this->branchService->getForSelect2($request->q);
 
         return response()->json([
-            'results' => $formatted
+            'results' => $results
         ]);
     }
 }

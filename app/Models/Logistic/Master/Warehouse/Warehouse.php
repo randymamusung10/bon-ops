@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Models\MasterData;
+namespace App\Models\Logistic\Master\Warehouse;
 
-use App\Models\Branch;
+use App\Models\Logistic\Master\Branch\Branch;
+use App\Models\Logistic\Master\BaseMasterModel;
 
 class Warehouse extends BaseMasterModel
 {

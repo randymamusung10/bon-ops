@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\MasterData;
+namespace App\Http\Requests\Logistic\Master\Branch;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class WarehouseRequest extends FormRequest
+class BranchRequest extends FormRequest
 {
     public function authorize()
     {
@@ -14,10 +14,9 @@ class WarehouseRequest extends FormRequest
     public function rules()
     {
         return [
-            'branch_id' => 'nullable|exists:branches,id',
             'name' => 'required|string|max:255',
-            'address' => 'nullable|string',
             'city' => 'nullable|string|max:255',
+            'address' => 'nullable|string',
             'status' => 'nullable|in:active,inactive',
         ];
     }

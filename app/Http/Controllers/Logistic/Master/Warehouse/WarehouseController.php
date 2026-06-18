@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Logistic\Master\Warehouse;
 
 use App\Http\Controllers\Controller;
-use App\Models\MasterData\Warehouse;
-use App\Models\Branch;
-use App\Http\Requests\MasterData\WarehouseRequest;
-use App\Services\MasterData\WarehouseService;
+use App\Models\Logistic\Master\Warehouse\Warehouse;
+use App\Models\Logistic\Master\Branch\Branch;
+use App\Http\Requests\Logistic\Master\Warehouse\WarehouseRequest;
+use App\Services\Logistic\Master\Warehouse\WarehouseService;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 

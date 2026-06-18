@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Logistic\Master\Supplier;
 
 use App\Http\Controllers\Controller;
-use App\Models\MasterData\Supplier;
-use App\Http\Requests\MasterData\SupplierRequest;
-use App\Services\MasterData\SupplierService;
+use App\Models\Logistic\Master\Supplier\Supplier;
+use App\Http\Requests\Logistic\Master\Supplier\SupplierRequest;
+use App\Services\Logistic\Master\Supplier\SupplierService;
 use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 

@@ -1,6 +1,11 @@
 <?php
 
-namespace App\Models\MasterData;
+namespace App\Models\Logistic\Master\Supplier;
+
+use App\Models\Logistic\Master\BaseMasterModel;
+use App\Models\MasterData\Currency;
+use App\Models\MasterData\Tax;
+use App\Models\MasterData\ChartOfAccount;
 
 class Supplier extends BaseMasterModel
 {

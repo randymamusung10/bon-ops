@@ -2,6 +2,8 @@
 
 namespace App\Models\MasterData;
 
+use App\Models\Logistic\Master\BaseMasterModel;
+
 class Tax extends BaseMasterModel
 {
     protected $fillable = [

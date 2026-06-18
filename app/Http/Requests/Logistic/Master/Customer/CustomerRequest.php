@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\MasterData;
+namespace App\Http\Requests\Logistic\Master\Customer;
 
 use Illuminate\Foundation\Http\FormRequest;
 

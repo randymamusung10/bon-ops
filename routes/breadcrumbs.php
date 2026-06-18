@@ -48,3 +48,10 @@ Breadcrumbs::for('logistic.master.warehouse', function (BreadcrumbTrail $trail) 
     $trail->push('Master Data', '#');
     $trail->push('Gudang', route('logistic.master.warehouse'));
 });
+
+// Master Data > Kategori Produk
+Breadcrumbs::for('logistic.master.category', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Kategori Produk', route('logistic.master.category'));
+});

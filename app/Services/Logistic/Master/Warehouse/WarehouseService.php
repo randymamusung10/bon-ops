@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\MasterData;
+namespace App\Services\Logistic\Master\Warehouse;
 
-use App\Models\MasterData\Warehouse;
+use App\Models\Logistic\Master\Warehouse\Warehouse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 

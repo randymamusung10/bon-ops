@@ -118,6 +118,14 @@ Route::middleware('auth')->group(function () {
             Route::put('supplier/{uuid}', [SupplierController::class, 'update'])->name('supplier.update');
             Route::delete('supplier/{uuid}', [SupplierController::class, 'destroy'])->name('supplier.destroy');
             Route::get('category', [ProductCategoryController::class, 'index'])->name('category');
+            Route::get('category/data', [ProductCategoryController::class, 'data'])->name('category.data');
+            Route::get('category/select2', [ProductCategoryController::class, 'select2'])->name('category.select2');
+            Route::get('category/create', [ProductCategoryController::class, 'create'])->name('category.create');
+            Route::post('category', [ProductCategoryController::class, 'store'])->name('category.store');
+            Route::get('category/{uuid}', [ProductCategoryController::class, 'show'])->name('category.show');
+            Route::get('category/{uuid}/edit', [ProductCategoryController::class, 'edit'])->name('category.edit');
+            Route::put('category/{uuid}', [ProductCategoryController::class, 'update'])->name('category.update');
+            Route::delete('category/{uuid}', [ProductCategoryController::class, 'destroy'])->name('category.destroy');
             Route::get('product', [ProductController::class, 'index'])->name('product');
             Route::get('unit', [UnitController::class, 'index'])->name('unit');
             Route::get('warehouse', [WarehouseController::class, 'index'])->name('warehouse');

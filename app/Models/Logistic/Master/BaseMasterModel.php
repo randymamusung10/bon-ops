@@ -1,33 +1,20 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Logistic\Master;
 
+use App\Models\Company;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
-class Branch extends Model
+abstract class BaseMasterModel extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'tenant_id',
-        'company_id',
-        'uuid',
-        'code',
-        'name',
-        'city',
-        'address',
-        'status',
-        'created_by',
-        'updated_by',
-    ];
-
-    /**
-     * Booted function to auto-generate UUID and audit logs.
-     */
     protected static function booted()
     {
         static::creating(function ($model) {
@@ -46,33 +33,21 @@ class Branch extends Model
         });
     }
 
-    /**
-     * Get the tenant that owns the branch.
-     */
     public function tenant()
     {
         return $this->belongsTo(Tenant::class);
     }
 
-    /**
-     * Get the company that owns the branch.
-     */
     public function company()
     {
         return $this->belongsTo(Company::class);
     }
 
-    /**
-     * Get the user who created the branch.
-     */
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the user who updated the branch.
-     */
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
