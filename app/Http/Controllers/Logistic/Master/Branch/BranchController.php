@@ -33,8 +33,8 @@ class BranchController extends Controller
     {
         $tenantId = Auth::user()->tenant_id ?? 1;
         
-        $branches = Branch::where('tenant_id', $tenantId)
-            ->select(['uuid', 'code', 'name', 'city', 'status'])
+        $branches = Branch::with('company')->where('tenant_id', $tenantId)
+            ->select(['id', 'tenant_id', 'company_id', 'uuid', 'code', 'name', 'city', 'address', 'status'])
             ->latest();
 
         return DataTables::of($branches)

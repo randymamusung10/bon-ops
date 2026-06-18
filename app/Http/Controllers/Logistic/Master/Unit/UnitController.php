@@ -34,7 +34,7 @@ class UnitController extends Controller
         $tenantId = Auth::user()->tenant_id ?? 1;
         
         $units = Unit::where('tenant_id', $tenantId)
-            ->select(['id', 'tenant_id', 'company_id', 'uuid', 'code', 'name', 'status'])
+            ->select(['id', 'tenant_id', 'company_id', 'uuid', 'code', 'name', 'description', 'status'])
             ->latest();
 
         return DataTables::of($units)
