@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\MasterData;
+namespace App\Models\Business\Finance\Currency;
 
 use App\Models\Logistic\Master\BaseMasterModel;
 

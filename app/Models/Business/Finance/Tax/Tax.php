@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\MasterData;
+namespace App\Models\Business\Finance\Tax;
 
 use App\Models\Logistic\Master\BaseMasterModel;
 

@@ -1,6 +1,12 @@
 <?php
 
-namespace App\Models\MasterData;
+namespace App\Models\Logistic\Master\Product;
+
+use App\Models\Logistic\Master\BaseMasterModel;
+use App\Models\Logistic\Master\ProductCategory\ProductCategory;
+use App\Models\Logistic\Master\Unit\Unit;
+use App\Models\Business\Finance\Tax\Tax;
+use App\Models\Business\Finance\ChartOfAccount\ChartOfAccount;
 
 class Product extends BaseMasterModel
 {

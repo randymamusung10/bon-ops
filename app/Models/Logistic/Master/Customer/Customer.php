@@ -3,9 +3,9 @@
 namespace App\Models\Logistic\Master\Customer;
 
 use App\Models\Logistic\Master\BaseMasterModel;
-use App\Models\MasterData\Currency;
-use App\Models\MasterData\Tax;
-use App\Models\MasterData\ChartOfAccount;
+use App\Models\Business\Finance\Currency\Currency;
+use App\Models\Business\Finance\Tax\Tax;
+use App\Models\Business\Finance\ChartOfAccount\ChartOfAccount;
 
 class Customer extends BaseMasterModel
 {

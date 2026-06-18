@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\MasterData;
+namespace App\Models\Business\Finance\ChartOfAccount;
 
 use App\Models\Logistic\Master\BaseMasterModel;
 
