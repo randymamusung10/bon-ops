@@ -27,3 +27,10 @@ Breadcrumbs::for('logistic.master.branch', function (BreadcrumbTrail $trail) {
     $trail->push('Master Data', '#');
     $trail->push('Cabang', route('logistic.master.branch'));
 });
+
+// Master Data > Pelanggan
+Breadcrumbs::for('logistic.master.customer', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Pelanggan', route('logistic.master.customer'));
+});

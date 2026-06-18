@@ -62,25 +62,18 @@ class BranchController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'code' => [
-                'required',
-                'string',
-                'max:50',
-                // Kode harus unik per tenant
-                Rule::unique('branches', 'code')->where(function ($query) use ($user) {
-                    return $query->where('tenant_id', $user->tenant_id)
-                                 ->whereNull('deleted_at');
-                }),
-            ],
             'name' => 'required|string|max:255',
             'city' => 'nullable|string|max:255',
             'address' => 'nullable|string',
         ]);
 
+        $maxId = Branch::where('tenant_id', $user->tenant_id)->withTrashed()->max('id') ?? 0;
+        $code = 'BRC-' . date('ym') . '-' . str_pad($maxId + 1, 3, '0', STR_PAD_LEFT);
+
         Branch::create([
             'tenant_id' => $user->tenant_id,
             'company_id' => $user->company_id,
-            'code' => $validated['code'],
+            'code' => $code,
             'name' => $validated['name'],
             'city' => $validated['city'],
             'address' => $validated['address'],
@@ -105,10 +98,7 @@ class BranchController extends Controller
             ->where('company_id', $user->company_id)
             ->firstOrFail();
 
-        return response()->json([
-            'success' => true,
-            'data' => $branch
-        ]);
+        return view('pages.logistic.master.branch.partials.show_modal', compact('branch'));
     }
 
     /**
@@ -139,15 +129,6 @@ class BranchController extends Controller
             ->firstOrFail();
 
         $validated = $request->validate([
-            'code' => [
-                'required',
-                'string',
-                'max:50',
-                Rule::unique('branches', 'code')->where(function ($query) use ($user) {
-                    return $query->where('tenant_id', $user->tenant_id)
-                                 ->whereNull('deleted_at');
-                })->ignore($branch->id),
-            ],
             'name' => 'required|string|max:255',
             'city' => 'nullable|string|max:255',
             'address' => 'nullable|string',
@@ -155,7 +136,6 @@ class BranchController extends Controller
         ]);
 
         $branch->update([
-            'code' => $validated['code'],
             'name' => $validated['name'],
             'city' => $validated['city'],
             'address' => $validated['address'],

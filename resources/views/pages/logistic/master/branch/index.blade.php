@@ -22,7 +22,7 @@
         <div class="table-responsive">
             <table id="branches-table" class="table align-middle mb-0 w-100" style="--bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.6);">
                 <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent);">
-                    <tr style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">
+                    <tr style="font-size: 13px; color: var(--text-muted); letter-spacing: 0.2px;">
                         <th class="ps-4 py-3" style="width: 5%;">No</th>
                         <th class="py-3" style="width: 10%;">Kode</th>
                         <th class="py-3" style="width: 20%;">Nama Cabang</th>
@@ -184,6 +184,9 @@ $(document).ready(function() {
                 class: 'pe-4 text-end text-nowrap',
                 render: function(data, type, row) {
                     return '<div class="d-inline-flex gap-2">' +
+                        '<button class="btn-icon-modern text-info show-btn" data-uuid="' + data + '" title="Detail" style="background: rgba(14, 165, 233, 0.12);">' +
+                        '<i class="bi bi-eye"></i>' +
+                        '</button>' +
                         '<button class="btn-icon-modern text-primary edit-btn" data-uuid="' + data + '" title="Edit" style="background: color-mix(in srgb, var(--primary-accent) 12%, transparent);">' +
                         '<i class="bi bi-pencil-square"></i>' +
                         '</button>' +
@@ -307,6 +310,16 @@ $(document).ready(function() {
     });
 
     // Edit Button Click (Load Edit Modal secara Dinamis)
+    $(document).on('click', '.show-btn', function() {
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('logistic/master/branch') }}/" + uuid;
+        
+        ERPLoader.loadModal(url, '#showBranchModal', {
+            title: 'Detail Cabang',
+            errorMessage: 'Gagal mengambil data detail cabang.'
+        });
+    });
+
     $(document).on('click', '.edit-btn', function() {
         var uuid = $(this).data('uuid');
         var url = "{{ url('logistic/master/branch') }}/" + uuid + "/edit";

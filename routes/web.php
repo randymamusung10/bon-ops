@@ -101,6 +101,13 @@ Route::middleware('auth')->group(function () {
             Route::delete('branch/{uuid}', [BranchController::class, 'destroy'])->name('branch.destroy');
             Route::get('warehouse', [WarehouseController::class, 'index'])->name('warehouse');
             Route::get('customer', [CustomerController::class, 'index'])->name('customer');
+            Route::get('customer/data', [CustomerController::class, 'data'])->name('customer.data');
+            Route::get('customer/create', [CustomerController::class, 'create'])->name('customer.create');
+            Route::post('customer', [CustomerController::class, 'store'])->name('customer.store');
+            Route::get('customer/{uuid}', [CustomerController::class, 'show'])->name('customer.show');
+            Route::get('customer/{uuid}/edit', [CustomerController::class, 'edit'])->name('customer.edit');
+            Route::put('customer/{uuid}', [CustomerController::class, 'update'])->name('customer.update');
+            Route::delete('customer/{uuid}', [CustomerController::class, 'destroy'])->name('customer.destroy');
             Route::get('supplier', [SupplierController::class, 'index'])->name('supplier');
             Route::get('category', [ProductCategoryController::class, 'index'])->name('category');
             Route::get('product', [ProductController::class, 'index'])->name('product');

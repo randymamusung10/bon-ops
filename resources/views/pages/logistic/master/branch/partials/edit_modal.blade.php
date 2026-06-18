@@ -5,9 +5,8 @@
         @method('PUT')
         <input type="hidden" id="edit-uuid" value="{{ $branch->uuid }}">
         <div class="mb-3">
-            <x-form.label required>Kode Cabang</x-form.label>
-            <x-form.input name="code" id="edit-code" value="{{ $branch->code }}" placeholder="Misal: JKT-02" required />
-            <div class="invalid-feedback" id="edit-code-error"></div>
+            <x-form.label>Kode Cabang</x-form.label>
+            <x-form.input name="code" id="edit-code" value="{{ $branch->code }}" readonly />
         </div>
         <div class="mb-3">
             <x-form.label required>Nama Cabang</x-form.label>

@@ -3,9 +3,8 @@
     <form id="add-branch-form">
         @csrf
         <div class="mb-3">
-            <x-form.label required>Kode Cabang</x-form.label>
-            <x-form.input name="code" id="add-code" placeholder="Misal: JKT-02" required />
-            <div class="invalid-feedback" id="add-code-error"></div>
+            <x-form.label>Kode Cabang</x-form.label>
+            <x-form.input name="code" id="add-code" placeholder="Otomatis (Auto Generated)" disabled />
         </div>
         <div class="mb-3">
             <x-form.label required>Nama Cabang</x-form.label>
