@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Logistic\Master\Branch;
 
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
-use Illuminate\Http\Request;
+use App\Services\MasterData\BranchService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Validation\Rule;
 
@@ -165,6 +166,34 @@ class BranchController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cabang berhasil dihapus.'
+        ]);
+    }
+
+    public function select2(Request $request)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $search = $request->q;
+
+        $branches = Branch::where('tenant_id', $tenantId)
+            ->where('status', 'active')
+            ->when($search, function($query) use ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('code', 'like', "%{$search}%");
+                });
+            })
+            ->limit(20)
+            ->get();
+
+        $formatted = $branches->map(function($branch) {
+            return [
+                'id' => $branch->id,
+                'text' => '[' . $branch->code . '] ' . $branch->name
+            ];
+        });
+
+        return response()->json([
+            'results' => $formatted
         ]);
     }
 }

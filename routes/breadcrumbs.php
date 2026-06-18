@@ -34,3 +34,17 @@ Breadcrumbs::for('logistic.master.customer', function (BreadcrumbTrail $trail) {
     $trail->push('Master Data', '#');
     $trail->push('Pelanggan', route('logistic.master.customer'));
 });
+
+// Master Data > Supplier
+Breadcrumbs::for('logistic.master.supplier', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Supplier', route('logistic.master.supplier'));
+});
+
+// Master Data > Gudang
+Breadcrumbs::for('logistic.master.warehouse', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Gudang', route('logistic.master.warehouse'));
+});
