@@ -26,12 +26,18 @@ class StockAdjustment extends Model
         'notes',
         'created_by',
         'updated_by',
+        'submitted_by',
+        'submitted_at',
+        'approved_by',
+        'approved_at',
         'posted_by',
         'posted_at',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'submitted_at' => 'datetime',
+        'approved_at' => 'datetime',
         'posted_at' => 'datetime',
     ];
 
@@ -49,5 +55,7 @@ class StockAdjustment extends Model
     public function warehouse() { return $this->belongsTo(Warehouse::class); }
     public function items() { return $this->hasMany(StockAdjustmentItem::class); }
     public function creator() { return $this->belongsTo(User::class, 'created_by'); }
+    public function submitter() { return $this->belongsTo(User::class, 'submitted_by'); }
+    public function approver() { return $this->belongsTo(User::class, 'approved_by'); }
     public function poster() { return $this->belongsTo(User::class, 'posted_by'); }
 }

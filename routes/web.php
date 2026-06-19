@@ -174,6 +174,8 @@ Route::middleware('auth')->group(function () {
             Route::get('adjustment/create', [StockAdjustmentController::class, 'create'])->name('adjustment.create');
             Route::post('adjustment', [StockAdjustmentController::class, 'store'])->name('adjustment.store');
             Route::get('adjustment/{uuid}', [StockAdjustmentController::class, 'show'])->name('adjustment.show');
+            Route::post('adjustment/{uuid}/submit', [StockAdjustmentController::class, 'submit'])->name('adjustment.submit');
+            Route::post('adjustment/{uuid}/approve', [StockAdjustmentController::class, 'approve'])->name('adjustment.approve');
             Route::post('adjustment/{uuid}/post', [StockAdjustmentController::class, 'post'])->name('adjustment.post');
             Route::delete('adjustment/{uuid}', [StockAdjustmentController::class, 'destroy'])->name('adjustment.destroy');
 

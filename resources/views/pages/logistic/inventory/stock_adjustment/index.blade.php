@@ -92,11 +92,7 @@ $(document).ready(function() {
             { data: 'document_number', name: 'document_number', class: 'fw-semibold text-heading' },
             { data: 'date', name: 'date' },
             { data: 'warehouse.name', name: 'warehouse.name' },
-            { data: 'status', name: 'status', render: function(data) {
-                if(data === 'draft') return '<span class="badge bg-secondary-subtle text-secondary px-2.5 py-1.5 rounded-pill" style="font-size: 11px; font-weight: 600;"><i class="bi bi-file-earmark me-1"></i> Draft</span>';
-                if(data === 'posted') return '<span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill" style="font-size: 11px; font-weight: 600;"><i class="bi bi-check-circle me-1"></i> Posted</span>';
-                return '<span class="badge bg-dark">'+data+'</span>';
-            }},
+            { data: 'status_badge', name: 'status', orderable: false, searchable: false },
             { data: 'uuid', name: 'uuid', class: 'pe-4 text-end text-nowrap', orderable: false, searchable: false, render: function(data, type, row) {
                 let actions = '<div class="d-inline-flex gap-2">' +
                     '<button class="btn-icon-modern text-info show-btn" href="{{ url("logistic/inventory/adjustment") }}/'+data+'" title="Detail" style="background: rgba(14, 165, 233, 0.12);">' +
@@ -263,26 +259,28 @@ $(document).ready(function() {
         });
     });
 
-    $(document).on('click', '#btn-post-adjustment', function() {
+    $(document).on('click', '.btn-action-adjustment', function() {
         var uuid = $(this).data('uuid');
-        var btn = $(this);
+        var action = $(this).data('action');
+        var textMap = {
+            'submit': 'mengajukan dokumen penyesuaian ini',
+            'approve': 'menyetujui dokumen penyesuaian ini',
+            'post': 'mem-posting dokumen penyesuaian ini'
+        };
         
-        AppAlert.confirm('Posting Dokumen?', 'Setelah di-posting, stok akan disesuaikan secara permanen dan dokumen tidak dapat diubah lagi.', 'Ya, Posting!').then((result) => {
+        AppAlert.confirm('Konfirmasi Aksi', 'Apakah Anda yakin ingin ' + textMap[action] + '?', 'Ya, Lanjutkan!').then((result) => {
             if (result.isConfirmed) {
-                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Memproses...');
                 $.ajax({
-                    url: "{{ url('logistic/inventory/adjustment') }}/" + uuid + "/post",
-                    type: "POST",
-                    success: function(response) {
-                        if (response.success) {
-                            $('#showAdjustmentModal').modal('hide');
-                            table.ajax.reload();
-                            AppAlert.success('Berhasil!', response.message);
-                        }
+                    url: `/logistic/inventory/adjustment/${uuid}/${action}`,
+                    type: 'POST',
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function(res) {
+                        $('#showAdjustmentModal').modal('hide');
+                        table.ajax.reload();
+                        AppAlert.success('Berhasil!', res.message);
                     },
-                    error: function(xhr) {
-                        btn.prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i> Posting Dokumen');
-                        AppAlert.error('Gagal!', xhr.responseJSON.message || 'Gagal mem-posting dokumen.');
+                    error: function(err) {
+                        AppAlert.error('Gagal!', err.responseJSON?.message || 'Terjadi kesalahan.');
                     }
                 });
             }

@@ -2,27 +2,32 @@
 
 namespace App\Services\Logistic\Inventory;
 
-use App\Models\Logistic\Inventory\StockAdjustment;
 use App\Models\Logistic\Inventory\StockAdjustmentItem;
 use App\Models\Logistic\Inventory\InventoryBalance;
 use App\Models\Logistic\Inventory\InventoryMovement;
+use App\Repositories\Logistic\Inventory\StockAdjustmentRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Exception;
 
 class StockAdjustmentService
 {
+    protected $repository;
+
+    public function __construct(StockAdjustmentRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     public function create(array $data)
     {
         try {
             DB::beginTransaction();
 
             $tenantId = Auth::user()->tenant_id ?? 1;
-            
-            // Generate simple document number
             $docNo = 'SA-' . date('YmdHis');
 
-            $adjustment = StockAdjustment::create([
+            $adjustment = $this->repository->create([
                 'tenant_id' => $tenantId,
                 'branch_id' => $data['branch_id'],
                 'warehouse_id' => $data['warehouse_id'],
@@ -34,7 +39,7 @@ class StockAdjustmentService
             ]);
 
             foreach ($data['items'] as $item) {
-                // Get system qty
+                // Ideally this would be in another repository, but kept here to avoid over-engineering if no InventoryBalanceRepository exists
                 $balance = InventoryBalance::where('tenant_id', $tenantId)
                     ->where('warehouse_id', $data['warehouse_id'])
                     ->where('product_id', $item['product_id'])
@@ -62,16 +67,66 @@ class StockAdjustmentService
         }
     }
 
-    public function post(string $uuid)
+    public function submitDocument(string $uuid)
+    {
+        try {
+            DB::beginTransaction();
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            
+            $adjustment = $this->repository->findByUuid($tenantId, $uuid);
+
+            if ($adjustment->status !== 'draft') {
+                throw new Exception("Hanya dokumen draft yang dapat disubmit.");
+            }
+
+            $this->repository->updateStatus($adjustment, 'submitted', [
+                'submitted_by' => Auth::id(),
+                'submitted_at' => now()
+            ]);
+
+            DB::commit();
+            return $adjustment;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function approveDocument(string $uuid)
+    {
+        try {
+            DB::beginTransaction();
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            
+            $adjustment = $this->repository->findByUuid($tenantId, $uuid);
+
+            if ($adjustment->status !== 'submitted') {
+                throw new Exception("Hanya dokumen submitted yang dapat diapprove.");
+            }
+
+            $this->repository->updateStatus($adjustment, 'approved', [
+                'approved_by' => Auth::id(),
+                'approved_at' => now()
+            ]);
+
+            DB::commit();
+            return $adjustment;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function postDocument(string $uuid)
     {
         try {
             DB::beginTransaction();
             $tenantId = Auth::user()->tenant_id ?? 1;
 
-            $adjustment = StockAdjustment::with('items')->where('uuid', $uuid)->where('tenant_id', $tenantId)->firstOrFail();
+            $adjustment = $this->repository->findByUuid($tenantId, $uuid);
 
-            if ($adjustment->status !== 'draft') {
-                throw new Exception("Dokumen sudah diposting atau dibatalkan.");
+            if ($adjustment->status !== 'approved') {
+                throw new Exception("Hanya dokumen approved yang dapat diposting.");
             }
 
             foreach ($adjustment->items as $item) {
@@ -117,10 +172,9 @@ class StockAdjustmentService
                 $balance->update(['qty' => $newBalance]);
             }
 
-            $adjustment->update([
-                'status' => 'posted',
+            $this->repository->updateStatus($adjustment, 'posted', [
                 'posted_by' => Auth::id(),
-                'posted_at' => now(),
+                'posted_at' => now()
             ]);
 
             DB::commit();
@@ -137,15 +191,13 @@ class StockAdjustmentService
             DB::beginTransaction();
             $tenantId = Auth::user()->tenant_id ?? 1;
 
-            $adjustment = StockAdjustment::where('uuid', $uuid)->where('tenant_id', $tenantId)->firstOrFail();
+            $adjustment = $this->repository->findByUuid($tenantId, $uuid);
 
             if ($adjustment->status !== 'draft') {
                 throw new Exception("Hanya dokumen dengan status draft yang dapat dihapus.");
             }
 
-            // Hapus items (bisa menggunakan relasi atau kaskade jika diatur, namun lebih aman hapus eksplisit)
-            $adjustment->items()->delete();
-            $adjustment->delete();
+            $this->repository->delete($adjustment);
 
             DB::commit();
             return true;

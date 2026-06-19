@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Logistic\Inventory\StockAdjustment;
 
 use App\Http\Controllers\Controller;
-use App\Models\Logistic\Inventory\StockAdjustment;
 use App\Models\Logistic\Master\Branch\Branch;
 use App\Models\Logistic\Master\Warehouse\Warehouse;
 use App\Models\Logistic\Master\Product\Product;
 use App\Services\Logistic\Inventory\StockAdjustmentService;
+use App\Repositories\Logistic\Inventory\StockAdjustmentRepository;
 use App\Http\Requests\Logistic\Inventory\StockAdjustmentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,10 +16,12 @@ use Yajra\DataTables\Facades\DataTables;
 class StockAdjustmentController extends Controller
 {
     protected $service;
+    protected $repository;
 
-    public function __construct(StockAdjustmentService $service)
+    public function __construct(StockAdjustmentService $service, StockAdjustmentRepository $repository)
     {
         $this->service = $service;
+        $this->repository = $repository;
     }
 
     public function index()
@@ -31,9 +33,7 @@ class StockAdjustmentController extends Controller
     {
         $tenantId = Auth::user()->tenant_id ?? 1;
         
-        $adjustments = StockAdjustment::with(['branch', 'warehouse', 'creator', 'poster'])
-            ->where('tenant_id', $tenantId)
-            ->latest();
+        $adjustments = $this->repository->getBaseQuery($tenantId)->latest();
 
         return DataTables::of($adjustments)
             ->editColumn('date', function ($model) {
@@ -44,6 +44,16 @@ class StockAdjustmentController extends Controller
                     $query->where('status', $keyword);
                 }
             })
+            ->addColumn('status_badge', function($row) {
+                $statusMap = [
+                    'draft' => '<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill">Draft</span>',
+                    'submitted' => '<span class="badge bg-warning-subtle text-warning px-2 py-1 rounded-pill">Submitted</span>',
+                    'approved' => '<span class="badge bg-info-subtle text-info px-2 py-1 rounded-pill">Approved</span>',
+                    'posted' => '<span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill">Posted</span>',
+                ];
+                return $statusMap[$row->status] ?? $row->status;
+            })
+            ->rawColumns(['status_badge'])
             ->make(true);
     }
 
@@ -70,17 +80,34 @@ class StockAdjustmentController extends Controller
     public function show($uuid)
     {
         $tenantId = Auth::user()->tenant_id ?? 1;
-        $adjustment = StockAdjustment::with(['branch', 'warehouse', 'items.product', 'creator', 'poster'])
-            ->where('uuid', $uuid)
-            ->where('tenant_id', $tenantId)
-            ->firstOrFail();
+        $adjustment = $this->repository->findByUuid($tenantId, $uuid);
 
         return view('pages.logistic.inventory.stock_adjustment.partials.show_modal', compact('adjustment'));
     }
 
+    public function submit($uuid)
+    {
+        $this->service->submitDocument($uuid);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen Penyesuaian Stok berhasil diajukan.'
+        ]);
+    }
+
+    public function approve($uuid)
+    {
+        $this->service->approveDocument($uuid);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen Penyesuaian Stok berhasil disetujui.'
+        ]);
+    }
+
     public function post($uuid)
     {
-        $this->service->post($uuid);
+        $this->service->postDocument($uuid);
 
         return response()->json([
             'success' => true,

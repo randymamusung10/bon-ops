@@ -13,12 +13,16 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="text-muted fw-medium" style="font-size: 12px;">Status</span>
                         <span>
-                            @if($adjustment->status === 'draft') 
-                                <span class="badge bg-secondary-subtle text-secondary px-2.5 py-1 rounded-pill" style="font-size: 11px;"><i class="bi bi-file-earmark me-1"></i> Draft</span>
-                            @elseif($adjustment->status === 'posted') 
-                                <span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill" style="font-size: 11px;"><i class="bi bi-check-circle me-1"></i> Posted</span>
-                            @else 
-                                <span class="badge bg-dark px-2.5 py-1 rounded-pill" style="font-size: 11px;">{{ $adjustment->status }}</span> 
+                            @if($adjustment->status === 'draft')
+                                <span class="badge bg-secondary-subtle text-secondary px-2.5 py-1 rounded-pill" style="font-size: 11px;"><i class="bi bi-file-earmark-text me-1"></i> Draft</span>
+                            @elseif($adjustment->status === 'submitted')
+                                <span class="badge bg-warning-subtle text-warning px-2.5 py-1 rounded-pill" style="font-size: 11px;"><i class="bi bi-clock me-1"></i> Submitted</span>
+                            @elseif($adjustment->status === 'approved')
+                                <span class="badge bg-info-subtle text-info px-2.5 py-1 rounded-pill" style="font-size: 11px;"><i class="bi bi-check me-1"></i> Approved</span>
+                            @elseif($adjustment->status === 'posted')
+                                <span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill" style="font-size: 11px;"><i class="bi bi-check-circle-fill me-1"></i> Posted</span>
+                            @else
+                                <span class="badge bg-dark px-2.5 py-1 rounded-pill" style="font-size: 11px;">{{ strtoupper($adjustment->status) }}</span>
                             @endif
                         </span>
                     </div>
@@ -118,8 +122,17 @@
 
     <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top" style="border-color: rgba(226, 232, 240, 0.2) !important;">
         <x-button type="button" variant="light" size="sm" data-bs-dismiss="modal">Tutup</x-button>
+        
         @if($adjustment->status === 'draft')
-        <x-button type="button" variant="success" size="sm" id="btn-post-adjustment" data-uuid="{{ $adjustment->uuid }}" icon="bi-check-circle">Posting Penyesuaian</x-button>
+        <x-button type="button" variant="warning" size="sm" class="btn-action-adjustment" data-uuid="{{ $adjustment->uuid }}" data-action="submit" icon="bi-send">Ajukan (Submit)</x-button>
+        @endif
+
+        @if($adjustment->status === 'submitted')
+        <x-button type="button" variant="primary" size="sm" class="btn-action-adjustment" data-uuid="{{ $adjustment->uuid }}" data-action="approve" icon="bi-check-lg">Setujui (Approve)</x-button>
+        @endif
+
+        @if($adjustment->status === 'approved')
+        <x-button type="button" variant="success" size="sm" class="btn-action-adjustment" data-uuid="{{ $adjustment->uuid }}" data-action="post" icon="bi-check-circle-fill">Posting Penyesuaian</x-button>
         @endif
     </div>
 </x-modal>

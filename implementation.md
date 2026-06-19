@@ -125,6 +125,8 @@ Sistem ini menggunakan UI component library internal.
 
 ## 🚨 WAJIB GUNAKAN DATATABLE DAN SELECT2 SESUAI STANDAR SISTEM
 
+## 🚨 BADGE STATUS HARUS DISERAGAMKAN
+
 ### Button
 
 ```blade
