@@ -127,10 +127,10 @@ Breadcrumbs::for('logistic.inventory.transfer', function (BreadcrumbTrail $trail
 });
 
 // Purchasing > Purchase Request
-Breadcrumbs::for('logistic.purchasing.request.index', function (BreadcrumbTrail $trail) {
+Breadcrumbs::for('logistic.purchasing.request', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Purchasing', '#');
-    $trail->push('Purchase Request', route('logistic.purchasing.request.index'));
+    $trail->push('Purchase Request', route('logistic.purchasing.request'));
 });
 
 // Purchasing > Purchase Order

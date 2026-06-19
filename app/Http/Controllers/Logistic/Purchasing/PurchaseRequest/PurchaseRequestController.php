@@ -112,7 +112,7 @@ class PurchaseRequestController extends Controller
         }
     }
 
-    public function postDoc($uuid)
+    public function post($uuid)
     {
         try {
             $this->service->postDocument($uuid);

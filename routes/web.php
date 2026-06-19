@@ -37,6 +37,7 @@ use App\Http\Controllers\Logistic\Master\Unit\UnitController;
 use App\Http\Controllers\Logistic\Master\Warehouse\WarehouseController;
 use App\Http\Controllers\Logistic\Purchasing\GoodsReceipt\GoodsReceiptController;
 use App\Http\Controllers\Logistic\Purchasing\PurchaseOrder\PurchaseOrderController;
+use App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController;
 use App\Http\Controllers\Logistic\Purchasing\PurchaseRequisition\PurchaseRequisitionController;
 use App\Http\Controllers\Logistic\Purchasing\SupplierInvoice\SupplierInvoiceController;
 use App\Http\Controllers\Logistic\Purchasing\SupplierPayment\SupplierPaymentController;
@@ -193,15 +194,15 @@ Route::middleware('auth')->group(function () {
             Route::get('waste', [StockWasteController::class, 'index'])->name('waste');
         });
         Route::prefix('purchasing')->name('purchasing.')->group(function () {
-            Route::get('request', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'index'])->name('request.index');
-            Route::get('request/data', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'data'])->name('request.data');
-            Route::get('request/create', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'create'])->name('request.create');
-            Route::post('request', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'store'])->name('request.store');
-            Route::get('request/{uuid}', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'show'])->name('request.show');
-            Route::delete('request/{uuid}', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'destroy'])->name('request.destroy');
-            Route::post('request/{uuid}/submit', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'submit'])->name('request.submit');
-            Route::post('request/{uuid}/approve', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'approve'])->name('request.approve');
-            Route::post('request/{uuid}/post', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'postDoc'])->name('request.post');
+            Route::get('request', [PurchaseRequestController::class, 'index'])->name('request');
+            Route::get('request/data', [PurchaseRequestController::class, 'data'])->name('request.data');
+            Route::get('request/create', [PurchaseRequestController::class, 'create'])->name('request.create');
+            Route::post('request', [PurchaseRequestController::class, 'store'])->name('request.store');
+            Route::get('request/{uuid}', [PurchaseRequestController::class, 'show'])->name('request.show');
+            Route::delete('request/{uuid}', [PurchaseRequestController::class, 'destroy'])->name('request.destroy');
+            Route::post('request/{uuid}/submit', [PurchaseRequestController::class, 'submit'])->name('request.submit');
+            Route::post('request/{uuid}/approve', [PurchaseRequestController::class, 'approve'])->name('request.approve');
+            Route::post('request/{uuid}/post', [PurchaseRequestController::class, 'post'])->name('request.post');
 
             Route::get('order', [PurchaseOrderController::class, 'index'])->name('order');
             Route::get('order/data', [PurchaseOrderController::class, 'data'])->name('order.data');
