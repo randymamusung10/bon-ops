@@ -140,3 +140,10 @@ Breadcrumbs::for('logistic.purchasing.order', function (BreadcrumbTrail $trail) 
     $trail->push('Purchase Order', route('logistic.purchasing.order'));
 });
 
+// Purchasing > Goods Receipt
+Breadcrumbs::for('logistic.purchasing.receipt', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Purchasing', '#');
+    $trail->push('Penerimaan Barang', route('logistic.purchasing.receipt'));
+});
+

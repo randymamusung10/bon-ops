@@ -214,6 +214,15 @@ Route::middleware('auth')->group(function () {
             Route::post('order/{uuid}/post', [PurchaseOrderController::class, 'post'])->name('order.post');
             Route::delete('order/{uuid}', [PurchaseOrderController::class, 'destroy'])->name('order.destroy');
             Route::get('receipt', [GoodsReceiptController::class, 'index'])->name('receipt');
+            Route::get('receipt/data', [GoodsReceiptController::class, 'data'])->name('receipt.data');
+            Route::get('receipt/create', [GoodsReceiptController::class, 'create'])->name('receipt.create');
+            Route::get('receipt/get-po/{id}', [GoodsReceiptController::class, 'getPoDetails'])->name('receipt.get_po');
+            Route::post('receipt', [GoodsReceiptController::class, 'store'])->name('receipt.store');
+            Route::get('receipt/{uuid}', [GoodsReceiptController::class, 'show'])->name('receipt.show');
+            Route::post('receipt/{uuid}/submit', [GoodsReceiptController::class, 'submit'])->name('receipt.submit');
+            Route::post('receipt/{uuid}/approve', [GoodsReceiptController::class, 'approve'])->name('receipt.approve');
+            Route::post('receipt/{uuid}/post', [GoodsReceiptController::class, 'post'])->name('receipt.post');
+            Route::delete('receipt/{uuid}', [GoodsReceiptController::class, 'destroy'])->name('receipt.destroy');
             Route::get('invoice', [SupplierInvoiceController::class, 'index'])->name('invoice');
             Route::get('payment', [SupplierPaymentController::class, 'index'])->name('payment');
         });
