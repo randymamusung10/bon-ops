@@ -193,7 +193,16 @@ Route::middleware('auth')->group(function () {
             Route::get('waste', [StockWasteController::class, 'index'])->name('waste');
         });
         Route::prefix('purchasing')->name('purchasing.')->group(function () {
-            Route::get('requisition', [PurchaseRequisitionController::class, 'index'])->name('requisition');
+            Route::get('request', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'index'])->name('request.index');
+            Route::get('request/data', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'data'])->name('request.data');
+            Route::get('request/create', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'create'])->name('request.create');
+            Route::post('request', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'store'])->name('request.store');
+            Route::get('request/{uuid}', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'show'])->name('request.show');
+            Route::delete('request/{uuid}', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'destroy'])->name('request.destroy');
+            Route::post('request/{uuid}/submit', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'submit'])->name('request.submit');
+            Route::post('request/{uuid}/approve', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'approve'])->name('request.approve');
+            Route::post('request/{uuid}/post', [App\Http\Controllers\Logistic\Purchasing\PurchaseRequest\PurchaseRequestController::class, 'postDoc'])->name('request.post');
+
             Route::get('order', [PurchaseOrderController::class, 'index'])->name('order');
             Route::get('order/data', [PurchaseOrderController::class, 'data'])->name('order.data');
             Route::get('order/create', [PurchaseOrderController::class, 'create'])->name('order.create');

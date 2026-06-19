@@ -126,6 +126,13 @@ Breadcrumbs::for('logistic.inventory.transfer', function (BreadcrumbTrail $trail
     $trail->push('Transfer Stok', route('logistic.inventory.transfer'));
 });
 
+// Purchasing > Purchase Request
+Breadcrumbs::for('logistic.purchasing.request.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Purchasing', '#');
+    $trail->push('Purchase Request', route('logistic.purchasing.request.index'));
+});
+
 // Purchasing > Purchase Order
 Breadcrumbs::for('logistic.purchasing.order', function (BreadcrumbTrail $trail) {
     $trail->parent('home');

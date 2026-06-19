@@ -118,7 +118,7 @@
                 </a>
                 <div class="collapse submenu-list-wrapper {{ Request::is('logistic/purchasing*') ? 'show' : '' }}" id="purchasingMenu">
                     <div class="submenu-list">
-                        <a href="{{ route('logistic.purchasing.requisition') }}" class="submenu-link {{ Route::is('logistic.purchasing.requisition') ? 'active' : '' }}"><i class="bi bi-file-earmark-plus"></i><span>Permintaan (PR)</span><span class="sidebar-sub-badge sidebar-badge-info ms-auto">2</span></a>
+                        <a href="{{ route('logistic.purchasing.request.index') }}" class="submenu-link {{ Route::is('logistic.purchasing.request.*') ? 'active' : '' }}"><i class="bi bi-file-earmark-plus"></i><span>Permintaan (PR)</span><span class="sidebar-sub-badge sidebar-badge-info ms-auto">2</span></a>
                         <a href="{{ route('logistic.purchasing.order') }}" class="submenu-link {{ Route::is('logistic.purchasing.order') ? 'active' : '' }}"><i class="bi bi-file-earmark-text"></i><span>Pesanan (PO)</span></a>
                         <a href="{{ route('logistic.purchasing.receipt') }}" class="submenu-link {{ Route::is('logistic.purchasing.receipt') ? 'active' : '' }}"><i class="bi bi-box-arrow-in-down"></i><span>Penerimaan Barang</span></a>
                         <a href="{{ route('logistic.purchasing.invoice') }}" class="submenu-link {{ Route::is('logistic.purchasing.invoice') ? 'active' : '' }}"><i class="bi bi-calculator"></i><span>Faktur Supplier</span></a>
