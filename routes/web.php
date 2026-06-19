@@ -224,7 +224,24 @@ Route::middleware('auth')->group(function () {
             Route::post('receipt/{uuid}/post', [GoodsReceiptController::class, 'post'])->name('receipt.post');
             Route::delete('receipt/{uuid}', [GoodsReceiptController::class, 'destroy'])->name('receipt.destroy');
             Route::get('invoice', [SupplierInvoiceController::class, 'index'])->name('invoice');
+            Route::get('invoice/data', [SupplierInvoiceController::class, 'data'])->name('invoice.data');
+            Route::get('invoice/create', [SupplierInvoiceController::class, 'create'])->name('invoice.create');
+            Route::get('invoice/get-gr/{id}', [SupplierInvoiceController::class, 'getGrDetails'])->name('invoice.get-gr');
+            Route::post('invoice', [SupplierInvoiceController::class, 'store'])->name('invoice.store');
+            Route::get('invoice/{uuid}', [SupplierInvoiceController::class, 'show'])->name('invoice.show');
+            Route::post('invoice/{uuid}/submit', [SupplierInvoiceController::class, 'submit'])->name('invoice.submit');
+            Route::post('invoice/{uuid}/approve', [SupplierInvoiceController::class, 'approve'])->name('invoice.approve');
+            Route::post('invoice/{uuid}/post', [SupplierInvoiceController::class, 'post'])->name('invoice.post');
+            Route::delete('invoice/{uuid}', [SupplierInvoiceController::class, 'destroy'])->name('invoice.destroy');
             Route::get('payment', [SupplierPaymentController::class, 'index'])->name('payment');
+            Route::get('payment/data', [SupplierPaymentController::class, 'data'])->name('payment.data');
+            Route::get('payment/create', [SupplierPaymentController::class, 'create'])->name('payment.create');
+            Route::post('payment', [SupplierPaymentController::class, 'store'])->name('payment.store');
+            Route::get('payment/{uuid}', [SupplierPaymentController::class, 'show'])->name('payment.show');
+            Route::post('payment/{uuid}/submit', [SupplierPaymentController::class, 'submit'])->name('payment.submit');
+            Route::post('payment/{uuid}/approve', [SupplierPaymentController::class, 'approve'])->name('payment.approve');
+            Route::post('payment/{uuid}/post', [SupplierPaymentController::class, 'post'])->name('payment.post');
+            Route::delete('payment/{uuid}', [SupplierPaymentController::class, 'destroy'])->name('payment.destroy');
         });
     });
 

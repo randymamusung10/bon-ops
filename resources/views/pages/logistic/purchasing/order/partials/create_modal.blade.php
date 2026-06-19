@@ -4,22 +4,22 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <x-form.label required>Cabang Pemesan</x-form.label>
-                <select class="form-select" name="branch_id" required>
+                <x-form.select name="branch_id" required>
                     <option value="">Pilih Cabang</option>
                     @foreach($branches as $b)
                         <option value="{{ $b->id }}">{{ $b->name }}</option>
                     @endforeach
-                </select>
+                </x-form.select>
                 <div class="invalid-feedback"></div>
             </div>
             <div class="col-md-6">
                 <x-form.label required>Supplier</x-form.label>
-                <select class="form-select" name="supplier_id" required>
+                <x-form.select name="supplier_id" required>
                     <option value="">Pilih Supplier</option>
                     @foreach($suppliers as $s)
                         <option value="{{ $s->id }}">{{ $s->name }}</option>
                     @endforeach
-                </select>
+                </x-form.select>
                 <div class="invalid-feedback"></div>
             </div>
             <div class="col-md-6">
@@ -86,26 +86,26 @@
 <template id="po-item-template">
     <tr>
         <td class="py-3 ps-4">
-            <select class="form-select form-select-sm select2-product" name="items[__INDEX__][product_id]" required>
+            <x-form.select class="select2-product" name="items[__INDEX__][product_id]" required>
                 <option value="">-- Pilih Produk --</option>
                 @foreach($products as $p)
                     <option value="{{ $p->id }}">{{ $p->name }}</option>
                 @endforeach
-            </select>
+            </x-form.select>
         </td>
         <td class="py-3">
-            <select class="form-select form-select-sm select2-unit" name="items[__INDEX__][unit_id]" required>
+            <x-form.select class="select2-unit" name="items[__INDEX__][unit_id]" required>
                 <option value="">-- Satuan --</option>
                 @foreach($units as $u)
                     <option value="{{ $u->id }}">{{ $u->name }}</option>
                 @endforeach
-            </select>
+            </x-form.select>
         </td>
         <td class="py-3">
-            <input type="number" class="form-control form-control-sm text-end qty-input" name="items[__INDEX__][quantity]" step="0.01" min="0.01" required placeholder="0.00">
+            <input type="text" class="form-control custom-form-control text-end qty-input format-number" name="items[__INDEX__][quantity]" required placeholder="0">
         </td>
         <td class="py-3">
-            <input type="number" class="form-control form-control-sm text-end price-input" name="items[__INDEX__][unit_price]" step="0.01" min="0" required placeholder="0.00">
+            <input type="text" class="form-control custom-form-control text-end price-input format-rupiah" name="items[__INDEX__][unit_price]" required placeholder="0">
         </td>
         <td class="py-3 text-end fw-semibold total-text">
             Rp 0
@@ -132,8 +132,8 @@ $(document).ready(function() {
     let itemIndex = 0;
     
     function calculateRowTotal(tr) {
-        let qty = parseFloat(tr.find('.qty-input').val()) || 0;
-        let price = parseFloat(tr.find('.price-input').val()) || 0;
+        let qty = parseFloat(window.AppFormat.unmaskNumber(tr.find('.qty-input').val())) || 0;
+        let price = parseFloat(window.AppFormat.unmaskNumber(tr.find('.price-input').val())) || 0;
         let total = qty * price;
         
         tr.find('.total-text').text('Rp ' + total.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
@@ -143,8 +143,8 @@ $(document).ready(function() {
     function calculateGrandTotal() {
         let grandTotal = 0;
         $('#table-items tbody tr').each(function() {
-            let qty = parseFloat($(this).find('.qty-input').val()) || 0;
-            let price = parseFloat($(this).find('.price-input').val()) || 0;
+            let qty = parseFloat(window.AppFormat.unmaskNumber($(this).find('.qty-input').val())) || 0;
+            let price = parseFloat(window.AppFormat.unmaskNumber($(this).find('.price-input').val())) || 0;
             grandTotal += (qty * price);
         });
         $('#grand-total-text').text('Rp ' + grandTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));

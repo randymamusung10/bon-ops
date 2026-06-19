@@ -1,25 +1,230 @@
 @extends('layouts.app')
 
+@section('page_title', 'Pembayaran Supplier')
+@section('page_description', 'Kelola pembayaran atas Faktur Supplier (Hutang AP).')
+@section('page_actions')
+    <x-button id="btn-add-payment" variant="primary" size="sm" icon="bi-plus-lg">
+        Buat Pembayaran Baru
+    </x-button>
+@endsection
+
 @section('content')
 <div class="container-fluid px-0">
-    <div class="row align-items-center mb-4">
-        <div class="col-12">
-            <h1 class="h4 fw-bold mb-1" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">Pembayaran Supplier</h1>
-            <p class="mb-0" style="color: var(--text-light); font-size: 13.5px;">Selamat datang di modul Pembayaran Supplier. Halaman ini merupakan bagian dari sistem ERP BonOps.</p>
-        </div>
-    </div>
-
-    <!-- Placeholder Card -->
-    <div class="card rounded-4 p-4">
-        <div class="d-flex align-items-center gap-3">
-            <div class="rounded-3 d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 48px; height: 48px;">
-                <i class="bi bi-info-circle-fill" style="font-size: 20px; color: var(--primary-accent) !important;"></i>
-            </div>
-            <div>
-                <h5 class="fw-bold mb-1" style="color: var(--text-heading);">Konten Modul Pembayaran Supplier</h5>
-                <p class="text-muted mb-0" style="font-size: 13px;">Modul ini siap dikembangkan lebih lanjut sesuai kebutuhan operasional.</p>
-            </div>
+    <div class="card rounded-4 border-0 shadow-sm p-4" style="background: var(--bg-dark-secondary);">
+        <div class="table-responsive">
+            <table id="payment-table" class="table align-middle mb-0 w-100" style="--bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.6);">
+                <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent);">
+                    <tr style="font-size: 13px; color: var(--text-muted); letter-spacing: 0.2px;">
+                        <th class="ps-4 py-3" style="width: 5%;">No</th>
+                        <th class="py-3">No. Pembayaran</th>
+                        <th class="py-3">Tanggal</th>
+                        <th class="py-3">Ref. Faktur</th>
+                        <th class="py-3">Supplier</th>
+                        <th class="py-3">Metode</th>
+                        <th class="py-3 text-end">Jumlah Bayar</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-end pe-4">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody style="font-size: 13px; color: var(--text-heading);">
+                    <tr>
+                        <td colspan="9" class="text-center py-5">
+                            <div class="d-flex flex-column align-items-center gap-2">
+                                <div class="modern-loader-spinner" style="width: 36px; height: 36px;">
+                                    <div class="spinner-outer" style="border-width: 2.5px;"></div>
+                                    <div class="spinner-inner" style="border-width: 1.5px;"></div>
+                                    <div class="spinner-dot" style="width: 5px; height: 5px;"></div>
+                                </div>
+                                <span class="fw-semibold text-muted" style="font-size: 12px; letter-spacing: 0.2px;">Memuat Data...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 @endsection
+
+@push('modals')
+<div id="modal-container"></div>
+@endpush
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    var table = $('#payment-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('logistic.purchasing.payment.data') }}",
+        order: [[2, 'desc']],
+        dom: '<"d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"lf>t<"d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4"ip>',
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false, class: 'ps-4 text-muted' },
+            { data: 'document_number', name: 'document_number', class: 'fw-semibold text-heading' },
+            { data: 'payment_date', name: 'payment_date' },
+            { data: 'invoice_number', name: 'supplierInvoice.document_number' },
+            { data: 'supplier_name', name: 'supplier.name' },
+            { data: 'payment_method', name: 'payment_method', class: 'text-capitalize' },
+            { data: 'payment_amount', name: 'payment_amount', class: 'text-end fw-bold text-primary' },
+            { data: 'status_badge', name: 'status', orderable: false, searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false, class: 'pe-4 text-end text-nowrap', render: function(data, type, row) {
+                let uuid = row.uuid;
+                let actions = '<div class="d-inline-flex gap-2">' +
+                    '<button class="btn-icon-modern text-info show-btn" href="{{ url("logistic/purchasing/payment") }}/'+uuid+'" title="Detail" style="background: rgba(14, 165, 233, 0.12);">' +
+                    '<i class="bi bi-eye"></i>' +
+                    '</button>';
+                if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+uuid+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
+                        '<i class="bi bi-trash"></i>' +
+                        '</button>';
+                }
+                actions += '</div>';
+                return actions;
+            }}
+        ],
+        language: {
+            processing: `<div class="d-flex flex-column align-items-center gap-2">
+                <div class="modern-loader-spinner" style="width: 36px; height: 36px;">
+                    <div class="spinner-outer" style="border-width: 2.5px;"></div>
+                    <div class="spinner-inner" style="border-width: 1.5px;"></div>
+                    <div class="spinner-dot" style="width: 5px; height: 5px;"></div>
+                </div>
+                <span class="fw-semibold text-muted" style="font-size: 12px; letter-spacing: 0.2px;">Memuat Data...</span>
+            </div>`,
+            search: '_INPUT_',
+            searchPlaceholder: 'Cari secara global...',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Menampilkan 0 data',
+            lengthMenu: 'Tampilkan _MENU_ entri',
+            paginate: { previous: 'Prev', next: 'Next' }
+        }
+    });
+
+    // Buka modal Buat Pembayaran
+    $('#btn-add-payment').on('click', function(e) {
+        e.preventDefault();
+        ERPLoader.loadModal("{{ route('logistic.purchasing.payment.create') }}", '#createModal', {
+            title: 'Buat Pembayaran Baru',
+            errorMessage: 'Gagal memuat form Pembayaran Supplier.',
+            onSuccess: function(modal) {
+                modal.find('select[name="supplier_invoice_id"]').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: modal,
+                    width: '100%'
+                });
+                modal.find('select[name="payment_method"]').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: modal,
+                    width: '100%',
+                    minimumResultsForSearch: Infinity // Hide search box for simple options
+                });
+            }
+        });
+    });
+
+    // Buka modal Detail
+    $(document).on('click', '.show-btn', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        ERPLoader.loadModal(url, '#showModal', {
+            title: 'Detail Pembayaran',
+            errorMessage: 'Gagal mengambil detail dokumen.'
+        });
+    });
+
+    // Submit form
+    $(document).on('submit', '#form-create-payment', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let submitBtn = form.find('button[type="submit"]');
+        let originalText = submitBtn.html();
+        submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...').prop('disabled', true);
+
+        $.ajax({
+            url: "{{ route('logistic.purchasing.payment.store') }}",
+            type: 'POST',
+            data: form.serialize(),
+            success: function(res) {
+                if (res.success) {
+                    $('#createModal').modal('hide');
+                    table.ajax.reload();
+                    AppAlert.success('Berhasil!', res.message);
+                }
+            },
+            error: function(xhr) {
+                AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan saat menyimpan data.');
+            },
+            complete: function() {
+                submitBtn.html(originalText).prop('disabled', false);
+            }
+        });
+    });
+
+    // Aksi workflow (Submit, Approve, Post)
+    $(document).on('click', '.btn-action-payment', function() {
+        let uuid = $(this).data('uuid');
+        let action = $(this).data('action');
+        let textMap = {
+            'submit':  'mengajukan pembayaran ini untuk verifikasi',
+            'approve': 'menyetujui pembayaran ini',
+            'post':    'memposting pembayaran ini sehingga hutang AP dianggap lunas'
+        };
+
+        AppAlert.confirm('Konfirmasi Aksi', 'Apakah Anda yakin ingin ' + (textMap[action] || action) + '?', 'Ya, Lanjutkan!').then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/logistic/purchasing/payment/${uuid}/${action}`,
+                    type: 'POST',
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function(res) {
+                        $('#showModal').modal('hide');
+                        table.ajax.reload();
+                        AppAlert.success('Berhasil!', res.message || 'Aksi berhasil dilakukan.');
+                    },
+                    error: function(err) {
+                        AppAlert.error('Gagal!', err.responseJSON?.message || 'Terjadi kesalahan sistem.');
+                    }
+                });
+            }
+        });
+    });
+
+    // Hapus draft
+    $(document).on('click', '.delete-btn', function() {
+        var uuid = $(this).data('uuid');
+        AppAlert.confirmDelete('Hapus Draft Pembayaran?', 'Draft ini akan dihapus secara permanen.').then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{{ url('logistic/purchasing/payment') }}/" + uuid,
+                    type: "DELETE",
+                    data: { _token: "{{ csrf_token() }}" },
+                    success: function(response) {
+                        if (response.success) {
+                            table.ajax.reload();
+                            AppAlert.success('Terhapus!', response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Gagal menghapus draft.');
+                    }
+                });
+            }
+        });
+    });
+
+    // Auto-fill jumlah bayar saat pilih Invoice
+    $(document).on('change', 'select[name="supplier_invoice_id"]', function() {
+        let option = $(this).find('option:selected');
+        let grandTotal = option.data('grand-total') || 0;
+        $('input[name="payment_amount"]').val(window.AppFormat.formatRupiah(grandTotal));
+        $('#invoice-amount-display').text('Rp ' + parseFloat(grandTotal).toLocaleString('id-ID'));
+    });
+});
+</script>
+@endpush

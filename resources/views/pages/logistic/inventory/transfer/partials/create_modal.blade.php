@@ -101,7 +101,7 @@
             </select>
         </td>
         <td class="py-3">
-            <input type="number" class="form-control form-control-sm text-end" name="items[__INDEX__][qty]" step="0.01" min="0.01" required placeholder="0.00">
+            <input type="text" class="form-control form-control-sm text-end format-number" name="items[__INDEX__][qty]" required placeholder="0">
         </td>
         <td class="py-3">
             <input type="text" class="form-control form-control-sm" name="items[__INDEX__][notes]" placeholder="Catatan (Opsional)">

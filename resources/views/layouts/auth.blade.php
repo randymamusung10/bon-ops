@@ -34,6 +34,18 @@
             for (const [key, value] of Object.entries(colors)) {
                 root.style.setProperty(key, value);
             }
+
+            // Fix native select option hover color in Chromium
+            const style = document.createElement('style');
+            style.id = 'dynamic-theme-styles';
+            style.textContent = `
+                select option:checked,
+                select option:hover {
+                    background-color: ${colors['--primary-accent']} !important;
+                    color: #ffffff !important;
+                }
+            `;
+            document.head.appendChild(style);
         })();
     </script>
     

@@ -4,12 +4,12 @@
         <div class="row g-3 mb-4">
             <div class="col-md-4">
                 <x-form.label required>Cabang Peminta</x-form.label>
-                <select class="form-select" name="branch_id" required>
+                <x-form.select name="branch_id" required>
                     <option value="">Pilih Cabang</option>
                     @foreach($branches as $b)
                         <option value="{{ $b->id }}">{{ $b->name }}</option>
                     @endforeach
-                </select>
+                </x-form.select>
                 <div class="invalid-feedback"></div>
             </div>
             <div class="col-md-4">
@@ -68,26 +68,26 @@
 <template id="pr-item-template">
     <tr>
         <td class="py-3 ps-4">
-            <select class="form-select form-select-sm select2-product" name="items[__INDEX__][product_id]" required>
+            <x-form.select class="select2-product" name="items[__INDEX__][product_id]" required>
                 <option value="">-- Pilih Produk --</option>
                 @foreach($products as $p)
                     <option value="{{ $p->id }}">{{ $p->name }}</option>
                 @endforeach
-            </select>
+            </x-form.select>
         </td>
         <td class="py-3">
-            <select class="form-select form-select-sm select2-unit" name="items[__INDEX__][unit_id]" required>
+            <x-form.select class="select2-unit" name="items[__INDEX__][unit_id]" required>
                 <option value="">-- Satuan --</option>
                 @foreach($units as $u)
                     <option value="{{ $u->id }}">{{ $u->name }}</option>
                 @endforeach
-            </select>
+            </x-form.select>
         </td>
         <td class="py-3">
-            <input type="number" class="form-control form-control-sm text-end qty-input" name="items[__INDEX__][quantity]" step="0.01" min="0.01" required placeholder="0.00">
+            <input type="text" class="form-control custom-form-control text-end qty-input format-number" name="items[__INDEX__][quantity]" required placeholder="0">
         </td>
         <td class="py-3">
-            <input type="text" class="form-control form-control-sm" name="items[__INDEX__][notes]" placeholder="(Opsional)">
+            <input type="text" class="form-control custom-form-control" name="items[__INDEX__][notes]" placeholder="(Opsional)">
         </td>
         <td class="text-center py-3 pe-4">
             <button type="button" class="btn-icon-modern text-danger btn-remove-item mx-auto" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">

@@ -78,7 +78,7 @@
             </select>
         </td>
         <td class="py-3">
-            <input type="number" step="0.01" class="form-control form-control-sm" name="items[__INDEX__][actual_qty]" required min="0">
+            <input type="text" class="form-control form-control-sm format-number" name="items[__INDEX__][actual_qty]" required placeholder="0">
         </td>
         <td class="py-3">
             <input type="text" class="form-control form-control-sm" name="items[__INDEX__][reason]" placeholder="Alasan (Opsional)">

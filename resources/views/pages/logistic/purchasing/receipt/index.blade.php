@@ -252,10 +252,10 @@ $(document).ready(function() {
                                 <input type="hidden" name="items[${index}][ordered_qty]" value="${item.quantity}">
                             </td>
                             <td class="py-2 border-0 border-bottom border-light">
-                                <input type="number" step="0.01" class="form-control form-control-sm text-end" name="items[${index}][received_qty]" value="${item.quantity}" min="0" required>
+                                <input type="number" step="0.01" class="form-control custom-form-control text-end" name="items[${index}][received_qty]" value="${item.quantity}" min="0" required>
                             </td>
                             <td class="py-2 pe-3 border-0 border-bottom border-light">
-                                <input type="text" class="form-control form-control-sm" name="items[${index}][notes]" placeholder="Catatan">
+                                <input type="text" class="form-control custom-form-control" name="items[${index}][notes]" placeholder="Catatan">
                             </td>
                         </tr>
                         `;

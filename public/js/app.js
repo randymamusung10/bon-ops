@@ -15,6 +15,18 @@
             }
             localStorage.setItem('bonops-theme', themeName);
             
+            // Fix native select option hover color dynamically
+            let style = document.getElementById('dynamic-theme-styles');
+            if (style) {
+                style.textContent = `
+                    select option:checked,
+                    select option:hover {
+                        background-color: ${colors['--primary-accent']} !important;
+                        color: #ffffff !important;
+                    }
+                `;
+            }
+            
             // Dispatch dynamic event to allow widgets (e.g., Chart.js) to adapt
             window.dispatchEvent(new CustomEvent('accentThemeChanged', { detail: { theme: themeName, colors } }));
         };
@@ -357,3 +369,116 @@
                 return this.toast('error', title || 'Gagal memproses data');
             }
         };
+
+        // Global ERP Input Formatter
+        window.AppFormat = {
+            // Format number to Rupiah (e.g., 1.000.000)
+            formatRupiah: function(angka, prefix = '') {
+                if (angka === null || angka === undefined) return '';
+                var number_string = angka.toString().replace(/[^,\d\-]/g, '');
+                var isNegative = number_string.startsWith('-');
+                number_string = number_string.replace(/-/g, '');
+
+                var split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    var separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                var result = prefix == undefined ? rupiah : (rupiah ? prefix + rupiah : '');
+                return isNegative && result ? '-' + result : result;
+            },
+
+            // Unmask formatted string back to raw number (e.g., 1.000.000,50 -> 1000000.50)
+            unmaskNumber: function(formattedString) {
+                if (!formattedString && formattedString !== 0) return '';
+                return formattedString.toString().replace(/\./g, '').replace(/,/g, '.');
+            },
+
+            // Format percentage (allow decimal, max 100)
+            formatPercentage: function(angka) {
+                if (angka === null || angka === undefined) return '';
+                var number_string = angka.toString().replace(/[^,\d]/g, '');
+                var split = number_string.split(',');
+                if (split.length > 1) {
+                    number_string = split[0] + ',' + split[1].substring(0, 2); // Max 2 decimal
+                }
+                return number_string;
+            },
+
+            // Initialize auto-formatting on DOM inputs
+            init: function() {
+                // Listen to input events on elements
+                $(document).on('input', '.format-rupiah, .format-number', function() {
+                    // Save cursor position
+                    var start = this.selectionStart,
+                        end = this.selectionEnd;
+                    var oldLen = $(this).val().length;
+                    
+                    $(this).val(window.AppFormat.formatRupiah($(this).val()));
+                    
+                    // Adjust cursor position
+                    var newLen = $(this).val().length;
+                    this.setSelectionRange(start + (newLen - oldLen), end + (newLen - oldLen));
+                });
+
+                $(document).on('input', '.format-percentage', function() {
+                    var val = $(this).val();
+                    val = window.AppFormat.formatPercentage(val);
+                    var num = parseFloat(window.AppFormat.unmaskNumber(val));
+                    if (num > 100) val = '100';
+                    $(this).val(val);
+                });
+
+                // Format initial values on load
+                $('.format-rupiah, .format-number').each(function() {
+                    if($(this).val()) {
+                        $(this).val(window.AppFormat.formatRupiah($(this).val()));
+                    }
+                });
+                
+                $('.format-percentage').each(function() {
+                    if($(this).val()) {
+                        $(this).val(window.AppFormat.formatPercentage($(this).val()));
+                    }
+                });
+            }
+        };
+
+        // Override jQuery serializeArray to automatically unmask before AJAX submission
+        (function($) {
+            var originalSerializeArray = $.fn.serializeArray;
+            $.fn.serializeArray = function() {
+                // Temporarily unmask inputs
+                var formattedInputs = this.find('.format-rupiah, .format-number, .format-percentage');
+                formattedInputs.each(function() {
+                    var el = $(this);
+                    el.data('original-masked-value', el.val());
+                    el.val(window.AppFormat.unmaskNumber(el.val()));
+                });
+                
+                // Perform original serialization
+                var result = originalSerializeArray.apply(this, arguments);
+                
+                // Restore formatted values
+                formattedInputs.each(function() {
+                    var el = $(this);
+                    if (el.data('original-masked-value') !== undefined) {
+                        el.val(el.data('original-masked-value'));
+                        el.removeData('original-masked-value');
+                    }
+                });
+                
+                return result;
+            };
+        })(jQuery);
+
+        // Initialize formatters when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            window.AppFormat.init();
+        });

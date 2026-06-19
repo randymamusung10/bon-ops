@@ -144,6 +144,19 @@ Breadcrumbs::for('logistic.purchasing.order', function (BreadcrumbTrail $trail) 
 Breadcrumbs::for('logistic.purchasing.receipt', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Purchasing', '#');
-    $trail->push('Penerimaan Barang', route('logistic.purchasing.receipt'));
+    $trail->push('Goods Receipt', route('logistic.purchasing.receipt'));
 });
 
+// Purchasing > Supplier Invoice
+Breadcrumbs::for('logistic.purchasing.invoice', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Purchasing', '#');
+    $trail->push('Supplier Invoice', route('logistic.purchasing.invoice'));
+});
+
+// Purchasing > Supplier Payment
+Breadcrumbs::for('logistic.purchasing.payment', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Purchasing', '#');
+    $trail->push('Pembayaran Supplier', route('logistic.purchasing.payment'));
+});

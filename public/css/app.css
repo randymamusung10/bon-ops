@@ -268,13 +268,6 @@
             box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-accent) 20%, transparent) !important;
         }
 
-        /* Native Option selected state coloring fallback */
-        select option:checked,
-        select option:hover {
-            background-color: var(--primary-accent) !important;
-            color: #ffffff !important;
-        }
-
         /* Dark mode: badge soft colors adjusted */
         html.dark-mode .badge.bg-success-subtle {
             background-color: rgba(16, 185, 129, 0.15) !important;

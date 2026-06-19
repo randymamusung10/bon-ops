@@ -4,22 +4,22 @@
         <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <x-form.label required>Gudang Penerima</x-form.label>
-                <select class="form-select" name="warehouse_id" required>
+                <x-form.select name="warehouse_id" required>
                     <option value="">Pilih Gudang</option>
                     @foreach($warehouses as $w)
                         <option value="{{ $w->id }}">{{ $w->name }}</option>
                     @endforeach
-                </select>
+                </x-form.select>
                 <div class="invalid-feedback"></div>
             </div>
             <div class="col-md-6">
                 <x-form.label required>Nomor Purchase Order (PO)</x-form.label>
-                <select class="form-select" name="purchase_order_id" required>
+                <x-form.select name="purchase_order_id" required>
                     <option value="">Pilih Dokumen PO</option>
                     @foreach($purchaseOrders as $po)
                         <option value="{{ $po->id }}">{{ $po->po_number }} ({{ $po->supplier->name ?? '-' }})</option>
                     @endforeach
-                </select>
+                </x-form.select>
                 <div class="invalid-feedback"></div>
             </div>
             <div class="col-md-6">
