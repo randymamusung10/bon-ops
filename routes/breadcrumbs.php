@@ -21,6 +21,13 @@ Breadcrumbs::for('system.settings.users', function (BreadcrumbTrail $trail) {
     $trail->push('Manajemen User', route('system.settings.users'));
 });
 
+// Master Data > Perusahaan
+Breadcrumbs::for('logistic.master.company', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Perusahaan', route('logistic.master.company'));
+});
+
 // Master Data > Cabang
 Breadcrumbs::for('logistic.master.branch', function (BreadcrumbTrail $trail) {
     $trail->parent('home');

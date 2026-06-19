@@ -91,6 +91,14 @@ Route::middleware('auth')->group(function () {
     Route::prefix('logistic')->name('logistic.')->group(function () {
         Route::prefix('master')->name('master.')->group(function () {
             Route::get('company', [CompanyController::class, 'index'])->name('company');
+            Route::get('company/data', [CompanyController::class, 'data'])->name('company.data');
+            Route::get('company/select2', [CompanyController::class, 'select2'])->name('company.select2');
+            Route::get('company/create', [CompanyController::class, 'create'])->name('company.create');
+            Route::post('company', [CompanyController::class, 'store'])->name('company.store');
+            Route::get('company/{uuid}', [CompanyController::class, 'show'])->name('company.show');
+            Route::get('company/{uuid}/edit', [CompanyController::class, 'edit'])->name('company.edit');
+            Route::put('company/{uuid}', [CompanyController::class, 'update'])->name('company.update');
+            Route::delete('company/{uuid}', [CompanyController::class, 'destroy'])->name('company.destroy');
             Route::get('branch', [BranchController::class, 'index'])->name('branch');
             Route::get('branch/data', [BranchController::class, 'data'])->name('branch.data');
             Route::get('branch/select2', [BranchController::class, 'select2'])->name('branch.select2');
