@@ -97,3 +97,24 @@ Breadcrumbs::for('business.finance.coa', function (BreadcrumbTrail $trail) {
     $trail->push('Keuangan', '#');
     $trail->push('Chart of Account', route('business.finance.coa'));
 });
+
+// Inventory > Stock Balance
+Breadcrumbs::for('logistic.inventory.balance', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Inventory', '#');
+    $trail->push('Saldo Stok', route('logistic.inventory.balance'));
+});
+
+// Inventory > Stock Card
+Breadcrumbs::for('logistic.inventory.card', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Inventory', '#');
+    $trail->push('Kartu Stok', route('logistic.inventory.card'));
+});
+
+// Inventory > Stock Adjustment
+Breadcrumbs::for('logistic.inventory.adjustment', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Inventory', '#');
+    $trail->push('Penyesuaian Stok', route('logistic.inventory.adjustment'));
+});

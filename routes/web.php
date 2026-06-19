@@ -164,8 +164,19 @@ Route::middleware('auth')->group(function () {
         });
         Route::prefix('inventory')->name('inventory.')->group(function () {
             Route::get('balance', [StockBalanceController::class, 'index'])->name('balance');
+            Route::get('balance/data', [StockBalanceController::class, 'data'])->name('balance.data');
+
             Route::get('card', [StockCardController::class, 'index'])->name('card');
+            Route::get('card/data', [StockCardController::class, 'data'])->name('card.data');
+
             Route::get('adjustment', [StockAdjustmentController::class, 'index'])->name('adjustment');
+            Route::get('adjustment/data', [StockAdjustmentController::class, 'data'])->name('adjustment.data');
+            Route::get('adjustment/create', [StockAdjustmentController::class, 'create'])->name('adjustment.create');
+            Route::post('adjustment', [StockAdjustmentController::class, 'store'])->name('adjustment.store');
+            Route::get('adjustment/{uuid}', [StockAdjustmentController::class, 'show'])->name('adjustment.show');
+            Route::post('adjustment/{uuid}/post', [StockAdjustmentController::class, 'post'])->name('adjustment.post');
+            Route::delete('adjustment/{uuid}', [StockAdjustmentController::class, 'destroy'])->name('adjustment.destroy');
+
             Route::get('transfer', [StockTransferController::class, 'index'])->name('transfer');
             Route::get('opname', [StockOpnameController::class, 'index'])->name('opname');
             Route::get('waste', [StockWasteController::class, 'index'])->name('waste');
