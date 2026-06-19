@@ -137,5 +137,44 @@ class InventoryDemoSeeder extends Seeder
         StockAdjustmentItem::create(['stock_adjustment_id' => $adj3->id, 'product_id' => $prod2->id, 'system_qty' => 500, 'actual_qty' => 495, 'difference' => -5, 'reason' => 'Bocor di gudang']);
         $adjService->post($adj3->uuid);
 
+        // 8. Create & Post Transfers to simulate movements
+        $transferService = app(\App\Services\Logistic\Inventory\StockTransferService::class);
+
+        // JKT to BDG Transfer (Draft)
+        $transfer1 = \App\Models\Logistic\Inventory\StockTransfer::create([
+            'tenant_id' => $tenantId,
+            'source_branch_id' => $branchA->id,
+            'source_warehouse_id' => $warehouseA->id,
+            'destination_branch_id' => $branchB->id,
+            'destination_warehouse_id' => $warehouseB->id,
+            'document_number' => 'TRF-DRAFT-' . time(),
+            'date' => now()->toDateString(),
+            'status' => 'draft',
+            'notes' => 'Draft mutasi dari Jakarta ke Bandung',
+            'created_by' => 1
+        ]);
+        \App\Models\Logistic\Inventory\StockTransferItem::create(['stock_transfer_id' => $transfer1->id, 'product_id' => $prod1->id, 'qty' => 10, 'notes' => 'Permintaan cabang']);
+
+        // JKT to BDG Transfer (Posted)
+        $transfer2 = \App\Models\Logistic\Inventory\StockTransfer::create([
+            'tenant_id' => $tenantId,
+            'source_branch_id' => $branchA->id,
+            'source_warehouse_id' => $warehouseA->id,
+            'destination_branch_id' => $branchB->id,
+            'destination_warehouse_id' => $warehouseB->id,
+            'document_number' => 'TRF-POSTED-' . time(),
+            'date' => now()->subDays(1)->toDateString(),
+            'status' => 'draft',
+            'notes' => 'Mutasi stok rutin Jakarta ke Bandung',
+            'created_by' => 1
+        ]);
+        \App\Models\Logistic\Inventory\StockTransferItem::create(['stock_transfer_id' => $transfer2->id, 'product_id' => $prod2->id, 'qty' => 50, 'notes' => 'Susu UHT untuk cafe Bandung']);
+        \App\Models\Logistic\Inventory\StockTransferItem::create(['stock_transfer_id' => $transfer2->id, 'product_id' => $prod3->id, 'qty' => 20, 'notes' => 'Gula pasir tambahan']);
+        
+        // Progress through the workflow: Draft -> Submitted -> Approved -> Posted
+        $transferService->submitDocument($transfer2->uuid);
+        $transferService->approveDocument($transfer2->uuid);
+        $transferService->postDocument($transfer2->uuid);
+
     }
 }

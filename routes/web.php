@@ -178,6 +178,15 @@ Route::middleware('auth')->group(function () {
             Route::delete('adjustment/{uuid}', [StockAdjustmentController::class, 'destroy'])->name('adjustment.destroy');
 
             Route::get('transfer', [StockTransferController::class, 'index'])->name('transfer');
+            Route::get('transfer/data', [StockTransferController::class, 'data'])->name('transfer.data');
+            Route::get('transfer/create', [StockTransferController::class, 'create'])->name('transfer.create');
+            Route::post('transfer', [StockTransferController::class, 'store'])->name('transfer.store');
+            Route::get('transfer/{uuid}', [StockTransferController::class, 'show'])->name('transfer.show');
+            Route::post('transfer/{uuid}/submit', [StockTransferController::class, 'submit'])->name('transfer.submit');
+            Route::post('transfer/{uuid}/approve', [StockTransferController::class, 'approve'])->name('transfer.approve');
+            Route::post('transfer/{uuid}/post', [StockTransferController::class, 'post'])->name('transfer.post');
+            Route::delete('transfer/{uuid}', [StockTransferController::class, 'destroy'])->name('transfer.destroy');
+            
             Route::get('opname', [StockOpnameController::class, 'index'])->name('opname');
             Route::get('waste', [StockWasteController::class, 'index'])->name('waste');
         });

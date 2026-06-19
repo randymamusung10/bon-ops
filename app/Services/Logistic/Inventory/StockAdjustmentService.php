@@ -105,6 +105,7 @@ class StockAdjustmentService
                     'product_id' => $item->product_id,
                     'reference_type' => 'stock_adjustment',
                     'reference_id' => $adjustment->id,
+                    'reference_number' => $adjustment->document_number,
                     'date' => $adjustment->date,
                     'qty_in' => $qtyIn,
                     'qty_out' => $qtyOut,

@@ -81,7 +81,8 @@ $(document).ready(function() {
                 if(data === 'stock_adjustment') ref = '<span class="badge bg-warning-subtle text-warning px-2 py-1 rounded-pill" style="font-size:10px;">Penyesuaian</span>';
                 else if(data === 'purchase_receipt') ref = '<span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill" style="font-size:10px;">Penerimaan</span>';
                 else ref = '<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill" style="font-size:10px;">'+data+'</span>';
-                return ref + '<br><small class="text-muted" style="font-size: 11px;">ID: '+row.reference_id+'</small>';
+                var refNumber = row.reference_number ? row.reference_number : ('ID: ' + row.reference_id);
+                return ref + '<br><small class="text-muted fw-semibold mt-1 d-inline-block" style="font-size: 11px;">'+refNumber+'</small>';
             } },
             { data: 'qty_in', name: 'qty_in', class: 'text-end text-success fw-bold', render: function(data) { return data > 0 ? '+'+parseFloat(data).toLocaleString('id-ID') : '-'; } },
             { data: 'qty_out', name: 'qty_out', class: 'text-end text-danger fw-bold', render: function(data) { return data > 0 ? '-'+parseFloat(data).toLocaleString('id-ID') : '-'; } },

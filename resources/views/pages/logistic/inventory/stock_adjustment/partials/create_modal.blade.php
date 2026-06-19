@@ -56,7 +56,7 @@
             </table>
         </div>
         <div>
-            <x-button type="button" variant="outline-primary" size="sm" id="btn-add-item" icon="bi-plus">Tambah Item</x-button>
+            <x-button type="button" variant="ghost-primary" size="sm" id="btn-add-item" icon="bi-plus">Tambah Item</x-button>
         </div>
 
         <div class="d-flex justify-content-end gap-2 mt-4">
@@ -84,7 +84,9 @@
             <input type="text" class="form-control form-control-sm" name="items[__INDEX__][reason]" placeholder="Alasan (Opsional)">
         </td>
         <td class="text-center py-3 pe-4">
-            <x-button type="button" variant="outline-danger" size="sm" class="btn-remove-item" icon="bi-trash"></x-button>
+            <button type="button" class="btn-icon-modern text-danger btn-remove-item mx-auto" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">
+                <i class="bi bi-trash"></i>
+            </button>
         </td>
     </tr>
 </template>

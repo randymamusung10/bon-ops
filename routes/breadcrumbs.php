@@ -118,3 +118,10 @@ Breadcrumbs::for('logistic.inventory.adjustment', function (BreadcrumbTrail $tra
     $trail->push('Inventory', '#');
     $trail->push('Penyesuaian Stok', route('logistic.inventory.adjustment'));
 });
+
+// Inventory > Stock Transfer
+Breadcrumbs::for('logistic.inventory.transfer', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Inventory', '#');
+    $trail->push('Transfer Stok', route('logistic.inventory.transfer'));
+});
