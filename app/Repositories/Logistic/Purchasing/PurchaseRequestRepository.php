@@ -85,4 +85,40 @@ class PurchaseRequestRepository
             throw $e;
         }
     }
+
+    public function updateDraft($uuid, array $data, array $items, $tenantId, $userId)
+    {
+        $pr = PurchaseRequest::where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
+        if ($pr->status !== 'draft') {
+            throw new \Exception('Hanya dokumen Draft yang dapat diedit.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $pr->update([
+                'branch_id' => $data['branch_id'],
+                'date' => $data['date'],
+                'expected_date' => $data['expected_date'] ?? null,
+                'notes' => $data['notes'] ?? null,
+                'updated_by' => $userId,
+            ]);
+
+            // Hapus item lama, masukkan yang baru
+            $pr->items()->delete();
+            foreach ($items as $item) {
+                $pr->items()->create([
+                    'product_id' => $item['product_id'],
+                    'unit_id' => $item['unit_id'],
+                    'quantity' => $item['quantity'],
+                    'notes' => $item['notes'] ?? null,
+                ]);
+            }
+
+            DB::commit();
+            return $pr;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }

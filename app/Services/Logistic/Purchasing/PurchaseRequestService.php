@@ -24,6 +24,15 @@ class PurchaseRequestService
         return $this->repository->createDraft($validatedData, $items, $tenantId, $userId);
     }
 
+    public function updateDraft($uuid, array $validatedData)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $userId = Auth::id();
+        $items = $validatedData['items'];
+
+        return $this->repository->updateDraft($uuid, $validatedData, $items, $tenantId, $userId);
+    }
+
     public function delete($uuid)
     {
         $tenantId = Auth::user()->tenant_id ?? 1;

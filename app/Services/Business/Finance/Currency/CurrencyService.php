@@ -21,7 +21,7 @@ class CurrencyService
 
         // Clean formatting for exchange_rate if needed
         if (isset($data['exchange_rate'])) {
-            $data['exchange_rate'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['exchange_rate']);
+            $data['exchange_rate'] = \App\Helpers\NumberHelper::parse($data['exchange_rate']);
         }
 
         return DB::transaction(function () use ($data) {
@@ -36,7 +36,7 @@ class CurrencyService
 
         // Clean formatting for exchange_rate if needed
         if (isset($data['exchange_rate'])) {
-            $data['exchange_rate'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['exchange_rate']);
+            $data['exchange_rate'] = \App\Helpers\NumberHelper::parse($data['exchange_rate']);
         }
 
         return DB::transaction(function () use ($currency, $data) {

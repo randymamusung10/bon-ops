@@ -146,6 +146,18 @@
                     <td colspan="5" class="py-3 text-end fw-bold border-0">Grand Total (Hutang AP)</td>
                     <td class="py-3 pe-4 text-end fw-bold text-primary border-0" style="font-size: 15px;">Rp {{ number_format($invoice->grand_total, 2, ',', '.') }}</td>
                 </tr>
+                @if(in_array($invoice->status, ['posted', 'paid']))
+                    @php
+                        $totalPaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                            ->where('status', 'posted')
+                            ->sum('payment_amount');
+                        $remaining = max(0, $invoice->grand_total - $totalPaid);
+                    @endphp
+                    <tr style="background-color: color-mix(in srgb, var(--primary-accent) 2%, transparent);">
+                        <td colspan="5" class="py-2 text-end fw-bold border-0" style="font-size: 12px;">Sisa Tagihan</td>
+                        <td class="py-2 pe-4 text-end fw-bold text-danger border-0" style="font-size: 13px;">Rp {{ number_format($remaining, 2, ',', '.') }}</td>
+                    </tr>
+                @endif
             </tfoot>
         </table>
     </div>

@@ -26,10 +26,10 @@ class ProductService
             
             // Clean number format for price and cost
             if (isset($data['price'])) {
-                $data['price'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['price']);
+                $data['price'] = \App\Helpers\NumberHelper::parse($data['price']);
             }
             if (isset($data['cost'])) {
-                $data['cost'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['cost']);
+                $data['cost'] = \App\Helpers\NumberHelper::parse($data['cost']);
             }
 
             $product = Product::create($data);
@@ -57,10 +57,10 @@ class ProductService
         return DB::transaction(function () use ($product, $data) {
             // Clean number format for price and cost
             if (isset($data['price'])) {
-                $data['price'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['price']);
+                $data['price'] = \App\Helpers\NumberHelper::parse($data['price']);
             }
             if (isset($data['cost'])) {
-                $data['cost'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['cost']);
+                $data['cost'] = \App\Helpers\NumberHelper::parse($data['cost']);
             }
 
             $newPrice = isset($data['price']) ? (float)$data['price'] : (float)$product->price;

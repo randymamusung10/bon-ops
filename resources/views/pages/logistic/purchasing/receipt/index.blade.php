@@ -76,6 +76,9 @@ $(document).ready(function() {
                     '<i class="bi bi-eye"></i>' +
                     '</button>';
                 if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-warning edit-btn" href="{{ url("logistic/purchasing/receipt") }}/'+uuid+'/edit" title="Edit" style="background: rgba(245, 158, 11, 0.12);">' +
+                        '<i class="bi bi-pencil"></i>' +
+                        '</button>';
                     actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+uuid+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
                         '<i class="bi bi-trash"></i>' +
                         '</button>';
@@ -129,6 +132,23 @@ $(document).ready(function() {
         });
     });
 
+    $(document).on('click', '.edit-btn', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        ERPLoader.loadModal(url, '#editModal', {
+            title: 'Edit Penerimaan Barang',
+            errorMessage: 'Gagal memuat form Edit Penerimaan Barang.',
+            onSuccess: function(modal) {
+                $('#form-edit-receipt select[name="warehouse_id"], #form-edit-receipt select[name="purchase_order_id"]').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: $('#editModal'),
+                    width: '100%'
+                });
+                window.AppFormat.init();
+            }
+        });
+    });
+
     $(document).on('click', '.show-btn', function(e) {
         e.preventDefault();
         var url = $(this).attr('href');
@@ -154,6 +174,36 @@ $(document).ready(function() {
             success: function(res) {
                 if (res.success) {
                     $('#createModal').modal('hide');
+                    table.ajax.reload();
+                    AppAlert.success('Berhasil!', res.message);
+                }
+            },
+            error: function(xhr) {
+                AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan saat menyimpan data.');
+            },
+            complete: function() {
+                submitBtn.html(originalText).prop('disabled', false);
+            }
+        });
+    });
+
+    // Form Submit Edit
+    $(document).on('submit', '#form-edit-receipt', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let submitBtn = form.find('button[type="submit"]');
+        let originalText = submitBtn.html();
+        let url = form.attr('action');
+        
+        submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...').prop('disabled', true);
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+            success: function(res) {
+                if (res.success) {
+                    $('#editModal').modal('hide');
                     table.ajax.reload();
                     AppAlert.success('Berhasil!', res.message);
                 }
@@ -252,7 +302,7 @@ $(document).ready(function() {
                                 <input type="hidden" name="items[${index}][ordered_qty]" value="${item.quantity}">
                             </td>
                             <td class="py-2 border-0 border-bottom border-light">
-                                <input type="number" step="0.01" class="form-control custom-form-control text-end" name="items[${index}][received_qty]" value="${item.quantity}" min="0" required>
+                                <input type="text" class="form-control custom-form-control text-end format-number qty-input" name="items[${index}][received_qty]" value="${item.quantity}" required>
                             </td>
                             <td class="py-2 pe-3 border-0 border-bottom border-light">
                                 <input type="text" class="form-control custom-form-control" name="items[${index}][notes]" placeholder="Catatan">

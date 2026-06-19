@@ -99,6 +99,9 @@ $(document).ready(function() {
                     '<i class="bi bi-eye"></i>' +
                     '</button>';
                 if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-primary edit-btn" href="{{ url("logistic/inventory/adjustment") }}/'+data+'/edit" title="Edit" style="background: rgba(59, 130, 246, 0.12);">' +
+                    '<i class="bi bi-pencil"></i>' +
+                    '</button>';
                     actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+data+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
                     '<i class="bi bi-trash"></i>' +
                     '</button>';
@@ -256,6 +259,107 @@ $(document).ready(function() {
         ERPLoader.loadModal(url, '#showAdjustmentModal', {
             title: 'Detail Penyesuaian Stok',
             errorMessage: 'Gagal mengambil data penyesuaian.'
+        });
+    });
+
+    $(document).on('click', '.edit-btn', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        ERPLoader.loadModal(url, '#editAdjustmentModal', {
+            title: 'Edit Penyesuaian Stok',
+            errorMessage: 'Gagal mengambil data penyesuaian.',
+            onSuccess: function(modal) {
+                modal.find('#edit-branch_id, #edit-warehouse_id').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: modal,
+                    width: '100%'
+                });
+                
+                modal.find('.product-select').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: modal,
+                    width: '100%'
+                });
+
+                let itemIndexEdit = modal.find('#items-table tbody tr').length;
+                
+                function addItemRowEdit() {
+                    let template = $('#item-row-template-edit').html();
+                    template = template.replace(/__INDEX__/g, itemIndexEdit);
+                    modal.find('#items-table tbody').append(template);
+                    
+                    modal.find('#items-table tbody').find('select[name="items['+itemIndexEdit+'][product_id]"]').select2({
+                        theme: 'bootstrap-5',
+                        dropdownParent: modal,
+                        width: '100%'
+                    });
+                    itemIndexEdit++;
+                }
+                
+                modal.find('#btn-add-item-edit').on('click', function() {
+                    addItemRowEdit();
+                });
+                
+                modal.find('#items-table').on('click', '.btn-remove-item', function() {
+                    if(modal.find('#items-table tbody tr').length > 1) {
+                        $(this).closest('tr').remove();
+                    } else {
+                        AppAlert.error('Peringatan', 'Minimal harus ada 1 item produk.');
+                    }
+                });
+            }
+        });
+    });
+
+    $(document).on('submit', '#edit-adjustment-form', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var uuid = form.data('uuid');
+        var submitBtn = form.find('button[type="submit"]');
+        submitBtn.prop('disabled', true);
+        
+        form.find('.form-control, .form-select').removeClass('is-invalid');
+        form.find('.invalid-feedback').html('');
+        
+        $.ajax({
+            url: "{{ url('logistic/inventory/adjustment') }}/" + uuid,
+            type: "PUT",
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    $('#editAdjustmentModal').modal('hide');
+                    table.ajax.reload();
+                    AppAlert.success('Tersimpan!', response.message);
+                }
+            },
+            error: function(xhr) {
+                if (xhr.status === 422) {
+                    var errors = xhr.responseJSON.errors;
+                    $.each(errors, function(key, val) {
+                        let field = form.find('[name="'+key+'"]');
+                        if(field.length === 0) {
+                            let parts = key.split('.');
+                            if(parts.length === 3) {
+                                field = form.find('[name="'+parts[0]+'['+parts[1]+']['+parts[2]+']"]');
+                            }
+                        }
+                        
+                        if(field.length > 0) {
+                            field.addClass('is-invalid');
+                            if(field.next('.invalid-feedback').length === 0) {
+                                field.after('<div class="invalid-feedback d-block" style="font-size: 11px;">'+val[0]+'</div>');
+                            } else {
+                                field.next('.invalid-feedback').html(val[0]).show();
+                            }
+                        } else {
+                            AppAlert.error('Validasi Gagal', val[0]);
+                        }
+                    });
+                } else {
+                    AppAlert.error('Error!', xhr.responseJSON?.message || 'Terjadi kesalahan sistem.');
+                }
+            },
+            complete: function() { submitBtn.prop('disabled', false); }
         });
     });
 

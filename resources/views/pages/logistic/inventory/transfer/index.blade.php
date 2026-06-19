@@ -76,6 +76,9 @@ $(document).ready(function() {
                     '<i class="bi bi-eye"></i>' +
                     '</button>';
                 if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-warning edit-btn" data-uuid="'+uuid+'" title="Edit" style="background: rgba(245, 158, 11, 0.12);">' +
+                        '<i class="bi bi-pencil"></i>' +
+                        '</button>';
                     actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+uuid+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
                         '<i class="bi bi-trash"></i>' +
                         '</button>';
@@ -161,6 +164,14 @@ $(document).ready(function() {
                 modal.find('#form-create-transfer').on('submit', function(e) {
                     e.preventDefault();
                     var form = $(this);
+
+                    var sourceWh = form.find('[name="source_warehouse_id"]').val();
+                    var destWh = form.find('[name="destination_warehouse_id"]').val();
+                    if (sourceWh && destWh && sourceWh === destWh) {
+                        AppAlert.error('Error Validasi!', 'Gudang tujuan tidak boleh sama dengan gudang asal.');
+                        return;
+                    }
+
                     var submitBtn = form.find('button[type="submit"]');
                     submitBtn.prop('disabled', true);
                     
@@ -168,15 +179,30 @@ $(document).ready(function() {
                         url: "{{ route('logistic.inventory.transfer.store') }}",
                         type: "POST",
                         data: form.serialize(),
+                        dataType: "json",
+                        headers: {
+                            'Accept': 'application/json'
+                        },
                         success: function(response) {
                             if (response.success) {
                                 $('#createTransferModal').modal('hide');
                                 table.ajax.reload();
                                 AppAlert.success('Tersimpan!', response.message);
+                            } else {
+                                AppAlert.error('Gagal!', response.message || 'Gagal menyimpan.');
                             }
                         },
                         error: function(xhr) {
-                            AppAlert.error('Error!', xhr.responseJSON?.message || 'Terjadi kesalahan sistem.');
+                            let msg = xhr.responseJSON?.message || 'Terjadi kesalahan sistem.';
+                            if (xhr.status === 422 && xhr.responseJSON.errors) {
+                                let errors = Object.values(xhr.responseJSON.errors).map(err => err[0]);
+                                msg = errors.join('\n');
+                            }
+                            try {
+                                AppAlert.error('Error Validasi!', msg);
+                            } catch (e) {
+                                alert("Error: " + msg);
+                            }
                         },
                         complete: function() { submitBtn.prop('disabled', false); }
                     });
@@ -191,6 +217,101 @@ $(document).ready(function() {
         ERPLoader.loadModal(url, '#showTransferModal', {
             title: 'Detail Mutasi Stok',
             errorMessage: 'Gagal mengambil data mutasi.'
+        });
+    });
+
+    $(document).on('click', '.edit-btn', function(e) {
+        e.preventDefault();
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('logistic/inventory/transfer') }}/" + uuid + "/edit";
+        
+        ERPLoader.loadModal(url, '#editTransferModal', {
+            title: 'Edit Mutasi Stok',
+            errorMessage: 'Gagal memuat form mutasi stok.',
+            onSuccess: function(modal) {
+                // Init select2
+                modal.find('select[name="source_branch_id"], select[name="source_warehouse_id"], select[name="destination_branch_id"], select[name="destination_warehouse_id"]').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: modal,
+                    width: '100%'
+                });
+                modal.find('.select2-product-edit').select2({
+                    theme: 'bootstrap-5',
+                    dropdownParent: modal,
+                    width: '100%'
+                });
+
+                let itemIndex = modal.find('#table-items-edit tbody tr').length;
+                
+                modal.find('#btn-add-item-edit').on('click', function() {
+                    let template = $('#transfer-item-template-edit').html();
+                    template = template.replace(/__INDEX__/g, itemIndex);
+                    modal.find('#table-items-edit tbody').append(template);
+                    
+                    modal.find('#table-items-edit tbody').find('select[name="items['+itemIndex+'][product_id]"]').select2({
+                        theme: 'bootstrap-5',
+                        dropdownParent: modal,
+                        width: '100%'
+                    });
+                    itemIndex++;
+                });
+                
+                modal.find('#table-items-edit').on('click', '.btn-remove-item', function() {
+                    if(modal.find('#table-items-edit tbody tr').length > 1) {
+                        $(this).closest('tr').remove();
+                    } else {
+                        AppAlert.error('Peringatan', 'Minimal harus ada 1 item produk.');
+                    }
+                });
+
+                // Handle form submit
+                modal.find('#form-edit-transfer').on('submit', function(e) {
+                    e.preventDefault();
+                    var form = $(this);
+
+                    var sourceWh = form.find('[name="source_warehouse_id"]').val();
+                    var destWh = form.find('[name="destination_warehouse_id"]').val();
+                    if (sourceWh && destWh && sourceWh === destWh) {
+                        AppAlert.error('Error Validasi!', 'Gudang tujuan tidak boleh sama dengan gudang asal.');
+                        return;
+                    }
+
+                    var submitBtn = form.find('button[type="submit"]');
+                    submitBtn.prop('disabled', true);
+                    
+                    $.ajax({
+                        url: "{{ url('logistic/inventory/transfer') }}/" + uuid,
+                        type: "POST",
+                        data: form.serialize(),
+                        dataType: "json",
+                        headers: {
+                            'Accept': 'application/json'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                $('#editTransferModal').modal('hide');
+                                table.ajax.reload();
+                                AppAlert.success('Tersimpan!', response.message);
+                            } else {
+                                AppAlert.error('Gagal!', response.message || 'Gagal menyimpan.');
+                            }
+                        },
+                        error: function(xhr) {
+                            let msg = xhr.responseJSON?.message || 'Terjadi kesalahan sistem.';
+                            if (xhr.status === 422 && xhr.responseJSON.errors) {
+                                let errors = Object.values(xhr.responseJSON.errors).map(err => err[0]);
+                                msg = errors.join('\n');
+                            }
+                            try {
+                                AppAlert.error('Error Validasi!', msg);
+                            } catch (e) {
+                                alert("Error: " + msg);
+                            }
+                        },
+                        complete: function() { submitBtn.prop('disabled', false); }
+                    });
+                });
+            }
         });
     });
 

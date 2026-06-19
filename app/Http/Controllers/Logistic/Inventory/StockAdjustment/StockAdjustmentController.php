@@ -85,6 +85,32 @@ class StockAdjustmentController extends Controller
         return view('pages.logistic.inventory.stock_adjustment.partials.show_modal', compact('adjustment'));
     }
 
+    public function edit($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $adjustment = $this->repository->findByUuid($tenantId, $uuid);
+
+        if ($adjustment->status !== 'draft') {
+            abort(403, 'Hanya dokumen draft yang dapat diedit.');
+        }
+
+        $branches = Branch::where('tenant_id', $tenantId)->get();
+        $warehouses = Warehouse::where('tenant_id', $tenantId)->get();
+        $products = Product::where('tenant_id', $tenantId)->get();
+
+        return view('pages.logistic.inventory.stock_adjustment.partials.edit_modal', compact('adjustment', 'branches', 'warehouses', 'products'));
+    }
+
+    public function update(StockAdjustmentRequest $request, $uuid)
+    {
+        $this->service->update($uuid, $request->validated());
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen Penyesuaian Stok berhasil diperbarui.'
+        ]);
+    }
+
     public function submit($uuid)
     {
         $this->service->submitDocument($uuid);

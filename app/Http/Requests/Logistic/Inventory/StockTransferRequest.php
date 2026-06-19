@@ -11,6 +11,19 @@ class StockTransferRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if ($this->has('items') && is_array($this->items)) {
+            $items = $this->items;
+            foreach ($items as $key => $item) {
+                if (isset($item['qty'])) {
+                    $items[$key]['qty'] = \App\Helpers\NumberHelper::parse($item['qty']);
+                }
+            }
+            $this->merge(['items' => $items]);
+        }
+    }
+
     public function rules(): array
     {
         return [

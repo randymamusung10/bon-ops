@@ -88,6 +88,38 @@ class StockTransferController extends Controller
         }
     }
 
+    public function edit($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $transfer = $this->repository->findByUuid($tenantId, $uuid);
+
+        if ($transfer->status !== 'draft') {
+            return response()->json(['message' => 'Hanya dokumen draft yang dapat diedit.'], 403);
+        }
+
+        $branches = Branch::where('tenant_id', $tenantId)->get();
+        $warehouses = Warehouse::where('tenant_id', $tenantId)->get();
+        $products = Product::where('tenant_id', $tenantId)->get();
+
+        return view('pages.logistic.inventory.transfer.partials.edit_modal', compact('transfer', 'branches', 'warehouses', 'products'));
+    }
+
+    public function update(StockTransferRequest $request, $uuid)
+    {
+        try {
+            $this->service->updateDraft($uuid, $request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Mutasi stok berhasil diperbarui.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function destroy($uuid)
     {
         try {

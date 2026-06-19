@@ -57,6 +57,45 @@ class StockTransferService
         }
     }
 
+    public function updateDraft(string $uuid, array $data)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            $transfer = $this->repository->findByUuid($tenantId, $uuid);
+
+            if ($transfer->status !== 'draft') {
+                throw new Exception("Hanya dokumen berstatus draft yang bisa diedit.");
+            }
+
+            $this->repository->update($transfer, [
+                'source_branch_id' => $data['source_branch_id'],
+                'source_warehouse_id' => $data['source_warehouse_id'],
+                'destination_branch_id' => $data['destination_branch_id'],
+                'destination_warehouse_id' => $data['destination_warehouse_id'],
+                'date' => $data['date'],
+                'notes' => $data['notes'] ?? null,
+            ]);
+
+            // Sync items
+            $transfer->items()->delete();
+            foreach ($data['items'] as $item) {
+                $transfer->items()->create([
+                    'product_id' => $item['product_id'],
+                    'qty' => $item['qty'],
+                    'notes' => $item['notes'] ?? null,
+                ]);
+            }
+
+            DB::commit();
+            return $transfer;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function submitDocument(string $uuid)
     {
         $tenantId = Auth::user()->tenant_id ?? 1;

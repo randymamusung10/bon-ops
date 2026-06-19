@@ -14,6 +14,7 @@ use App\Models\Logistic\Master\Branch\Branch;
 use App\Models\Logistic\Master\Supplier\Supplier;
 use App\Models\Logistic\Master\Product\Product;
 use App\Models\Logistic\Master\Unit\Unit;
+use App\Models\Logistic\Purchasing\PurchaseRequest;
 
 class PurchaseOrderController extends Controller
 {
@@ -74,8 +75,11 @@ class PurchaseOrderController extends Controller
         $suppliers = Supplier::where('tenant_id', $tenantId)->get();
         $products = Product::where('tenant_id', $tenantId)->get();
         $units = Unit::where('tenant_id', $tenantId)->get();
+        $purchaseRequests = PurchaseRequest::where('tenant_id', $tenantId)
+            ->whereIn('status', ['approved', 'posted'])
+            ->get();
 
-        return view('pages.logistic.purchasing.order.partials.create_modal', compact('branches', 'suppliers', 'products', 'units'));
+        return view('pages.logistic.purchasing.order.partials.create_modal', compact('branches', 'suppliers', 'products', 'units', 'purchaseRequests'));
     }
 
     public function store(PurchaseOrderRequest $request)
@@ -85,6 +89,68 @@ class PurchaseOrderController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Purchase Order berhasil disimpan sebagai Draft.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getPurchaseRequestDetails($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $pr = PurchaseRequest::with(['items.product', 'items.unit'])
+            ->where('tenant_id', $tenantId)
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $pr->id,
+                'branch_id' => $pr->branch_id,
+                'items' => $pr->items->map(function ($item) {
+                    return [
+                        'product_id' => $item->product_id,
+                        'product_name' => $item->product->name,
+                        'unit_id' => $item->unit_id,
+                        'unit_name' => $item->unit->name,
+                        'quantity' => $item->quantity,
+                    ];
+                })
+            ]
+        ]);
+    }
+
+    public function edit($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $order = $this->repository->findByUuid($tenantId, $uuid);
+        
+        if ($order->status !== 'draft') {
+            return response()->json(['message' => 'Hanya dokumen Draft yang dapat diedit.'], 403);
+        }
+
+        $branches = Branch::where('tenant_id', $tenantId)->get();
+        $suppliers = Supplier::where('tenant_id', $tenantId)->get();
+        $products = Product::where('tenant_id', $tenantId)->get();
+        $units = Unit::where('tenant_id', $tenantId)->get();
+        $purchaseRequests = PurchaseRequest::where('tenant_id', $tenantId)
+            ->whereIn('status', ['approved', 'posted'])
+            ->get();
+
+        return view('pages.logistic.purchasing.order.partials.edit_modal', compact('order', 'branches', 'suppliers', 'products', 'units', 'purchaseRequests'));
+    }
+
+    public function update(PurchaseOrderRequest $request, $uuid)
+    {
+        try {
+            $this->service->updateDraft($uuid, $request->validated());
+            return response()->json([
+                'success' => true,
+                'message' => 'Purchase Order berhasil diperbarui.'
             ]);
         } catch (\Exception $e) {
             return response()->json([

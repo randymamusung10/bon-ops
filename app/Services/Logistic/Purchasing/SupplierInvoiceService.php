@@ -141,6 +141,54 @@ class SupplierInvoiceService
         }
     }
 
+    public function updateDraft(string $uuid, array $data)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            $invoice = $this->repository->findByUuid($tenantId, $uuid);
+
+            if ($invoice->status !== 'draft') {
+                throw new Exception("Hanya faktur draft yang dapat diperbarui.");
+            }
+
+            $invoice->update([
+                'supplier_invoice_number' => $data['supplier_invoice_number'],
+                'date' => $data['date'],
+                'due_date' => $data['due_date'],
+                'subtotal' => $data['subtotal'] ?? 0,
+                'tax_amount' => $data['tax_amount'] ?? 0,
+                'discount_amount' => $data['discount_amount'] ?? 0,
+                'grand_total' => $data['grand_total'] ?? 0,
+                'notes' => $data['notes'] ?? null,
+                'updated_by' => Auth::id(),
+            ]);
+
+            // Recreate items
+            $invoice->items()->delete();
+
+            foreach ($data['items'] as $item) {
+                SupplierInvoiceItem::create([
+                    'supplier_invoice_id' => $invoice->id,
+                    'goods_receipt_item_id' => $item['goods_receipt_item_id'] ?? null,
+                    'product_id' => $item['product_id'],
+                    'unit_id' => $item['unit_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'total_price' => $item['total_price'],
+                    'notes' => $item['notes'] ?? null,
+                ]);
+            }
+
+            DB::commit();
+            return $invoice;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function deleteDocument(string $uuid)
     {
         try {
@@ -153,7 +201,7 @@ class SupplierInvoiceService
                 throw new Exception("Hanya faktur dengan status draft yang dapat dihapus.");
             }
 
-            $this->repository->delete($invoice);
+            $invoice->delete();
 
             DB::commit();
             return true;

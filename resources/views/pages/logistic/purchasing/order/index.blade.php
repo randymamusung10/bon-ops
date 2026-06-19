@@ -78,6 +78,9 @@ $(document).ready(function() {
                     '<i class="bi bi-eye"></i>' +
                     '</button>';
                 if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-warning edit-btn" href="{{ url("logistic/purchasing/order") }}/'+uuid+'/edit" title="Edit" style="background: rgba(245, 158, 11, 0.12);">' +
+                        '<i class="bi bi-pencil"></i>' +
+                        '</button>';
                     actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+uuid+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
                         '<i class="bi bi-trash"></i>' +
                         '</button>';
@@ -124,6 +127,15 @@ $(document).ready(function() {
             onSuccess: function(modal) {
                 // Logic is mostly handled in create modal script directly for item repeater
             }
+        });
+    });
+
+    $(document).on('click', '.edit-btn', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        ERPLoader.loadModal(url, '#editModal', {
+            title: 'Edit Purchase Order',
+            errorMessage: 'Gagal memuat form Edit PO.'
         });
     });
 

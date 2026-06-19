@@ -117,12 +117,54 @@ class SupplierPaymentService
                 'posted_at' => now()
             ]);
 
-            // Tandai Invoice sebagai PAID jika payment_amount >= invoice grand_total
+            // Tandai Invoice sebagai PAID jika total pembayaran >= grand_total
             $invoice = $payment->supplierInvoice;
-            if ($invoice && $payment->payment_amount >= $invoice->grand_total) {
-                $invoice->status = 'paid';
-                $invoice->save();
+            if ($invoice) {
+                $totalPaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                    ->where('status', 'posted')
+                    ->sum('payment_amount');
+
+                if ($totalPaid >= $invoice->grand_total) {
+                    $invoice->status = 'paid';
+                    $invoice->save();
+                }
             }
+
+            DB::commit();
+            return $payment;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateDraft(string $uuid, array $data)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            $payment = $this->repository->findByUuid($tenantId, $uuid);
+
+            if ($payment->status !== 'draft') {
+                throw new Exception("Hanya pembayaran draft yang dapat diperbarui.");
+            }
+
+            $invoice = SupplierInvoice::findOrFail($data['supplier_invoice_id']);
+
+            $payment->update([
+                'supplier_invoice_id' => $invoice->id,
+                'branch_id'           => $invoice->branch_id,
+                'supplier_id'         => $invoice->supplier_id,
+                'payment_date'        => $data['payment_date'],
+                'payment_method'      => $data['payment_method'],
+                'bank_name'           => $data['bank_name'] ?? null,
+                'bank_account_number' => $data['bank_account_number'] ?? null,
+                'bank_reference'      => $data['bank_reference'] ?? null,
+                'payment_amount'      => \App\Helpers\NumberHelper::parse($data['payment_amount']),
+                'invoice_amount'      => $invoice->grand_total,
+                'notes'               => $data['notes'] ?? null,
+            ]);
 
             DB::commit();
             return $payment;

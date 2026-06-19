@@ -75,6 +75,32 @@ class PurchaseRequestController extends Controller
         }
     }
 
+    public function edit($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $requestData = $this->repository->findByUuid($tenantId, $uuid);
+        
+        if ($requestData->status !== 'draft') {
+            return response()->json(['message' => 'Hanya dokumen Draft yang dapat diedit.'], 403);
+        }
+
+        $branches = Branch::where('tenant_id', $tenantId)->get();
+        $products = Product::where('tenant_id', $tenantId)->get();
+        $units = Unit::where('tenant_id', $tenantId)->get();
+
+        return view('pages.logistic.purchasing.request.partials.edit_modal', compact('requestData', 'branches', 'products', 'units'));
+    }
+
+    public function update(PurchaseRequestRequest $request, $uuid)
+    {
+        try {
+            $this->service->updateDraft($uuid, $request->validated());
+            return response()->json(['success' => true, 'message' => 'Draft Purchase Request berhasil diperbarui.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
     public function show($uuid)
     {
         $tenantId = Auth::user()->tenant_id ?? 1;

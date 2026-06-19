@@ -20,7 +20,7 @@ class TaxService
         }
 
         if (isset($data['rate_percentage'])) {
-            $data['rate_percentage'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['rate_percentage']);
+            $data['rate_percentage'] = \App\Helpers\NumberHelper::parse($data['rate_percentage']);
         }
 
         return DB::transaction(function () use ($data) {
@@ -34,7 +34,7 @@ class TaxService
         $tax = Tax::where('uuid', $uuid)->where('tenant_id', $tenantId)->firstOrFail();
 
         if (isset($data['rate_percentage'])) {
-            $data['rate_percentage'] = str_replace(['Rp', '.', ',', ' '], ['', '', '.', ''], $data['rate_percentage']);
+            $data['rate_percentage'] = \App\Helpers\NumberHelper::parse($data['rate_percentage']);
         }
 
         return DB::transaction(function () use ($tax, $data) {

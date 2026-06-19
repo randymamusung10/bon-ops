@@ -175,6 +175,8 @@ Route::middleware('auth')->group(function () {
             Route::get('adjustment/create', [StockAdjustmentController::class, 'create'])->name('adjustment.create');
             Route::post('adjustment', [StockAdjustmentController::class, 'store'])->name('adjustment.store');
             Route::get('adjustment/{uuid}', [StockAdjustmentController::class, 'show'])->name('adjustment.show');
+            Route::get('adjustment/{uuid}/edit', [StockAdjustmentController::class, 'edit'])->name('adjustment.edit');
+            Route::put('adjustment/{uuid}', [StockAdjustmentController::class, 'update'])->name('adjustment.update');
             Route::post('adjustment/{uuid}/submit', [StockAdjustmentController::class, 'submit'])->name('adjustment.submit');
             Route::post('adjustment/{uuid}/approve', [StockAdjustmentController::class, 'approve'])->name('adjustment.approve');
             Route::post('adjustment/{uuid}/post', [StockAdjustmentController::class, 'post'])->name('adjustment.post');
@@ -185,6 +187,8 @@ Route::middleware('auth')->group(function () {
             Route::get('transfer/create', [StockTransferController::class, 'create'])->name('transfer.create');
             Route::post('transfer', [StockTransferController::class, 'store'])->name('transfer.store');
             Route::get('transfer/{uuid}', [StockTransferController::class, 'show'])->name('transfer.show');
+            Route::get('transfer/{uuid}/edit', [StockTransferController::class, 'edit'])->name('transfer.edit');
+            Route::put('transfer/{uuid}', [StockTransferController::class, 'update'])->name('transfer.update');
             Route::post('transfer/{uuid}/submit', [StockTransferController::class, 'submit'])->name('transfer.submit');
             Route::post('transfer/{uuid}/approve', [StockTransferController::class, 'approve'])->name('transfer.approve');
             Route::post('transfer/{uuid}/post', [StockTransferController::class, 'post'])->name('transfer.post');
@@ -199,6 +203,8 @@ Route::middleware('auth')->group(function () {
             Route::get('request/create', [PurchaseRequestController::class, 'create'])->name('request.create');
             Route::post('request', [PurchaseRequestController::class, 'store'])->name('request.store');
             Route::get('request/{uuid}', [PurchaseRequestController::class, 'show'])->name('request.show');
+            Route::get('request/{uuid}/edit', [PurchaseRequestController::class, 'edit'])->name('request.edit');
+            Route::put('request/{uuid}', [PurchaseRequestController::class, 'update'])->name('request.update');
             Route::delete('request/{uuid}', [PurchaseRequestController::class, 'destroy'])->name('request.destroy');
             Route::post('request/{uuid}/submit', [PurchaseRequestController::class, 'submit'])->name('request.submit');
             Route::post('request/{uuid}/approve', [PurchaseRequestController::class, 'approve'])->name('request.approve');
@@ -207,8 +213,11 @@ Route::middleware('auth')->group(function () {
             Route::get('order', [PurchaseOrderController::class, 'index'])->name('order');
             Route::get('order/data', [PurchaseOrderController::class, 'data'])->name('order.data');
             Route::get('order/create', [PurchaseOrderController::class, 'create'])->name('order.create');
+            Route::get('order/get-pr/{uuid}', [PurchaseOrderController::class, 'getPurchaseRequestDetails'])->name('order.get_pr');
             Route::post('order', [PurchaseOrderController::class, 'store'])->name('order.store');
             Route::get('order/{uuid}', [PurchaseOrderController::class, 'show'])->name('order.show');
+            Route::get('order/{uuid}/edit', [PurchaseOrderController::class, 'edit'])->name('order.edit');
+            Route::put('order/{uuid}', [PurchaseOrderController::class, 'update'])->name('order.update');
             Route::post('order/{uuid}/submit', [PurchaseOrderController::class, 'submit'])->name('order.submit');
             Route::post('order/{uuid}/approve', [PurchaseOrderController::class, 'approve'])->name('order.approve');
             Route::post('order/{uuid}/post', [PurchaseOrderController::class, 'post'])->name('order.post');
@@ -219,6 +228,8 @@ Route::middleware('auth')->group(function () {
             Route::get('receipt/get-po/{id}', [GoodsReceiptController::class, 'getPoDetails'])->name('receipt.get_po');
             Route::post('receipt', [GoodsReceiptController::class, 'store'])->name('receipt.store');
             Route::get('receipt/{uuid}', [GoodsReceiptController::class, 'show'])->name('receipt.show');
+            Route::get('receipt/{uuid}/edit', [GoodsReceiptController::class, 'edit'])->name('receipt.edit');
+            Route::put('receipt/{uuid}', [GoodsReceiptController::class, 'update'])->name('receipt.update');
             Route::post('receipt/{uuid}/submit', [GoodsReceiptController::class, 'submit'])->name('receipt.submit');
             Route::post('receipt/{uuid}/approve', [GoodsReceiptController::class, 'approve'])->name('receipt.approve');
             Route::post('receipt/{uuid}/post', [GoodsReceiptController::class, 'post'])->name('receipt.post');
@@ -229,6 +240,8 @@ Route::middleware('auth')->group(function () {
             Route::get('invoice/get-gr/{id}', [SupplierInvoiceController::class, 'getGrDetails'])->name('invoice.get-gr');
             Route::post('invoice', [SupplierInvoiceController::class, 'store'])->name('invoice.store');
             Route::get('invoice/{uuid}', [SupplierInvoiceController::class, 'show'])->name('invoice.show');
+            Route::get('invoice/{uuid}/edit', [SupplierInvoiceController::class, 'edit'])->name('invoice.edit');
+            Route::put('invoice/{uuid}', [SupplierInvoiceController::class, 'update'])->name('invoice.update');
             Route::post('invoice/{uuid}/submit', [SupplierInvoiceController::class, 'submit'])->name('invoice.submit');
             Route::post('invoice/{uuid}/approve', [SupplierInvoiceController::class, 'approve'])->name('invoice.approve');
             Route::post('invoice/{uuid}/post', [SupplierInvoiceController::class, 'post'])->name('invoice.post');
@@ -238,6 +251,8 @@ Route::middleware('auth')->group(function () {
             Route::get('payment/create', [SupplierPaymentController::class, 'create'])->name('payment.create');
             Route::post('payment', [SupplierPaymentController::class, 'store'])->name('payment.store');
             Route::get('payment/{uuid}', [SupplierPaymentController::class, 'show'])->name('payment.show');
+            Route::get('payment/{uuid}/edit', [SupplierPaymentController::class, 'edit'])->name('payment.edit');
+            Route::put('payment/{uuid}', [SupplierPaymentController::class, 'update'])->name('payment.update');
             Route::post('payment/{uuid}/submit', [SupplierPaymentController::class, 'submit'])->name('payment.submit');
             Route::post('payment/{uuid}/approve', [SupplierPaymentController::class, 'approve'])->name('payment.approve');
             Route::post('payment/{uuid}/post', [SupplierPaymentController::class, 'post'])->name('payment.post');

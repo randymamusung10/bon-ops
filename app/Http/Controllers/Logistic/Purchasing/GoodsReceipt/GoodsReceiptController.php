@@ -99,6 +99,45 @@ class GoodsReceiptController extends Controller
         }
     }
 
+    public function edit($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $receipt = $this->repository->findByUuid($tenantId, $uuid);
+        
+        if ($receipt->status !== 'draft') {
+            return response()->json(['message' => 'Hanya dokumen Draft yang dapat diedit.'], 403);
+        }
+
+        $warehouses = Warehouse::where('tenant_id', $tenantId)->get();
+        // Fetch only POs that are posted
+        $purchaseOrders = PurchaseOrder::where('tenant_id', $tenantId)
+            ->where('status', 'posted')
+            ->get();
+            
+        // also include the current PO if not in list
+        if ($receipt->purchase_order_id && !$purchaseOrders->contains('id', $receipt->purchase_order_id)) {
+            $purchaseOrders->push($receipt->purchaseOrder);
+        }
+
+        return view('pages.logistic.purchasing.receipt.partials.edit_modal', compact('receipt', 'warehouses', 'purchaseOrders'));
+    }
+
+    public function update(GoodsReceiptRequest $request, $uuid)
+    {
+        try {
+            $po = PurchaseOrder::findOrFail($request->purchase_order_id);
+            
+            $data = $request->validated();
+            $data['branch_id'] = $po->branch_id;
+            $data['supplier_id'] = $po->supplier_id;
+
+            $this->service->updateDraft($uuid, $data);
+            return response()->json(['success' => true, 'message' => 'Penerimaan Barang berhasil diperbarui.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
     public function show($uuid)
     {
         $tenantId = Auth::user()->tenant_id ?? 1;

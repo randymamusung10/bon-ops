@@ -67,6 +67,57 @@ class StockAdjustmentService
         }
     }
 
+    public function update(string $uuid, array $data)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            $adjustment = $this->repository->findByUuid($tenantId, $uuid);
+
+            if ($adjustment->status !== 'draft') {
+                throw new Exception("Hanya dokumen dengan status draft yang dapat diedit.");
+            }
+
+            $this->repository->update($adjustment, [
+                'branch_id' => $data['branch_id'],
+                'warehouse_id' => $data['warehouse_id'],
+                'date' => $data['date'],
+                'notes' => $data['notes'],
+            ]);
+
+            // Hapus item lama
+            $adjustment->items()->delete();
+
+            // Masukkan item baru
+            foreach ($data['items'] as $item) {
+                $balance = InventoryBalance::where('tenant_id', $tenantId)
+                    ->where('warehouse_id', $data['warehouse_id'])
+                    ->where('product_id', $item['product_id'])
+                    ->first();
+                
+                $systemQty = $balance ? $balance->qty : 0;
+                $actualQty = $item['actual_qty'];
+                $difference = $actualQty - $systemQty;
+
+                StockAdjustmentItem::create([
+                    'stock_adjustment_id' => $adjustment->id,
+                    'product_id' => $item['product_id'],
+                    'system_qty' => $systemQty,
+                    'actual_qty' => $actualQty,
+                    'difference' => $difference,
+                    'reason' => $item['reason'] ?? null,
+                ]);
+            }
+
+            DB::commit();
+            return $adjustment;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function submitDocument(string $uuid)
     {
         try {

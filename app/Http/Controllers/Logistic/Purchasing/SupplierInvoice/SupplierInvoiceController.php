@@ -47,6 +47,20 @@ class SupplierInvoiceController extends Controller
             ->editColumn('grand_total', function ($row) {
                 return number_format($row->grand_total, 2, ',', '.');
             })
+            ->addColumn('remaining_balance', function ($row) {
+                if (in_array($row->status, ['draft', 'submitted', 'approved'])) {
+                    return number_format($row->grand_total, 2, ',', '.');
+                }
+                if ($row->status === 'paid') {
+                    return number_format(0, 2, ',', '.');
+                }
+                
+                $totalPaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $row->id)
+                    ->where('status', 'posted')
+                    ->sum('payment_amount');
+                $remaining = max(0, $row->grand_total - $totalPaid);
+                return number_format($remaining, 2, ',', '.');
+            })
             ->addColumn('status_badge', function ($row) {
                 $status = $row->status;
                 if ($status === 'draft') return '<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill">Draft</span>';
@@ -157,6 +171,28 @@ class SupplierInvoiceController extends Controller
         try {
             $this->service->postDocument($uuid);
             return response()->json(['success' => true, 'message' => 'Faktur berhasil diposting. Menjadi Hutang (AP) yang sah.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function edit($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $invoice = $this->repository->findByUuid($tenantId, $uuid);
+
+        if ($invoice->status !== 'draft') {
+            abort(403, "Hanya faktur draft yang dapat diedit.");
+        }
+
+        return view('pages.logistic.purchasing.invoice.partials.edit_modal', compact('invoice'));
+    }
+
+    public function update(SupplierInvoiceRequest $request, $uuid)
+    {
+        try {
+            $this->service->updateDraft($uuid, $request->validated());
+            return response()->json(['success' => true, 'message' => 'Faktur Supplier berhasil diperbarui.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }

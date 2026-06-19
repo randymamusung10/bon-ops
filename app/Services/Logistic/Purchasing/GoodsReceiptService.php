@@ -60,6 +60,25 @@ class GoodsReceiptService
         }
     }
 
+    public function updateDraft($uuid, array $data)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            $userId = Auth::id();
+            $items = $data['items'];
+
+            $receipt = $this->repository->updateDraft($uuid, $data, $items, $tenantId, $userId);
+
+            DB::commit();
+            return $receipt;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
     public function submitDocument(string $uuid)
     {
         try {

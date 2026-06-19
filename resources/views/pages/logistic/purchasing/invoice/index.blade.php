@@ -22,13 +22,14 @@
                         <th class="py-3">Jatuh Tempo</th>
                         <th class="py-3">Supplier</th>
                         <th class="py-3 text-end">Total Tagihan</th>
+                        <th class="py-3 text-end">Sisa Tagihan</th>
                         <th class="py-3">Status</th>
                         <th class="py-3 text-end pe-4">Aksi</th>
                     </tr>
                 </thead>
                 <tbody style="font-size: 13px; color: var(--text-heading);">
                     <tr>
-                        <td colspan="9" class="text-center py-5">
+                        <td colspan="10" class="text-center py-5">
                             <div class="d-flex flex-column align-items-center gap-2">
                                 <div class="modern-loader-spinner" style="width: 36px; height: 36px;">
                                     <div class="spinner-outer" style="border-width: 2.5px;"></div>
@@ -71,7 +72,8 @@ $(document).ready(function() {
             { data: 'date', name: 'date' },
             { data: 'due_date', name: 'due_date' },
             { data: 'supplier_name', name: 'supplier.name' },
-            { data: 'grand_total', name: 'grand_total', class: 'text-end fw-bold text-primary' },
+            { data: 'grand_total', name: 'grand_total', class: 'text-end fw-bold' },
+            { data: 'remaining_balance', name: 'remaining_balance', class: 'text-end fw-bold text-primary' },
             { data: 'status_badge', name: 'status', orderable: false, searchable: false },
             { data: 'action', name: 'action', orderable: false, searchable: false, class: 'pe-4 text-end text-nowrap', render: function(data, type, row) {
                 let uuid = row.uuid;
@@ -80,6 +82,9 @@ $(document).ready(function() {
                     '<i class="bi bi-eye"></i>' +
                     '</button>';
                 if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-warning edit-btn" data-uuid="'+uuid+'" title="Edit" style="background: rgba(245, 158, 11, 0.12);">' +
+                        '<i class="bi bi-pencil"></i>' +
+                        '</button>';
                     actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+uuid+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
                         '<i class="bi bi-trash"></i>' +
                         '</button>';
@@ -142,6 +147,17 @@ $(document).ready(function() {
         });
     });
 
+    // Buka modal Edit
+    $(document).on('click', '.edit-btn', function(e) {
+        e.preventDefault();
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('logistic/purchasing/invoice') }}/" + uuid + "/edit";
+        ERPLoader.loadModal(url, '#editModal', {
+            title: 'Edit Faktur Supplier',
+            errorMessage: 'Gagal mengambil form edit faktur.'
+        });
+    });
+
     // Form Submit Create
     $(document).on('submit', '#form-create-invoice', function(e) {
         e.preventDefault();
@@ -158,6 +174,36 @@ $(document).ready(function() {
             success: function(res) {
                 if (res.success) {
                     $('#createModal').modal('hide');
+                    table.ajax.reload();
+                    AppAlert.success('Berhasil!', res.message);
+                }
+            },
+            error: function(xhr) {
+                AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan saat menyimpan data.');
+            },
+            complete: function() {
+                submitBtn.html(originalText).prop('disabled', false);
+            }
+        });
+    });
+
+    // Form Submit Edit
+    $(document).on('submit', '#form-edit-invoice', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let uuid = form.data('uuid');
+        let submitBtn = form.find('button[type="submit"]');
+        let originalText = submitBtn.html();
+        
+        submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...').prop('disabled', true);
+        
+        $.ajax({
+            url: "{{ url('logistic/purchasing/invoice') }}/" + uuid,
+            type: 'POST',
+            data: form.serialize(),
+            success: function(res) {
+                if (res.success) {
+                    $('#editModal').modal('hide');
                     table.ajax.reload();
                     AppAlert.success('Berhasil!', res.message);
                 }
@@ -225,22 +271,24 @@ $(document).ready(function() {
     });
 
     // Kalkulator Form
-    function calculateTotals() {
+    function calculateTotals(suffix = '') {
         let subtotal = 0;
-        $('.item-total-price').each(function() {
+        let containerId = suffix === '-edit' ? '#invoice-items-container-edit' : '#invoice-items-container';
+        
+        $(containerId).find('.item-total-price').each(function() {
             let val = parseFloat($(this).val()) || 0;
             subtotal += val;
         });
 
-        let tax = parseFloat(window.AppFormat.unmaskNumber($('#tax-amount').val())) || 0;
-        let discount = parseFloat(window.AppFormat.unmaskNumber($('#discount-amount').val())) || 0;
+        let tax = parseFloat(window.AppFormat.unmaskNumber($('#tax-amount' + suffix).val())) || 0;
+        let discount = parseFloat(window.AppFormat.unmaskNumber($('#discount-amount' + suffix).val())) || 0;
         let grandTotal = subtotal + tax - discount;
 
-        $('#subtotal').val(subtotal);
-        $('#subtotal-display').text(subtotal.toLocaleString('id-ID'));
+        $('#subtotal' + suffix).val(subtotal);
+        $('#subtotal-display' + suffix).text(subtotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         
-        $('#grand-total').val(grandTotal);
-        $('#grand-total-display').text(grandTotal.toLocaleString('id-ID'));
+        $('#grand-total' + suffix).val(grandTotal);
+        $('#grand-total-display' + suffix).text(grandTotal.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
 
     $(document).on('input', '.qty-input, .price-input', function() {
@@ -249,12 +297,18 @@ $(document).ready(function() {
         let price = parseFloat(window.AppFormat.unmaskNumber(row.find('.price-input').val())) || 0;
         let total = qty * price;
         row.find('.item-total-price').val(total);
-        row.find('.item-total-display').text(total.toLocaleString('id-ID'));
-        calculateTotals();
+        row.find('.item-total-display').text(total.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        
+        let isEdit = row.closest('tbody').attr('id') === 'invoice-items-container-edit';
+        calculateTotals(isEdit ? '-edit' : '');
     });
 
     $(document).on('input', '#tax-amount, #discount-amount', function() {
         calculateTotals();
+    });
+
+    $(document).on('input', '#tax-amount-edit, #discount-amount-edit', function() {
+        calculateTotals('-edit');
     });
 
     // Fetch GR Items when GR is selected

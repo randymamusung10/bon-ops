@@ -31,6 +31,11 @@ class StockAdjustmentRepository
         return StockAdjustment::create($data);
     }
 
+    public function update(StockAdjustment $adjustment, array $data): bool
+    {
+        return $adjustment->update($data);
+    }
+
     public function updateStatus(StockAdjustment $adjustment, string $status, array $additionalData = []): bool
     {
         $data = array_merge(['status' => $status], $additionalData);

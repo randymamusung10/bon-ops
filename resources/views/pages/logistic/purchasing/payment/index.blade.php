@@ -80,6 +80,9 @@ $(document).ready(function() {
                     '<i class="bi bi-eye"></i>' +
                     '</button>';
                 if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-warning edit-btn" data-uuid="'+uuid+'" title="Edit" style="background: rgba(245, 158, 11, 0.12);">' +
+                        '<i class="bi bi-pencil"></i>' +
+                        '</button>';
                     actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+uuid+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
                         '<i class="bi bi-trash"></i>' +
                         '</button>';
@@ -122,7 +125,7 @@ $(document).ready(function() {
                     theme: 'bootstrap-5',
                     dropdownParent: modal,
                     width: '100%',
-                    minimumResultsForSearch: Infinity // Hide search box for simple options
+                    minimumResultsForSearch: -1 // Hide search box for simple options
                 });
             }
         });
@@ -138,7 +141,18 @@ $(document).ready(function() {
         });
     });
 
-    // Submit form
+    // Buka modal Edit
+    $(document).on('click', '.edit-btn', function(e) {
+        e.preventDefault();
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('logistic/purchasing/payment') }}/" + uuid + "/edit";
+        ERPLoader.loadModal(url, '#editModal', {
+            title: 'Edit Pembayaran',
+            errorMessage: 'Gagal mengambil form edit pembayaran.'
+        });
+    });
+
+    // Submit form Create
     $(document).on('submit', '#form-create-payment', function(e) {
         e.preventDefault();
         let form = $(this);
@@ -153,6 +167,35 @@ $(document).ready(function() {
             success: function(res) {
                 if (res.success) {
                     $('#createModal').modal('hide');
+                    table.ajax.reload();
+                    AppAlert.success('Berhasil!', res.message);
+                }
+            },
+            error: function(xhr) {
+                AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan saat menyimpan data.');
+            },
+            complete: function() {
+                submitBtn.html(originalText).prop('disabled', false);
+            }
+        });
+    });
+
+    // Submit form Edit
+    $(document).on('submit', '#form-edit-payment', function(e) {
+        e.preventDefault();
+        let form = $(this);
+        let uuid = form.data('uuid');
+        let submitBtn = form.find('button[type="submit"]');
+        let originalText = submitBtn.html();
+        submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...').prop('disabled', true);
+
+        $.ajax({
+            url: "{{ url('logistic/purchasing/payment') }}/" + uuid,
+            type: 'POST',
+            data: form.serialize(),
+            success: function(res) {
+                if (res.success) {
+                    $('#editModal').modal('hide');
                     table.ajax.reload();
                     AppAlert.success('Berhasil!', res.message);
                 }
@@ -222,8 +265,12 @@ $(document).ready(function() {
     $(document).on('change', 'select[name="supplier_invoice_id"]', function() {
         let option = $(this).find('option:selected');
         let grandTotal = option.data('grand-total') || 0;
-        $('input[name="payment_amount"]').val(window.AppFormat.formatRupiah(grandTotal));
-        $('#invoice-amount-display').text('Rp ' + parseFloat(grandTotal).toLocaleString('id-ID'));
+        let isEdit = $(this).closest('form').attr('id') === 'form-edit-payment';
+        let amountInput = isEdit ? $('#editModal').find('input[name="payment_amount"]') : $('#createModal').find('input[name="payment_amount"]');
+        let displayEl = isEdit ? $('#invoice-amount-display-edit') : $('#invoice-amount-display');
+        
+        amountInput.val(window.AppFormat.formatRupiah(grandTotal));
+        displayEl.text('Rp ' + parseFloat(grandTotal).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     });
 });
 </script>

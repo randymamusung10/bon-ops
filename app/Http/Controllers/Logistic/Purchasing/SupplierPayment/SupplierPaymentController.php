@@ -59,7 +59,17 @@ class SupplierPaymentController extends Controller
         $invoices = SupplierInvoice::with('supplier')
             ->where('tenant_id', $tenantId)
             ->whereIn('status', ['posted'])
-            ->get();
+            ->get()
+            ->map(function($invoice) {
+                $totalPaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                    ->where('status', 'posted')
+                    ->sum('payment_amount');
+                $invoice->remaining_amount = max(0, $invoice->grand_total - $totalPaid);
+                return $invoice;
+            })
+            ->filter(function($invoice) {
+                return $invoice->remaining_amount > 0;
+            });
 
         return view('pages.logistic.purchasing.payment.partials.create_modal', compact('invoices'));
     }
@@ -117,6 +127,58 @@ class SupplierPaymentController extends Controller
         try {
             $this->service->postDocument($uuid);
             return response()->json(['success' => true, 'message' => 'Pembayaran berhasil diposting. Hutang AP pada Faktur telah dilunasi.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function edit($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $payment = $this->repository->findByUuid($tenantId, $uuid);
+
+        if ($payment->status !== 'draft') {
+            abort(403, "Hanya pembayaran draft yang dapat diedit.");
+        }
+
+        // Get posted invoices, plus the invoice currently attached to this payment
+        $invoices = SupplierInvoice::with('supplier')
+            ->where('tenant_id', $tenantId)
+            ->where(function($q) use ($payment) {
+                $q->whereIn('status', ['posted'])
+                  ->orWhere('id', $payment->supplier_invoice_id);
+            })
+            ->get()
+            ->map(function($invoice) {
+                $totalPaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                    ->where('status', 'posted')
+                    ->sum('payment_amount');
+                $invoice->remaining_amount = max(0, $invoice->grand_total - $totalPaid);
+                return $invoice;
+            })
+            ->filter(function($invoice) use ($payment) {
+                return $invoice->remaining_amount > 0 || $invoice->id == $payment->supplier_invoice_id;
+            });
+
+        return view('pages.logistic.purchasing.payment.partials.edit_modal', compact('payment', 'invoices'));
+    }
+
+    public function update(Request $request, $uuid)
+    {
+        $request->validate([
+            'supplier_invoice_id' => 'required|exists:supplier_invoices,id',
+            'payment_date'        => 'required|date',
+            'payment_method'      => 'required|string',
+            'payment_amount'      => 'required|string',
+            'bank_reference'      => 'nullable|string|max:100',
+            'bank_name'           => 'nullable|string|max:100',
+            'bank_account_number' => 'nullable|string|max:100',
+            'notes'               => 'nullable|string',
+        ]);
+
+        try {
+            $this->service->updateDraft($uuid, $request->all());
+            return response()->json(['success' => true, 'message' => 'Pembayaran berhasil diperbarui.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
         }

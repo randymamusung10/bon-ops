@@ -42,6 +42,7 @@ class PurchaseOrderRepository
 
             $po = PurchaseOrder::create([
                 'tenant_id' => $tenantId,
+                'purchase_request_id' => $data['purchase_request_id'] ?? null,
                 'branch_id' => $data['branch_id'],
                 'supplier_id' => $data['supplier_id'],
                 'date' => $data['date'],
@@ -92,6 +93,59 @@ class PurchaseOrderRepository
         }
 
         return $po->delete();
+    }
+
+    /**
+     * Update Draft PO
+     */
+    public function updateDraft($uuid, array $data, array $items, $tenantId, $userId)
+    {
+        $po = $this->findByUuid($tenantId, $uuid);
+        
+        if ($po->status !== 'draft') {
+            throw new \Exception('Hanya dokumen dengan status Draft yang dapat diedit.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $po->update([
+                'purchase_request_id' => $data['purchase_request_id'] ?? null,
+                'branch_id' => $data['branch_id'],
+                'supplier_id' => $data['supplier_id'],
+                'date' => $data['date'],
+                'expected_date' => $data['expected_date'] ?? null,
+                'notes' => $data['notes'] ?? null,
+                'updated_by' => $userId,
+            ]);
+
+            // Hapus item lama, masukkan yang baru
+            $po->items()->delete();
+            $totalAmount = 0;
+
+            foreach ($items as $item) {
+                $quantity = floatval($item['quantity']);
+                $unitPrice = floatval($item['unit_price']);
+                $totalPrice = $quantity * $unitPrice;
+                $totalAmount += $totalPrice;
+
+                PurchaseOrderItem::create([
+                    'purchase_order_id' => $po->id,
+                    'product_id' => $item['product_id'],
+                    'unit_id' => $item['unit_id'],
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'total_price' => $totalPrice,
+                ]);
+            }
+
+            $po->update(['total_amount' => $totalAmount]);
+
+            DB::commit();
+            return $po;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     /**
