@@ -1,25 +1,197 @@
 @extends('layouts.app')
 
+@section('page_title', 'Purchase Order')
+@section('page_description', 'Kelola data pemesanan barang ke supplier.')
+@section('page_actions')
+    <x-button id="btn-add-po" variant="primary" size="sm" icon="bi-plus-lg">
+        Buat PO Baru
+    </x-button>
+@endsection
+
 @section('content')
 <div class="container-fluid px-0">
-    <div class="row align-items-center mb-4">
-        <div class="col-12">
-            <h1 class="h4 fw-bold mb-1" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; letter-spacing: -0.5px;">Pesanan Pembelian (PO)</h1>
-            <p class="mb-0" style="color: var(--text-light); font-size: 13.5px;">Selamat datang di modul Pesanan Pembelian (PO). Halaman ini merupakan bagian dari sistem ERP BonOps.</p>
-        </div>
-    </div>
-
-    <!-- Placeholder Card -->
-    <div class="card rounded-4 p-4">
-        <div class="d-flex align-items-center gap-3">
-            <div class="rounded-3 d-flex align-items-center justify-content-center bg-primary-subtle text-primary" style="width: 48px; height: 48px;">
-                <i class="bi bi-info-circle-fill" style="font-size: 20px; color: var(--primary-accent) !important;"></i>
-            </div>
-            <div>
-                <h5 class="fw-bold mb-1" style="color: var(--text-heading);">Konten Modul Pesanan Pembelian (PO)</h5>
-                <p class="text-muted mb-0" style="font-size: 13px;">Modul ini siap dikembangkan lebih lanjut sesuai kebutuhan operasional.</p>
-            </div>
+    <div class="card rounded-4 border-0 shadow-sm p-4" style="background: var(--bg-dark-secondary);">
+        <div class="table-responsive">
+            <table id="po-table" class="table align-middle mb-0 w-100" style="--bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.6);">
+                <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent);">
+                    <tr style="font-size: 13px; color: var(--text-muted); letter-spacing: 0.2px;">
+                        <th class="ps-4 py-3" style="width: 5%;">No</th>
+                        <th class="py-3">Tanggal</th>
+                        <th class="py-3">PO Number</th>
+                        <th class="py-3">Cabang</th>
+                        <th class="py-3">Supplier</th>
+                        <th class="py-3 text-end">Total Amount</th>
+                        <th class="py-3">Status</th>
+                        <th class="py-3 text-end pe-4">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody style="font-size: 13px; color: var(--text-heading);">
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <div class="d-flex flex-column align-items-center gap-2">
+                                <div class="modern-loader-spinner" style="width: 36px; height: 36px;">
+                                    <div class="spinner-outer" style="border-width: 2.5px;"></div>
+                                    <div class="spinner-inner" style="border-width: 1.5px;"></div>
+                                    <div class="spinner-dot" style="width: 5px; height: 5px;"></div>
+                                </div>
+                                <span class="fw-semibold text-muted" style="font-size: 12px; letter-spacing: 0.2px;">Memuat Data...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 @endsection
+
+@push('modals')
+<div id="modal-container"></div>
+@endpush
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    var table = $('#po-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('logistic.purchasing.order.data') }}",
+        order: [[1, 'desc']],
+        dom: '<"d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4"lf>t<"d-flex flex-wrap justify-content-between align-items-center gap-3 mt-4"ip>',
+        lengthMenu: [[10, 25, 50, 100], [10, 25, 50, 100]],
+        columns: [
+            { data: 'DT_RowIndex', name: 'DT_RowIndex', searchable: false, orderable: false, class: 'ps-4 text-muted' },
+            { data: 'date', name: 'date' },
+            { data: 'po_number', name: 'po_number', class: 'fw-semibold text-heading' },
+            { data: 'branch_name', name: 'branch.name' },
+            { data: 'supplier_name', name: 'supplier.name' },
+            { data: 'total_amount', name: 'total_amount', class: 'text-end fw-semibold text-primary' },
+            { data: 'status_badge', name: 'status', orderable: false, searchable: false },
+            { data: 'action', name: 'action', orderable: false, searchable: false, class: 'pe-4 text-end text-nowrap', render: function(data, type, row) {
+                let uuid = row.uuid;
+                let actions = '<div class="d-inline-flex gap-2">' +
+                    '<button class="btn-icon-modern text-info show-btn" href="{{ url("logistic/purchasing/order") }}/'+uuid+'" title="Detail" style="background: rgba(14, 165, 233, 0.12);">' +
+                    '<i class="bi bi-eye"></i>' +
+                    '</button>';
+                if (row.status === 'draft') {
+                    actions += '<button class="btn-icon-modern text-danger delete-btn" data-uuid="'+uuid+'" title="Hapus" style="background: rgba(239, 68, 68, 0.12);">' +
+                        '<i class="bi bi-trash"></i>' +
+                        '</button>';
+                }
+                actions += '</div>';
+                return actions;
+            }}
+        ],
+        language: {
+            processing: `
+                <div class="d-flex flex-column align-items-center gap-2">
+                    <div class="modern-loader-spinner" style="width: 36px; height: 36px;">
+                        <div class="spinner-outer" style="border-width: 2.5px;"></div>
+                        <div class="spinner-inner" style="border-width: 1.5px;"></div>
+                        <div class="spinner-dot" style="width: 5px; height: 5px;"></div>
+                    </div>
+                    <span class="fw-semibold text-muted" style="font-size: 12px; letter-spacing: 0.2px;">Memuat Data...</span>
+                </div>
+            `,
+            search: '_INPUT_',
+            searchPlaceholder: 'Cari secara global...',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Menampilkan 0 data',
+            lengthMenu: 'Tampilkan _MENU_ entri',
+            paginate: { previous: 'Prev', next: 'Next' }
+        }
+    });
+
+    table.on('processing.dt', function(e, settings, processing) {
+        if (processing) {
+            $('.dataTables_wrapper').addClass('is-processing');
+        } else {
+            $('.dataTables_wrapper').removeClass('is-processing');
+        }
+    });
+
+    $('.dataTables_length select').select2({ theme: 'bootstrap-5', width: '75px', minimumResultsForSearch: -1 });
+
+    $('#btn-add-po').on('click', function(e) {
+        e.preventDefault();
+        ERPLoader.loadModal("{{ route('logistic.purchasing.order.create') }}", '#createModal', {
+            title: 'Buat Purchase Order',
+            errorMessage: 'Gagal memuat form PO.',
+            onSuccess: function(modal) {
+                // Logic is mostly handled in create modal script directly for item repeater
+            }
+        });
+    });
+
+    $(document).on('click', '.show-btn', function(e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+        ERPLoader.loadModal(url, '#showModal', {
+            title: 'Detail Purchase Order',
+            errorMessage: 'Gagal mengambil detail PO.'
+        });
+    });
+
+    // HANDLE ACTION BUTTONS (Submit, Approve, Post)
+    $(document).on('click', '.btn-action-po', function() {
+        let uuid = $(this).data('uuid');
+        let action = $(this).data('action');
+        let textMap = {
+            'submit': 'mengajukan dokumen ini',
+            'approve': 'menyetujui dokumen ini',
+            'post': 'memposting PO ini agar dapat diproses lebih lanjut'
+        };
+
+        AppAlert.confirm('Konfirmasi Aksi', 'Apakah Anda yakin ingin ' + textMap[action] + '?', 'Ya, Lanjutkan!').then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `/logistic/purchasing/order/${uuid}/${action}`,
+                    type: 'POST',
+                    data: { _token: '{{ csrf_token() }}' },
+                    success: function(res) {
+                        $('#showModal').modal('hide');
+                        table.ajax.reload();
+                        AppAlert.success('Berhasil!', res.message || 'Aksi berhasil dilakukan.');
+                    },
+                    error: function(err) {
+                        AppAlert.error('Gagal!', err.responseJSON?.message || 'Terjadi kesalahan sistem.');
+                    }
+                });
+            }
+        });
+    });
+
+    // HANDLE DELETE
+    $(document).on('click', '.delete-btn', function() {
+        var uuid = $(this).data('uuid');
+        
+        AppAlert.confirmDelete('Hapus Draft PO?', 'Draft Purchase Order akan dihapus secara permanen.').then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{{ url('logistic/purchasing/order') }}/" + uuid,
+                    type: "DELETE",
+                    data: { _token: "{{ csrf_token() }}" },
+                    success: function(response) {
+                        if (response.success) {
+                            table.ajax.reload();
+                            AppAlert.success('Terhapus!', response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Gagal menghapus draft PO.');
+                    }
+                });
+            }
+        });
+    });
+
+    window.refreshTable = function() {
+        table.ajax.reload(null, false);
+    };
+});
+</script>
+@endpush

@@ -195,6 +195,14 @@ Route::middleware('auth')->group(function () {
         Route::prefix('purchasing')->name('purchasing.')->group(function () {
             Route::get('requisition', [PurchaseRequisitionController::class, 'index'])->name('requisition');
             Route::get('order', [PurchaseOrderController::class, 'index'])->name('order');
+            Route::get('order/data', [PurchaseOrderController::class, 'data'])->name('order.data');
+            Route::get('order/create', [PurchaseOrderController::class, 'create'])->name('order.create');
+            Route::post('order', [PurchaseOrderController::class, 'store'])->name('order.store');
+            Route::get('order/{uuid}', [PurchaseOrderController::class, 'show'])->name('order.show');
+            Route::post('order/{uuid}/submit', [PurchaseOrderController::class, 'submit'])->name('order.submit');
+            Route::post('order/{uuid}/approve', [PurchaseOrderController::class, 'approve'])->name('order.approve');
+            Route::post('order/{uuid}/post', [PurchaseOrderController::class, 'post'])->name('order.post');
+            Route::delete('order/{uuid}', [PurchaseOrderController::class, 'destroy'])->name('order.destroy');
             Route::get('receipt', [GoodsReceiptController::class, 'index'])->name('receipt');
             Route::get('invoice', [SupplierInvoiceController::class, 'index'])->name('invoice');
             Route::get('payment', [SupplierPaymentController::class, 'index'])->name('payment');

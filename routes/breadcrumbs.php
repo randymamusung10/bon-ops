@@ -125,3 +125,11 @@ Breadcrumbs::for('logistic.inventory.transfer', function (BreadcrumbTrail $trail
     $trail->push('Inventory', '#');
     $trail->push('Transfer Stok', route('logistic.inventory.transfer'));
 });
+
+// Purchasing > Purchase Order
+Breadcrumbs::for('logistic.purchasing.order', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Purchasing', '#');
+    $trail->push('Purchase Order', route('logistic.purchasing.order'));
+});
+
