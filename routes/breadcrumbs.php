@@ -126,6 +126,21 @@ Breadcrumbs::for('logistic.inventory.transfer', function (BreadcrumbTrail $trail
     $trail->push('Transfer Stok', route('logistic.inventory.transfer'));
 });
 
+// Inventory > Stock Opname
+Breadcrumbs::for('logistic.inventory.opname', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Inventory', '#');
+    $trail->push('Stock Opname', route('logistic.inventory.opname'));
+});
+
+// Inventory > Stock Waste
+Breadcrumbs::for('logistic.inventory.waste', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Inventory', '#');
+    $trail->push('Waste (Pembuangan)', route('logistic.inventory.waste'));
+});
+
+
 // Purchasing > Purchase Request
 Breadcrumbs::for('logistic.purchasing.request', function (BreadcrumbTrail $trail) {
     $trail->parent('home');

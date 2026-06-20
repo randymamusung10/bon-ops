@@ -209,9 +209,31 @@ Route::middleware('auth')->group(function () {
             Route::post('transfer/{uuid}/post', [StockTransferController::class, 'post'])->name('transfer.post');
             Route::delete('transfer/{uuid}', [StockTransferController::class, 'destroy'])->name('transfer.destroy');
             
-            Route::get('opname', [StockOpnameController::class, 'index'])->name('opname');
-            Route::get('waste', [StockWasteController::class, 'index'])->name('waste');
-        });
+             Route::get('opname', [StockOpnameController::class, 'index'])->name('opname');
+             Route::get('opname/data', [StockOpnameController::class, 'data'])->name('opname.data');
+             Route::get('opname/system-stock', [StockOpnameController::class, 'getSystemStock'])->name('opname.system_stock');
+             Route::get('opname/create', [StockOpnameController::class, 'create'])->name('opname.create');
+             Route::post('opname', [StockOpnameController::class, 'store'])->name('opname.store');
+             Route::get('opname/{uuid}', [StockOpnameController::class, 'show'])->name('opname.show');
+             Route::get('opname/{uuid}/edit', [StockOpnameController::class, 'edit'])->name('opname.edit');
+             Route::put('opname/{uuid}', [StockOpnameController::class, 'update'])->name('opname.update');
+             Route::post('opname/{uuid}/submit', [StockOpnameController::class, 'submit'])->name('opname.submit');
+             Route::post('opname/{uuid}/approve', [StockOpnameController::class, 'approve'])->name('opname.approve');
+             Route::post('opname/{uuid}/post', [StockOpnameController::class, 'post'])->name('opname.post');
+             Route::delete('opname/{uuid}', [StockOpnameController::class, 'destroy'])->name('opname.destroy');
+             
+             Route::get('waste', [StockWasteController::class, 'index'])->name('waste');
+             Route::get('waste/data', [StockWasteController::class, 'data'])->name('waste.data');
+             Route::get('waste/create', [StockWasteController::class, 'create'])->name('waste.create');
+             Route::post('waste', [StockWasteController::class, 'store'])->name('waste.store');
+             Route::get('waste/{uuid}', [StockWasteController::class, 'show'])->name('waste.show');
+             Route::get('waste/{uuid}/edit', [StockWasteController::class, 'edit'])->name('waste.edit');
+             Route::put('waste/{uuid}', [StockWasteController::class, 'update'])->name('waste.update');
+             Route::post('waste/{uuid}/submit', [StockWasteController::class, 'submit'])->name('waste.submit');
+             Route::post('waste/{uuid}/approve', [StockWasteController::class, 'approve'])->name('waste.approve');
+             Route::post('waste/{uuid}/post', [StockWasteController::class, 'post'])->name('waste.post');
+             Route::delete('waste/{uuid}', [StockWasteController::class, 'destroy'])->name('waste.destroy');
+         });
         Route::prefix('purchasing')->name('purchasing.')->group(function () {
             Route::get('request', [PurchaseRequestController::class, 'index'])->name('request');
             Route::get('request/data', [PurchaseRequestController::class, 'data'])->name('request.data');
