@@ -96,6 +96,7 @@ class DatabaseSeeder extends Seeder
         // 8. Master Produk Terintegrasi (Bergantung pada Category, Unit, Tax, COA)
         $this->call([
             ProductSeeder::class,
+            RecipeSeeder::class,
         ]);
     }
 }

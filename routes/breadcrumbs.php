@@ -160,3 +160,18 @@ Breadcrumbs::for('logistic.purchasing.payment', function (BreadcrumbTrail $trail
     $trail->push('Purchasing', '#');
     $trail->push('Pembayaran Supplier', route('logistic.purchasing.payment'));
 });
+
+// Master Data > Resep (Recipe)
+Breadcrumbs::for('logistic.master.recipe', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Resep Produk', route('logistic.master.recipe'));
+});
+
+// Master Data > Stasiun Produksi
+Breadcrumbs::for('logistic.master.station', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Master Data', '#');
+    $trail->push('Stasiun Produksi', route('logistic.master.station'));
+});
+

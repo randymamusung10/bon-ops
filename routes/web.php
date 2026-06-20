@@ -161,7 +161,22 @@ Route::middleware('auth')->group(function () {
             Route::put('warehouse/{uuid}', [WarehouseController::class, 'update'])->name('warehouse.update');
             Route::delete('warehouse/{uuid}', [WarehouseController::class, 'destroy'])->name('warehouse.destroy');
             Route::get('recipe', [RecipeController::class, 'index'])->name('recipe');
+            Route::get('recipe/data', [RecipeController::class, 'data'])->name('recipe.data');
+            Route::get('recipe/create', [RecipeController::class, 'create'])->name('recipe.create');
+            Route::post('recipe', [RecipeController::class, 'store'])->name('recipe.store');
+            Route::get('recipe/{uuid}', [RecipeController::class, 'show'])->name('recipe.show');
+            Route::get('recipe/{uuid}/edit', [RecipeController::class, 'edit'])->name('recipe.edit');
+            Route::put('recipe/{uuid}', [RecipeController::class, 'update'])->name('recipe.update');
+            Route::delete('recipe/{uuid}', [RecipeController::class, 'destroy'])->name('recipe.destroy');
+
             Route::get('station', [ProductionStationController::class, 'index'])->name('station');
+            Route::get('station/data', [ProductionStationController::class, 'data'])->name('station.data');
+            Route::get('station/select2', [ProductionStationController::class, 'select2'])->name('station.select2');
+            Route::get('station/create', [ProductionStationController::class, 'create'])->name('station.create');
+            Route::post('station', [ProductionStationController::class, 'store'])->name('station.store');
+            Route::get('station/{uuid}/edit', [ProductionStationController::class, 'edit'])->name('station.edit');
+            Route::put('station/{uuid}', [ProductionStationController::class, 'update'])->name('station.update');
+            Route::delete('station/{uuid}', [ProductionStationController::class, 'destroy'])->name('station.destroy');
         });
         Route::prefix('inventory')->name('inventory.')->group(function () {
             Route::get('balance', [StockBalanceController::class, 'index'])->name('balance');
