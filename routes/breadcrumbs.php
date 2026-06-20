@@ -218,4 +218,18 @@ Breadcrumbs::for('operational.restaurant.barista', function (BreadcrumbTrail $tr
     $trail->push('Barista Display', route('operational.restaurant.barista'));
 });
 
+// Operational > Riwayat Penjualan
+Breadcrumbs::for('operational.pos.history', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('POS', '#');
+    $trail->push('Riwayat Penjualan', route('operational.pos.history'));
+});
+
+// Operational > Refund Transaksi
+Breadcrumbs::for('operational.pos.refund', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('POS', '#');
+    $trail->push('Refund Transaksi', route('operational.pos.refund'));
+});
+
 
