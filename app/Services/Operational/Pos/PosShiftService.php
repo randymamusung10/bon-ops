@@ -61,15 +61,6 @@ class PosShiftService
                 throw new Exception("Shift kasir sudah ditutup sebelumnya.");
             }
 
-            // Check if there are still active/unfinished order items in the kitchen or barista display
-            $unfinishedItemsCount = \App\Models\Operational\Pos\PosOrderItem::whereHas('posOrder', function($q) use ($shift) {
-                $q->where('pos_shift_id', $shift->id);
-            })->where('status', '!=', 'completed')->count();
-
-            if ($unfinishedItemsCount > 0) {
-                throw new Exception("Tidak dapat menutup shift. Masih ada {$unfinishedItemsCount} item pesanan yang belum selesai diproses di dapur/barista.");
-            }
-
             // Calculate expected cash in drawer
             $cashOrdersTotal = PosOrder::where('pos_shift_id', $shift->id)
                 ->where('payment_status', 'paid')
