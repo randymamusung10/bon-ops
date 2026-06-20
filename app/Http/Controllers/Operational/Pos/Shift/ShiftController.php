@@ -49,9 +49,9 @@ class ShiftController extends Controller
             })
             ->addColumn('status_badge', function($row) {
                 if ($row->status === 'open') {
-                    return '<span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill">Open</span>';
+                    return '<span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill" style="font-size: 11px; font-weight: 600;"><i class="bi bi-unlock-fill me-1"></i> Open</span>';
                 }
-                return '<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill">Closed</span>';
+                return '<span class="badge bg-secondary-subtle text-secondary px-2.5 py-1.5 rounded-pill" style="font-size: 11px; font-weight: 600;"><i class="bi bi-lock-fill me-1"></i> Closed</span>';
             })
             ->rawColumns(['status_badge'])
             ->make(true);
@@ -80,6 +80,49 @@ class ShiftController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    public function summary($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $shift = $this->repository->findByUuid($tenantId, $uuid);
+
+        // Fetch sales for this shift
+        $orders = \App\Models\Operational\Pos\PosOrder::where('pos_shift_id', $shift->id)
+            ->where('payment_status', 'paid')
+            ->get();
+
+        $cashSales = 0;
+        $debitSales = 0;
+        $creditSales = 0;
+        $qrisSales = 0;
+
+        foreach ($orders as $order) {
+            if ($order->payment_method === 'cash') {
+                $cashSales += (float)$order->grand_total;
+            } elseif ($order->payment_method === 'debit') {
+                $debitSales += (float)$order->grand_total;
+            } elseif ($order->payment_method === 'credit') {
+                $creditSales += (float)$order->grand_total;
+            } elseif ($order->payment_method === 'qris') {
+                $qrisSales += (float)$order->grand_total;
+            }
+        }
+
+        $expectedEndCash = (float)$shift->start_cash + $cashSales;
+
+        return response()->json([
+            'success' => true,
+            'summary' => [
+                'start_cash' => (float)$shift->start_cash,
+                'cash_sales' => $cashSales,
+                'debit_sales' => $debitSales,
+                'credit_sales' => $creditSales,
+                'qris_sales' => $qrisSales,
+                'non_cash_sales' => $debitSales + $creditSales + $qrisSales,
+                'expected_end_cash' => $expectedEndCash
+            ]
+        ]);
     }
 
     public function close(Request $request, $uuid)

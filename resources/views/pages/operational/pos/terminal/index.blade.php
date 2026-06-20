@@ -24,6 +24,26 @@
     background: var(--primary-accent) !important;
     color: #ffffff !important;
 }
+.payment-method-btn {
+    border: 1px solid rgba(226, 232, 240, 0.1) !important;
+    background: rgba(226, 232, 240, 0.02) !important;
+    color: var(--text-light) !important;
+    font-weight: 500;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease-in-out;
+}
+.payment-method-btn:hover {
+    background: rgba(226, 232, 240, 0.08) !important;
+    color: var(--text-heading) !important;
+    border-color: rgba(226, 232, 240, 0.2) !important;
+}
+.btn-check:checked + .payment-method-btn {
+    background: var(--primary-accent) !important;
+    border-color: var(--primary-accent) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
 </style>
 @endpush
 
@@ -148,16 +168,16 @@
                         <x-form.label class="mb-2" style="font-size: 11px;">Metode Pembayaran</x-form.label>
                         <div class="btn-group w-100" role="group">
                             <input type="radio" class="btn-check" name="payment_method" id="pay-cash" value="cash" checked autocomplete="off">
-                            <label class="btn btn-outline-primary btn-sm py-2" for="pay-cash" data-bs-toggle="tooltip" title="Pembayaran langsung dengan uang tunai fisik"><i class="bi bi-cash me-1"></i> Cash</label>
+                            <label class="btn payment-method-btn py-2" for="pay-cash" data-bs-toggle="tooltip" title="Pembayaran langsung dengan uang tunai fisik"><i class="bi bi-cash me-1"></i> Cash</label>
                             
                             <input type="radio" class="btn-check" name="payment_method" id="pay-debit" value="debit" autocomplete="off">
-                            <label class="btn btn-outline-primary btn-sm py-2" for="pay-debit" data-bs-toggle="tooltip" title="Pembayaran potong saldo langsung via Kartu ATM/Debit"><i class="bi bi-credit-card me-1"></i> Debit</label>
+                            <label class="btn payment-method-btn py-2" for="pay-debit" data-bs-toggle="tooltip" title="Pembayaran potong saldo langsung via Kartu ATM/Debit"><i class="bi bi-credit-card me-1"></i> Debit</label>
 
                             <input type="radio" class="btn-check" name="payment_method" id="pay-credit" value="credit" autocomplete="off">
-                            <label class="btn btn-outline-primary btn-sm py-2" for="pay-credit" data-bs-toggle="tooltip" title="Pembayaran tagihan via Kartu Kredit"><i class="bi bi-credit-card-2-front me-1"></i> Credit</label>
+                            <label class="btn payment-method-btn py-2" for="pay-credit" data-bs-toggle="tooltip" title="Pembayaran tagihan via Kartu Kredit"><i class="bi bi-credit-card-2-front me-1"></i> Credit</label>
 
                             <input type="radio" class="btn-check" name="payment_method" id="pay-qris" value="qris" autocomplete="off">
-                            <label class="btn btn-outline-primary btn-sm py-2" for="pay-qris" data-bs-toggle="tooltip" title="QRIS (Quick Response Code): Pembayaran digital dengan scan barcode lewat aplikasi E-Wallet/M-Banking (Gopay, Ovo, Dana, dll)"><i class="bi bi-qr-code me-1"></i> QRIS</label>
+                            <label class="btn payment-method-btn py-2" for="pay-qris" data-bs-toggle="tooltip" title="QRIS (Quick Response Code): Pembayaran digital dengan scan barcode lewat aplikasi E-Wallet/M-Banking (Gopay, Ovo, Dana, dll)"><i class="bi bi-qr-code me-1"></i> QRIS</label>
                         </div>
                     </div>
 

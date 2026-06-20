@@ -149,6 +149,24 @@
     <!-- JS Global -->
     <script src="{{ asset('js/app.js') }}?v={{ filemtime(public_path('js/app.js')) }}"></script>
     
+    <!-- Global Session Flash Notifications -->
+    <script>
+        $(document).ready(function() {
+            @if(session('success'))
+                AppAlert.success('Berhasil!', "{{ session('success') }}");
+            @endif
+            @if(session('error'))
+                AppAlert.error('Akses Ditolak', "{{ session('error') }}");
+            @endif
+            @if(session('warning'))
+                AppAlert.warning('Perhatian', "{{ session('warning') }}");
+            @endif
+            @if(session('info'))
+                AppAlert.info('Informasi', "{{ session('info') }}");
+            @endif
+        });
+    </script>
+
     <!-- Scripts Stack -->
     @stack('scripts')
 </body>

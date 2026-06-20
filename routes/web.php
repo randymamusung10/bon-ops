@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
             
             Route::get('shift', [ShiftController::class, 'index'])->name('shift');
             Route::get('shift/data', [ShiftController::class, 'data'])->name('shift.data');
+            Route::get('shift/summary/{uuid}', [ShiftController::class, 'summary'])->name('shift.summary');
             Route::post('shift/open', [ShiftController::class, 'open'])->name('shift.open');
             Route::post('shift/close/{uuid}', [ShiftController::class, 'close'])->name('shift.close');
             
