@@ -40,13 +40,15 @@ class SalesHistoryController extends Controller
             })
             ->addColumn('status_badge', function ($model) {
                 if ($model->status === 'completed') {
-                    return '<span class="badge bg-success px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-check-lg me-1"></i> Completed</span>';
+                    return '<span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i> Completed</span>';
                 } elseif ($model->status === 'cancelled') {
-                    return '<span class="badge bg-danger px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-x-circle me-1"></i> Cancelled</span>';
+                    return '<span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-x-circle-fill me-1"></i> Cancelled</span>';
                 } elseif ($model->status === 'processing') {
-                    return '<span class="badge bg-primary px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-clock me-1"></i> Kitchen</span>';
+                    return '<span class="badge bg-warning-subtle text-warning px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-fire me-1"></i> Diproses Kitchen</span>';
+                } elseif ($model->status === 'pending') {
+                    return '<span class="badge bg-info-subtle text-info px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-hourglass-split me-1"></i> Belum Diproses</span>';
                 }
-                return '<span class="badge bg-secondary px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;">' . ucfirst($model->status) . '</span>';
+                return '<span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill" style="font-size: 11px; font-weight:600;">' . ucfirst($model->status) . '</span>';
             })
             ->rawColumns(['payment_status_badge', 'status_badge'])
             ->make(true);

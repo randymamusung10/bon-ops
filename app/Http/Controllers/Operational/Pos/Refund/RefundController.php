@@ -54,10 +54,57 @@ class RefundController extends Controller
             ], 404);
         }
 
+        // Determine refund eligibility
+        $isEligible = true;
+        $ineligibleReason = '';
+
+        if ($order->payment_status !== 'paid') {
+            $isEligible = false;
+            $ineligibleReason = 'Transaksi ini belum dibayar atau sudah di-refund sebelumnya (status: ' . ucfirst($order->payment_status) . ').';
+        } elseif ($order->status === 'cancelled') {
+            $isEligible = false;
+            $ineligibleReason = 'Transaksi ini sudah dibatalkan sebelumnya.';
+        } elseif (in_array($order->status, ['processing', 'completed'])) {
+            $isEligible = false;
+            $statusLabel = $order->status === 'processing' ? 'sedang diproses oleh Kitchen/Barista' : 'sudah selesai diproses oleh Kitchen/Barista';
+            $ineligibleReason = 'Transaksi tidak dapat di-refund karena pesanan ' . $statusLabel . '. Hanya pesanan yang belum diterima oleh Kitchen/Barista yang dapat di-refund.';
+        }
+
         return response()->json([
             'success' => true,
-            'order' => $order
+            'order' => $order,
+            'is_eligible' => $isEligible,
+            'ineligible_reason' => $ineligibleReason,
         ]);
+    }
+
+    public function autocomplete(Request $request)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $search = $request->get('q');
+        
+        if (empty($search)) {
+            return response()->json([]);
+        }
+
+        $searchQuery = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $search);
+
+        $orders = PosOrder::where('tenant_id', $tenantId)
+            ->where('order_number', 'LIKE', '%' . $searchQuery . '%')
+            ->orderBy('id', 'desc')
+            ->limit(5)
+            ->get(['order_number', 'grand_total', 'status', 'created_at']);
+
+        $results = $orders->map(function ($order) {
+            return [
+                'id' => $order->order_number,
+                'status' => $order->status,
+                'grand_total' => $order->grand_total,
+                'date' => $order->created_at->format('d/m/Y H:i')
+            ];
+        });
+
+        return response()->json($results);
     }
 
     public function process(Request $request, $uuid)

@@ -53,6 +53,9 @@ class ShiftController extends Controller
                 }
                 return '<span class="badge bg-secondary-subtle text-secondary px-2.5 py-1.5 rounded-pill" style="font-size: 11px; font-weight: 600;"><i class="bi bi-lock-fill me-1"></i> Closed</span>';
             })
+            ->addColumn('uuid', function($row) {
+                return $row->uuid;
+            })
             ->rawColumns(['status_badge'])
             ->make(true);
     }
@@ -121,6 +124,66 @@ class ShiftController extends Controller
                 'qris_sales' => $qrisSales,
                 'non_cash_sales' => $debitSales + $creditSales + $qrisSales,
                 'expected_end_cash' => $expectedEndCash
+            ]
+        ]);
+    }
+
+    public function detail($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $shift = $this->repository->findByUuid($tenantId, $uuid);
+
+        if (!$shift) {
+            return response()->json(['success' => false, 'message' => 'Data shift tidak ditemukan.'], 404);
+        }
+
+        // Fetch sales for this shift
+        $orders = \App\Models\Operational\Pos\PosOrder::where('pos_shift_id', $shift->id)
+            ->where('payment_status', 'paid')
+            ->get();
+
+        $cashSales = 0;
+        $debitSales = 0;
+        $creditSales = 0;
+        $qrisSales = 0;
+        $totalTransactions = $orders->count();
+
+        foreach ($orders as $order) {
+            if ($order->payment_method === 'cash') {
+                $cashSales += (float)$order->grand_total;
+            } elseif ($order->payment_method === 'debit') {
+                $debitSales += (float)$order->grand_total;
+            } elseif ($order->payment_method === 'credit') {
+                $creditSales += (float)$order->grand_total;
+            } elseif ($order->payment_method === 'qris') {
+                $qrisSales += (float)$order->grand_total;
+            }
+        }
+
+        $expectedEndCash = (float)$shift->start_cash + $cashSales;
+        $discrepancy = $shift->actual_end_cash !== null ? (float)$shift->actual_end_cash - $expectedEndCash : null;
+
+        return response()->json([
+            'success' => true,
+            'shift' => [
+                'uuid' => $shift->uuid,
+                'cashier' => $shift->user->name ?? '-',
+                'branch' => $shift->branch->name ?? '-',
+                'status' => $shift->status,
+                'start_time' => $shift->start_time ? $shift->start_time->format('d/m/Y H:i:s') : '-',
+                'end_time' => $shift->end_time ? $shift->end_time->format('d/m/Y H:i:s') : '-',
+                'start_cash' => (float)$shift->start_cash,
+                'actual_end_cash' => $shift->actual_end_cash !== null ? (float)$shift->actual_end_cash : null,
+                'expected_end_cash' => $expectedEndCash,
+                'discrepancy' => $discrepancy,
+                'notes' => $shift->notes ?? '-',
+                'total_transactions' => $totalTransactions,
+                'cash_sales' => $cashSales,
+                'debit_sales' => $debitSales,
+                'credit_sales' => $creditSales,
+                'qris_sales' => $qrisSales,
+                'non_cash_sales' => $debitSales + $creditSales + $qrisSales,
+                'total_sales' => $cashSales + $debitSales + $creditSales + $qrisSales,
             ]
         ]);
     }

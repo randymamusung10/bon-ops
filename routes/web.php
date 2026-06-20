@@ -83,11 +83,13 @@ Route::middleware('auth')->group(function () {
             Route::get('shift', [ShiftController::class, 'index'])->name('shift');
             Route::get('shift/data', [ShiftController::class, 'data'])->name('shift.data');
             Route::get('shift/summary/{uuid}', [ShiftController::class, 'summary'])->name('shift.summary');
+            Route::get('shift/detail/{uuid}', [ShiftController::class, 'detail'])->name('shift.detail');
             Route::post('shift/open', [ShiftController::class, 'open'])->name('shift.open');
             Route::post('shift/close/{uuid}', [ShiftController::class, 'close'])->name('shift.close');
             
             Route::get('refund', [RefundController::class, 'index'])->name('refund');
             Route::get('refund/search', [RefundController::class, 'search'])->name('refund.search');
+            Route::get('refund/autocomplete', [RefundController::class, 'autocomplete'])->name('refund.autocomplete');
             Route::post('refund/process/{uuid}', [RefundController::class, 'process'])->name('refund.process');
         });
         Route::prefix('restaurant')->name('restaurant.')->group(function () {

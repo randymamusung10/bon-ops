@@ -8,27 +8,31 @@
     <div class="row g-4">
         <!-- Left Column: Search & Information -->
         <div class="col-lg-5">
-            <div class="card rounded-4 border-0 shadow-sm p-4 mb-4" style="background: var(--bg-dark-secondary);">
+            <div class="card rounded-4 border-0 shadow-sm p-4 mb-4">
                 <h5 class="fw-bold text-heading mb-3" style="font-family: 'Outfit', sans-serif;">Cari Transaksi</h5>
                 <form id="search-order-form">
                     @csrf
-                    <div class="mb-3">
+                    <div class="mb-3 position-relative">
                         <x-form.label required>Nomor Invoice / Order</x-form.label>
-                        <div class="input-group">
-                            <x-form.input type="text" id="order_number" name="order_number" placeholder="Contoh: POS-20260620..." required style="border-radius: 10px 0 0 10px;" />
-                            <x-button type="submit" variant="primary" style="border-radius: 0 10px 10px 0;" id="btn-search-submit">
-                                <i class="bi bi-search"></i> Cari
-                            </x-button>
+                        <div class="input-group shadow-sm" style="border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color);">
+                            <input type="text" class="form-control border-0" id="order_number" name="order_number" placeholder="Ketik sebagian Nomor Invoice..." required style="background: var(--bg-dark-tertiary); color: var(--text-heading); font-size: 14px; padding: 12px 16px;" autocomplete="off" />
+                            <button type="submit" class="btn btn-primary px-4 fw-semibold" id="btn-search-submit" style="border-radius: 0;">
+                                <i class="bi bi-search me-1"></i> Cari
+                            </button>
+                        </div>
+                        <div id="autocomplete-dropdown" class="position-absolute w-100 shadow-lg rounded-3 border d-none" style="z-index: 1050; top: 100%; left: 0; margin-top: 5px; max-height: 300px; overflow-y: auto; background: var(--bg-dark-secondary); border-color: var(--border-color) !important;">
+                            <!-- items go here -->
                         </div>
                     </div>
                 </form>
             </div>
 
             <!-- ERP Rules Card -->
-            <div class="card rounded-4 border-0 shadow-sm p-4" style="background: var(--bg-dark-secondary);">
+            <div class="card rounded-4 border-0 shadow-sm p-4">
                 <h6 class="fw-bold text-heading mb-3" style="font-family: 'Outfit', sans-serif;"><i class="bi bi-shield-lock-fill text-warning me-2"></i> Ketentuan Refund ERP</h6>
                 <ul class="text-muted ps-3 mb-0" style="font-size: 12.5px; line-height: 1.6;">
                     <li class="mb-2">Transaksi yang dibatalkan harus berstatus pembayaran <strong class="text-success">Paid</strong>.</li>
+                    <li class="mb-2">Hanya pesanan yang <strong class="text-info">Belum Diproses</strong> oleh Kitchen/Barista yang dapat di-refund. Pesanan yang sudah <strong class="text-warning">Diproses Kitchen</strong> atau <strong class="text-success">Completed</strong> tidak dapat dibatalkan.</li>
                     <li class="mb-2">Sistem akan secara otomatis **mengembalikan saldo stok** bahan baku yang terpotong ke gudang asal.</li>
                     <li class="mb-2">Alasan pembatalan wajib diisi dengan jelas untuk tujuan pelaporan audit keuangan.</li>
                     <li>Semua aktivitas refund/void dicatat dalam log sistem beserta kasir pemroses.</li>
@@ -39,20 +43,22 @@
         <!-- Right Column: Detail & Actions -->
         <div class="col-lg-7">
             <!-- Alert Placeholder -->
-            <div class="card rounded-4 border-0 shadow-sm p-5 text-center text-muted" id="empty-state" style="background: var(--bg-dark-secondary);">
-                <i class="bi bi-receipt-cutoff d-block mb-3" style="font-size: 48px; color: var(--text-light);"></i>
-                <h5 class="fw-bold text-heading mb-1">Detail Transaksi Penjualan</h5>
-                <p class="mb-0" style="font-size: 13px;">Masukkan nomor invoice di panel kiri untuk mulai mencari data transaksi.</p>
+            <div class="card rounded-4 border-0 shadow-sm p-5 text-center text-muted h-100 d-flex flex-column justify-content-center align-items-center" id="empty-state">
+                <div class="rounded-circle d-flex align-items-center justify-content-center mb-3 shadow-sm" style="width: 80px; height: 80px; background: var(--bg-dark-tertiary);">
+                    <i class="bi bi-receipt-cutoff text-primary" style="font-size: 32px;"></i>
+                </div>
+                <h5 class="fw-bold text-heading mb-2" style="font-family: 'Outfit', sans-serif;">Detail Transaksi Penjualan</h5>
+                <p class="text-muted mb-0" style="font-size: 14px; max-width: 320px;">Silakan masukkan Nomor Invoice pada panel di sebelah kiri untuk menampilkan data transaksi.</p>
             </div>
 
             <!-- Detail Result Panel (Hidden by default) -->
-            <div class="card rounded-4 border-0 shadow-sm p-4 d-none" id="detail-panel" style="background: var(--bg-dark-secondary);">
+            <div class="card rounded-4 border-0 shadow-sm p-4 d-none" id="detail-panel">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h5 class="fw-bold text-heading mb-0" style="font-family: 'Outfit', sans-serif;">Detail Invoice</h5>
                     <div id="badge-container"></div>
                 </div>
 
-                <div class="p-3 rounded-4 mb-4" style="background: rgba(226, 232, 240, 0.03); border: 1px solid rgba(226, 232, 240, 0.08);">
+                <div class="p-3 rounded-4 mb-4" style="background: var(--bg-dark-tertiary); border: 1px solid var(--border-color);">
                     <div class="row g-2" style="font-size: 13px;">
                         <div class="col-6">
                             <span class="text-muted d-block">Nomor Invoice</span>
@@ -134,6 +140,67 @@ $(document).ready(function() {
         return new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(amount);
     }
 
+    // Autocomplete Logic
+    var autocompleteTimer;
+    $('#order_number').on('input', function() {
+        clearTimeout(autocompleteTimer);
+        var q = $(this).val();
+        
+        if (q.length < 3) {
+            $('#autocomplete-dropdown').addClass('d-none');
+            return;
+        }
+
+        autocompleteTimer = setTimeout(function() {
+            $.ajax({
+                url: "{{ route('operational.pos.refund.autocomplete') }}",
+                type: "GET",
+                data: { q: q },
+                success: function(res) {
+                    if (res.length > 0) {
+                        var html = '<div class="list-group list-group-flush">';
+                        res.forEach(function(item) {
+                            var statusBadge = '';
+                            if (item.status === 'pending') {
+                                statusBadge = '<span class="badge bg-info-subtle text-info px-2 py-1 rounded-pill" style="font-size: 10px;">Belum Diproses</span>';
+                            } else if (item.status === 'completed') {
+                                statusBadge = '<span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill" style="font-size: 10px;">Completed</span>';
+                            } else if (item.status === 'cancelled') {
+                                statusBadge = '<span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill" style="font-size: 10px;">Cancelled</span>';
+                            } else {
+                                statusBadge = '<span class="badge bg-warning-subtle text-warning px-2 py-1 rounded-pill" style="font-size: 10px;">Diproses Kitchen</span>';
+                            }
+                            
+                            html += '<button type="button" class="list-group-item list-group-item-action autocomplete-item p-3 border-0 d-flex flex-column" data-id="' + item.id + '" style="background: transparent; color: var(--text-heading); border-bottom: 1px solid var(--border-color) !important;">';
+                            html += '<div class="d-flex justify-content-between align-items-center w-100 mb-1"><strong style="font-size: 13px;">' + item.id + '</strong>' + statusBadge + '</div>';
+                            html += '<div class="d-flex justify-content-between align-items-center w-100 text-muted" style="font-size: 12px;"><span>' + item.date + '</span><span class="fw-semibold text-primary">Rp ' + formatMoney(item.grand_total) + '</span></div>';
+                            html += '</button>';
+                        });
+                        html += '</div>';
+                        $('#autocomplete-dropdown').html(html).removeClass('d-none');
+                    } else {
+                        $('#autocomplete-dropdown').html('<div class="p-3 text-center text-muted" style="font-size: 13px;">Transaksi tidak ditemukan</div>').removeClass('d-none');
+                    }
+                }
+            });
+        }, 300); // 300ms debounce
+    });
+
+    // Handle click on autocomplete item
+    $(document).on('click', '.autocomplete-item', function() {
+        var id = $(this).data('id');
+        $('#order_number').val(id);
+        $('#autocomplete-dropdown').addClass('d-none');
+        $('#search-order-form').submit(); // auto submit
+    });
+
+    // Hide dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#order_number, #autocomplete-dropdown').length) {
+            $('#autocomplete-dropdown').addClass('d-none');
+        }
+    });
+
     // Search Order Form Submit
     $('#search-order-form').on('submit', function(e) {
         e.preventDefault();
@@ -162,20 +229,25 @@ $(document).ready(function() {
                     $('#res-payment-method').text(order.payment_method);
                     $('#res-grandtotal').text('Rp ' + formatMoney(order.grand_total));
                     
-                    // Badges
+                    // Payment Status Badge
                     var badgeHtml = '';
                     if (order.payment_status === 'paid') {
                         badgeHtml += '<span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill me-1" style="font-size: 11px; font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i> Paid</span>';
                     } else if (order.payment_status === 'refunded') {
                         badgeHtml += '<span class="badge bg-danger-subtle text-danger px-2.5 py-1 rounded-pill me-1" style="font-size: 11px; font-weight:600;"><i class="bi bi-arrow-counterclockwise me-1"></i> Refunded</span>';
+                    } else {
+                        badgeHtml += '<span class="badge bg-warning-subtle text-warning px-2.5 py-1 rounded-pill me-1" style="font-size: 11px; font-weight:600;"><i class="bi bi-exclamation-circle-fill me-1"></i> Unpaid</span>';
                     }
                     
+                    // Order Status Badge
                     if (order.status === 'completed') {
-                        badgeHtml += '<span class="badge bg-success px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-check-lg me-1"></i> Completed</span>';
+                        badgeHtml += '<span class="badge bg-success-subtle text-success px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-check-circle-fill me-1"></i> Completed</span>';
                     } else if (order.status === 'cancelled') {
-                        badgeHtml += '<span class="badge bg-danger px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-x-circle me-1"></i> Cancelled</span>';
-                    } else {
-                        badgeHtml += '<span class="badge bg-primary px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-clock me-1"></i> ' + order.status.toUpperCase() + '</span>';
+                        badgeHtml += '<span class="badge bg-danger-subtle text-danger px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-x-circle-fill me-1"></i> Cancelled</span>';
+                    } else if (order.status === 'processing') {
+                        badgeHtml += '<span class="badge bg-warning-subtle text-warning px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-fire me-1"></i> Diproses Kitchen</span>';
+                    } else if (order.status === 'pending') {
+                        badgeHtml += '<span class="badge bg-info-subtle text-info px-2.5 py-1 rounded-pill" style="font-size: 11px; font-weight:600;"><i class="bi bi-hourglass-split me-1"></i> Belum Diproses</span>';
                     }
                     $('#badge-container').html(badgeHtml);
                     
@@ -193,12 +265,18 @@ $(document).ready(function() {
                     });
                     $('#res-items-body').html(itemsHtml);
                     
-                    // Actions
+                    // Actions — use is_eligible from server response
                     var actionHtml = '';
-                    if (order.payment_status === 'paid' && order.status !== 'cancelled') {
-                        actionHtml = '<x-button type="button" variant="danger" size="sm" icon="bi-arrow-counterclockwise" id="btn-trigger-refund-modal">Void / Refund Transaksi</x-button>';
+                    if (res.is_eligible) {
+                        actionHtml = '<button type="button" class="btn custom-btn btn-size-md btn-variant-danger position-relative overflow-hidden w-100 shadow-sm rounded-3" id="btn-trigger-refund-modal">' +
+                            '<span class="btn-content d-flex align-items-center justify-content-center gap-2" style="position: relative; z-index: 2;">' +
+                            '<i class="bi bi-arrow-counterclockwise fs-5"></i>' +
+                            '<span style="font-weight: 600; font-size: 14px;">Void / Refund Transaksi</span>' +
+                            '</span></button>';
                     } else {
-                        actionHtml = '<span class="text-muted" style="font-size: 12.5px;"><i class="bi bi-info-circle-fill me-1"></i> Transaksi ini sudah dibatalkan/di-refund sebelumnya.</span>';
+                        actionHtml = '<div class="alert alert-danger d-flex align-items-center mb-0 w-100 p-3 rounded-3 border-0 shadow-sm" role="alert" style="font-size: 13px;">' +
+                            '<i class="bi bi-exclamation-triangle-fill fs-5 me-3"></i>' +
+                            '<div>' + res.ineligible_reason + '</div></div>';
                     }
                     $('#action-container').html(actionHtml);
                 }
@@ -206,7 +284,7 @@ $(document).ready(function() {
             error: function(xhr) {
                 $('#empty-state').removeClass('d-none');
                 $('#detail-panel').addClass('d-none');
-                AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan sistem.');
+                AppAlert.error('Tidak Ditemukan', xhr.responseJSON?.message || 'Terjadi kesalahan sistem.');
             },
             complete: function() {
                 searchBtn.prop('disabled', false);

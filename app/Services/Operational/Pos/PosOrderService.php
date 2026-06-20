@@ -199,8 +199,14 @@ class PosOrderService
             $orderItem = PosOrderItem::findOrFail($itemId);
             $orderItem->update(['status' => $status]);
 
-            // If all items are completed, update order status to completed
             $order = $orderItem->posOrder;
+
+            // If the order was pending and an item starts cooking/completed, change order to processing
+            if ($order->status === 'pending' && in_array($status, ['cooking', 'completed'])) {
+                $order->update(['status' => 'processing']);
+            }
+
+            // If all items are completed, update order status to completed
             $allCompleted = !PosOrderItem::where('pos_order_id', $order->id)
                 ->where('status', '!=', 'completed')
                 ->exists();
@@ -227,6 +233,12 @@ class PosOrderService
 
             if ($order->payment_status === 'refunded') {
                 throw new Exception("Transaksi ini sudah di-refund sebelumnya.");
+            }
+
+            // Check if any order item has been started (status is cooking or completed)
+            $hasStartedItems = $order->items()->whereIn('status', ['cooking', 'completed'])->exists();
+            if ($hasStartedItems) {
+                throw new Exception("Tidak dapat melakukan refund. Pesanan sudah mulai diproses di dapur/barista.");
             }
 
             // Update order status

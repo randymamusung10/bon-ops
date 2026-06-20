@@ -58,25 +58,19 @@
 
     <!-- History Card -->
     <div class="card rounded-4 border-0 shadow-sm p-4" style="background: var(--bg-dark-secondary);">
-        <div class="d-flex align-items-center mb-4">
-            <div class="rounded-3 d-flex align-items-center justify-content-center text-primary" style="width: 36px; height: 36px; background: rgba(249, 115, 22, 0.15);">
-                <i class="bi bi-clock-history" style="font-size: 16px; color: var(--primary-accent) !important;"></i>
-            </div>
-            <h5 class="fw-bold mb-0 text-heading ms-3" style="font-family: 'Outfit', sans-serif; letter-spacing: -0.2px;">Riwayat Shift Kasir</h5>
-        </div>
-
         <div class="table-responsive">
             <table id="shift-table" class="table align-middle mb-0 w-100" style="--bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.6);">
                 <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent);">
                     <tr style="font-size: 13px; color: var(--text-muted); letter-spacing: 0.2px;">
                         <th class="ps-4 py-3" style="width: 5%;">No</th>
-                        <th class="py-3">Kasir</th>
-                        <th class="py-3">Cabang</th>
-                        <th class="py-3">Waktu Buka</th>
-                        <th class="py-3">Waktu Tutup</th>
-                        <th class="py-3">Modal Awal</th>
-                        <th class="py-3">Kas Fisik Akhir</th>
-                        <th class="py-3">Status</th>
+                        <th class="py-3" style="width: 15%;">Kasir</th>
+                        <th class="py-3" style="width: 12%;">Cabang</th>
+                        <th class="py-3" style="width: 14%;">Waktu Buka</th>
+                        <th class="py-3" style="width: 14%;">Waktu Tutup</th>
+                        <th class="py-3" style="width: 12%;">Modal Awal</th>
+                        <th class="py-3" style="width: 12%;">Kas Fisik Akhir</th>
+                        <th class="py-3" style="width: 8%;">Status</th>
+                        <th class="pe-4 text-end py-3" style="width: 8%;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody style="font-size: 13px; color: var(--text-heading);">
@@ -159,6 +153,93 @@
     </form>
 </x-modal>
 @endif
+
+<!-- Modal Detail Shift -->
+<x-modal id="detailShiftModal" title="Detail Shift Kasir">
+    <div class="mb-4 p-3 rounded-4" style="background: rgba(226, 232, 240, 0.03); border: 1px solid rgba(226, 232, 240, 0.08);">
+        <div class="row g-2" style="font-size: 13px;">
+            <div class="col-6">
+                <span class="text-muted d-block">Kasir</span>
+                <strong class="text-heading" id="det-cashier">-</strong>
+            </div>
+            <div class="col-6">
+                <span class="text-muted d-block">Cabang</span>
+                <strong class="text-heading" id="det-branch">-</strong>
+            </div>
+            <div class="col-6 mt-2">
+                <span class="text-muted d-block">Waktu Buka</span>
+                <strong class="text-heading" id="det-start-time">-</strong>
+            </div>
+            <div class="col-6 mt-2">
+                <span class="text-muted d-block">Waktu Tutup</span>
+                <strong class="text-heading" id="det-end-time">-</strong>
+            </div>
+            <div class="col-6 mt-2">
+                <span class="text-muted d-block">Status</span>
+                <span id="det-status">-</span>
+            </div>
+            <div class="col-6 mt-2">
+                <span class="text-muted d-block">Jumlah Transaksi</span>
+                <strong class="text-heading" id="det-total-trx">0</strong>
+            </div>
+        </div>
+    </div>
+
+    <h6 class="fw-bold text-heading mb-2">Ringkasan Penjualan</h6>
+    <div class="p-3 rounded-4 mb-4" style="background: rgba(226, 232, 240, 0.03); border: 1px solid rgba(226, 232, 240, 0.08);">
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 13px;">
+            <span class="text-muted">Penjualan Tunai (Cash)</span>
+            <span class="fw-medium text-heading" id="det-cash-sales">Rp 0</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 13px;">
+            <span class="text-muted">Penjualan Debit</span>
+            <span class="fw-medium text-heading" id="det-debit-sales">Rp 0</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 13px;">
+            <span class="text-muted">Penjualan Credit</span>
+            <span class="fw-medium text-heading" id="det-credit-sales">Rp 0</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 13px;">
+            <span class="text-muted">Penjualan QRIS</span>
+            <span class="fw-medium text-heading" id="det-qris-sales">Rp 0</span>
+        </div>
+        <hr style="opacity: 0.1; margin: 10px 0;">
+        <div class="d-flex align-items-center justify-content-between" style="font-size: 13px;">
+            <span class="fw-semibold text-heading">Total Penjualan</span>
+            <span class="fw-bold text-primary" id="det-total-sales" style="font-size: 14px;">Rp 0</span>
+        </div>
+    </div>
+
+    <h6 class="fw-bold text-heading mb-2">Rekonsiliasi Kas</h6>
+    <div class="p-3 rounded-4 mb-3" style="background: rgba(226, 232, 240, 0.03); border: 1px solid rgba(226, 232, 240, 0.08);">
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 13px;">
+            <span class="text-muted">Modal Kas Awal</span>
+            <span class="fw-medium text-heading" id="det-start-cash">Rp 0</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 13px;">
+            <span class="text-muted">Ekspektasi Kas di Laci</span>
+            <span class="fw-medium text-heading" id="det-expected-cash">Rp 0</span>
+        </div>
+        <div class="d-flex align-items-center justify-content-between mb-2" style="font-size: 13px;">
+            <span class="text-muted">Kas Fisik Akhir</span>
+            <span class="fw-medium text-heading" id="det-actual-cash">-</span>
+        </div>
+        <hr style="opacity: 0.1; margin: 10px 0;">
+        <div class="d-flex align-items-center justify-content-between" style="font-size: 13px;">
+            <span class="fw-semibold" id="det-discrepancy-label">Selisih Kas</span>
+            <span class="fw-bold" id="det-discrepancy" style="font-size: 14px;">-</span>
+        </div>
+    </div>
+
+    <div class="mb-0" style="font-size: 13px;">
+        <span class="text-muted d-block mb-1">Catatan</span>
+        <span class="text-heading" id="det-notes">-</span>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3" style="border-top: 1px solid var(--border-color);">
+        <x-button type="button" variant="light" size="sm" data-bs-dismiss="modal">Tutup</x-button>
+    </div>
+</x-modal>
 @endpush
 
 @push('scripts')
@@ -178,7 +259,20 @@ $(document).ready(function() {
             { data: 'end_time', name: 'end_time' },
             { data: 'start_cash', name: 'start_cash' },
             { data: 'actual_end_cash', name: 'actual_end_cash' },
-            { data: 'status_badge', name: 'status', orderable: false, class: 'pe-4' }
+            { data: 'status_badge', name: 'status', orderable: false },
+            {
+                data: 'uuid',
+                orderable: false,
+                searchable: false,
+                class: 'pe-4 text-end text-nowrap',
+                render: function(data, type, row) {
+                    return '<div class="d-inline-flex gap-2">' +
+                        '<button class="btn-icon-modern text-info btn-shift-detail" data-uuid="' + data + '" title="Detail" style="background: rgba(14, 165, 233, 0.12);">' +
+                        '<i class="bi bi-eye"></i>' +
+                        '</button>' +
+                        '</div>';
+                }
+            }
         ],
         language: {
             processing: `
@@ -336,6 +430,66 @@ $(document).ready(function() {
                 } else {
                     AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan sistem.');
                 }
+            }
+        });
+    });
+
+    // View Shift Detail
+    $(document).on('click', '.btn-shift-detail', function() {
+        var uuid = $(this).data('uuid');
+        $.ajax({
+            url: `/operational/pos/shift/detail/${uuid}`,
+            type: "GET",
+            success: function(res) {
+                if (res.success) {
+                    var s = res.shift;
+                    $('#det-cashier').text(s.cashier);
+                    $('#det-branch').text(s.branch);
+                    $('#det-start-time').text(s.start_time);
+                    $('#det-end-time').text(s.end_time);
+                    $('#det-total-trx').text(s.total_transactions + ' transaksi');
+                    
+                    if (s.status === 'open') {
+                        $('#det-status').html('<span class="badge bg-success-subtle text-success px-2.5 py-1.5 rounded-pill" style="font-size: 11px; font-weight: 600;"><i class="bi bi-unlock-fill me-1"></i> Open</span>');
+                    } else {
+                        $('#det-status').html('<span class="badge bg-secondary-subtle text-secondary px-2.5 py-1.5 rounded-pill" style="font-size: 11px; font-weight: 600;"><i class="bi bi-lock-fill me-1"></i> Closed</span>');
+                    }
+
+                    // Sales breakdown
+                    $('#det-cash-sales').text('Rp ' + formatMoney(s.cash_sales));
+                    $('#det-debit-sales').text('Rp ' + formatMoney(s.debit_sales));
+                    $('#det-credit-sales').text('Rp ' + formatMoney(s.credit_sales));
+                    $('#det-qris-sales').text('Rp ' + formatMoney(s.qris_sales));
+                    $('#det-total-sales').text('Rp ' + formatMoney(s.total_sales));
+
+                    // Cash reconciliation
+                    $('#det-start-cash').text('Rp ' + formatMoney(s.start_cash));
+                    $('#det-expected-cash').text('Rp ' + formatMoney(s.expected_end_cash));
+                    $('#det-actual-cash').text(s.actual_end_cash !== null ? 'Rp ' + formatMoney(s.actual_end_cash) : '-');
+                    $('#det-notes').text(s.notes);
+
+                    // Discrepancy
+                    if (s.discrepancy !== null) {
+                        if (s.discrepancy === 0) {
+                            $('#det-discrepancy-label').text('Kas Sesuai (Klop)').css('color', 'var(--bs-success)');
+                            $('#det-discrepancy').text('Rp 0').css('color', 'var(--bs-success)');
+                        } else if (s.discrepancy > 0) {
+                            $('#det-discrepancy-label').text('Selisih Lebih (Surplus)').css('color', 'var(--bs-primary)');
+                            $('#det-discrepancy').text('+Rp ' + formatMoney(s.discrepancy)).css('color', 'var(--bs-primary)');
+                        } else {
+                            $('#det-discrepancy-label').text('Selisih Kurang (Shortage)').css('color', 'var(--bs-danger)');
+                            $('#det-discrepancy').text('-Rp ' + formatMoney(Math.abs(s.discrepancy))).css('color', 'var(--bs-danger)');
+                        }
+                    } else {
+                        $('#det-discrepancy-label').text('Selisih Kas').css('color', '');
+                        $('#det-discrepancy').text('-').css('color', '');
+                    }
+
+                    $('#detailShiftModal').modal('show');
+                }
+            },
+            error: function() {
+                AppAlert.error('Gagal!', 'Tidak dapat memuat detail shift kasir.');
             }
         });
     });

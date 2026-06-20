@@ -24,7 +24,7 @@ class BaristaDisplayController extends Controller
         // Fetch active order items for barista
         $items = PosOrderItem::with(['posOrder', 'product'])
             ->whereHas('posOrder', function($q) use ($tenantId) {
-                $q->where('tenant_id', $tenantId)->where('status', 'processing');
+                $q->where('tenant_id', $tenantId)->whereIn('status', ['pending', 'processing']);
             })
             ->where('status', '!=', 'completed')
             ->whereHas('product.recipe', function($qr) {
