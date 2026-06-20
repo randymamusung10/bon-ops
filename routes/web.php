@@ -75,15 +75,26 @@ Route::middleware('auth')->group(function () {
     Route::prefix('operational')->name('operational.')->group(function () {
         Route::prefix('pos')->name('pos.')->group(function () {
             Route::get('terminal', [PosTerminalController::class, 'index'])->name('terminal');
+            Route::post('terminal', [PosTerminalController::class, 'store'])->name('terminal.store');
             Route::get('history', [SalesHistoryController::class, 'index'])->name('history');
+            
             Route::get('shift', [ShiftController::class, 'index'])->name('shift');
+            Route::get('shift/data', [ShiftController::class, 'data'])->name('shift.data');
+            Route::post('shift/open', [ShiftController::class, 'open'])->name('shift.open');
+            Route::post('shift/close/{uuid}', [ShiftController::class, 'close'])->name('shift.close');
+            
             Route::get('refund', [RefundController::class, 'index'])->name('refund');
         });
         Route::prefix('restaurant')->name('restaurant.')->group(function () {
             Route::get('tables', [TableManagementController::class, 'index'])->name('tables');
             Route::get('reservations', [ReservationController::class, 'index'])->name('reservations');
+            
             Route::get('kitchen', [KitchenDisplayController::class, 'index'])->name('kitchen');
+            Route::post('kitchen/{id}/status', [KitchenDisplayController::class, 'updateStatus'])->name('kitchen.status');
+            
             Route::get('barista', [BaristaDisplayController::class, 'index'])->name('barista');
+            Route::post('barista/{id}/status', [BaristaDisplayController::class, 'updateStatus'])->name('barista.status');
+            
             Route::get('queue', [OrderQueueController::class, 'index'])->name('queue');
         });
     });

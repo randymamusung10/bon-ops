@@ -56,4 +56,14 @@ class Product extends BaseMasterModel
     {
         return $this->belongsTo(ChartOfAccount::class, 'income_account_id');
     }
+
+    public function recipe()
+    {
+        return $this->hasOne(\App\Models\Logistic\Master\Recipe\Recipe::class, 'product_id');
+    }
+
+    public function inventoryBalances()
+    {
+        return $this->hasMany(\App\Models\Logistic\Inventory\InventoryBalance::class, 'product_id');
+    }
 }

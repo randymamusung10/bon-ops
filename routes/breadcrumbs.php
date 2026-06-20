@@ -190,3 +190,32 @@ Breadcrumbs::for('logistic.master.station', function (BreadcrumbTrail $trail) {
     $trail->push('Stasiun Produksi', route('logistic.master.station'));
 });
 
+// Operational > POS Terminal
+Breadcrumbs::for('operational.pos.terminal', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('POS', '#');
+    $trail->push('POS Terminal', route('operational.pos.terminal'));
+});
+
+// Operational > Shift Kasir
+Breadcrumbs::for('operational.pos.shift', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('POS', '#');
+    $trail->push('Buka/Tutup Shift', route('operational.pos.shift'));
+});
+
+// Restaurant > Kitchen Display
+Breadcrumbs::for('operational.restaurant.kitchen', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Restaurant', '#');
+    $trail->push('Kitchen Display', route('operational.restaurant.kitchen'));
+});
+
+// Restaurant > Barista Display
+Breadcrumbs::for('operational.restaurant.barista', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Restaurant', '#');
+    $trail->push('Barista Display', route('operational.restaurant.barista'));
+});
+
+

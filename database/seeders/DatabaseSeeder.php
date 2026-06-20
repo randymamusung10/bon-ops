@@ -98,6 +98,7 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             RecipeSeeder::class,
             InventoryOpnameWasteSeeder::class,
+            PosDemoSeeder::class,
         ]);
     }
 }
