@@ -30,7 +30,8 @@ class RefundController extends Controller
         ]);
 
         $tenantId = Auth::user()->tenant_id ?? 1;
-        $searchQuery = trim($request->order_number);
+        // Strip all leading/trailing whitespace including tabs, non-breaking spaces, and control characters
+        $searchQuery = preg_replace('/^[\pZ\pC]+|[\pZ\pC]+$/u', '', $request->order_number);
 
         // 1. Try exact match (case-insensitive)
         $order = PosOrder::with(['items.product', 'creator', 'branch'])

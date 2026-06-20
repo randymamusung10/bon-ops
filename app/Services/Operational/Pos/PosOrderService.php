@@ -217,7 +217,7 @@ class PosOrderService
         }
     }
 
-    public function refundOrder(string $uuid, string $notes = null)
+    public function refundOrder(string $uuid, ?string $notes = null)
     {
         try {
             DB::beginTransaction();
