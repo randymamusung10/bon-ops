@@ -63,12 +63,7 @@
 
 /* List View Styles */
 #product-grid.list-view .product-card-item {
-    width: 50% !important; /* 2 Columns to reduce empty space */
-}
-@media (max-width: 992px) {
-    #product-grid.list-view .product-card-item {
-        width: 100% !important;
-    }
+    width: 100% !important; /* Single column full width */
 }
 #product-grid.list-view .card {
     flex-direction: row !important;
