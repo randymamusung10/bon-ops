@@ -110,6 +110,20 @@
 #product-grid.list-view .product-price {
     font-size: 14px !important;
 }
+
+/* Autocomplete Hover Effect */
+.autocomplete-item {
+    transition: all 0.2s ease;
+    position: relative;
+}
+.autocomplete-item:hover, .autocomplete-item:focus {
+    background-color: color-mix(in srgb, var(--primary-accent) 5%, transparent) !important;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--primary-accent) 15%, transparent);
+    z-index: 2;
+    transform: translateY(-1px);
+    border-radius: 8px;
+    margin: 0 4px;
+}
 </style>
 @endpush
 
@@ -124,7 +138,11 @@
                     <div class="col-12 col-md-5">
                         <div class="position-relative">
                             <i class="bi bi-search position-absolute text-muted" style="left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; z-index: 10;"></i>
-                            <x-form.input type="text" id="search-product" class="ps-5" placeholder="Cari menu atau kode produk..." style="border-radius: 10px;" />
+                            <x-form.input type="text" id="search-product" class="ps-5" placeholder="Cari menu atau kode produk..." style="border-radius: 10px;" autocomplete="off" />
+                            
+                            <!-- Autocomplete Dropdown -->
+                            <div id="autocomplete-dropdown" class="position-absolute w-100 shadow-lg rounded-3 border d-none" style="z-index: 1050; top: 100%; left: 0; margin-top: 5px; max-height: 300px; overflow-y: auto; background: var(--bg-dark-secondary); border-color: rgba(226, 232, 240, 0.1) !important;">
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-md-7">
@@ -140,10 +158,15 @@
                                 @endforeach
                             </div>
                             
-                            <!-- View Toggle -->
-                            <div class="btn-group flex-shrink-0 ms-1 shadow-sm" role="group" style="border-radius: 8px; overflow: hidden;">
-                                <button type="button" class="btn btn-sm view-mode-btn active px-3" id="btn-grid-view" data-bs-toggle="tooltip" title="Grid View"><i class="bi bi-grid-fill"></i></button>
-                                <button type="button" class="btn btn-sm view-mode-btn px-3" id="btn-list-view" data-bs-toggle="tooltip" title="List View"><i class="bi bi-list-ul"></i></button>
+                            <!-- View Toggle & Reload -->
+                            <div class="d-flex align-items-center gap-2 flex-shrink-0 ms-1">
+                                <button type="button" class="btn btn-sm btn-primary shadow-sm px-3" id="btn-reload-data" data-bs-toggle="tooltip" title="Muat ulang data menu & stok terbaru" style="border-radius: 8px;">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                                <div class="btn-group shadow-sm" role="group" style="border-radius: 8px; overflow: hidden;">
+                                    <button type="button" class="btn btn-sm view-mode-btn active px-3" id="btn-grid-view" data-bs-toggle="tooltip" title="Grid View"><i class="bi bi-grid-fill"></i></button>
+                                    <button type="button" class="btn btn-sm view-mode-btn px-3" id="btn-list-view" data-bs-toggle="tooltip" title="List View"><i class="bi bi-list-ul"></i></button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -152,12 +175,24 @@
 
             <!-- Product Grid -->
             <div class="row g-3" id="product-grid" style="max-height: 65vh; overflow-y: auto;">
+                <!-- Empty State Placeholder (Hidden by default) -->
+                <div class="col-12" id="product-empty-state" style="display: {{ count($products) == 0 ? 'block' : 'none' }};">
+                    <div class="text-center py-5">
+                        <i class="bi bi-search text-muted" style="font-size: 48px; opacity: 0.5;"></i>
+                        <h5 class="mt-3 text-muted">Menu tidak ditemukan</h5>
+                        <p class="text-muted" style="font-size: 13px;">Coba gunakan kata kunci lain atau pilih kategori Semua.</p>
+                    </div>
+                </div>
+
                 @foreach($products as $prod)
                     <div class="col-md-4 col-sm-6 product-card-item" data-category-id="{{ $prod->product_category_id }}" data-name="{{ strtolower($prod->name) }}" data-code="{{ strtolower($prod->code) }}">
                         <div class="card h-100 rounded-4 border-0 shadow-sm overflow-hidden position-relative product-btn" 
                              data-id="{{ $prod->id }}" 
                              data-name="{{ $prod->name }}" 
                              data-price="{{ (float)$prod->price }}"
+                             data-type="{{ $prod->type }}"
+                             data-stock="{{ $prod->type === 'raw_material' ? (float)$prod->inventoryBalances->sum('qty') : 'BTO' }}"
+                             data-unit="{{ $prod->unit->name ?? 'pcs' }}"
                              style="background: var(--bg-dark-secondary); cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(226, 232, 240, 0.1) !important;">
                             
                             <!-- Header visual or initials -->
@@ -208,6 +243,15 @@
 
                 <!-- Customer info inputs -->
                 <div class="p-3 border-bottom bg-light-subtle" style="border-color: rgba(226, 232, 240, 0.1) !important;">
+                    <div class="row g-2 mb-2">
+                        <div class="col-12">
+                            <x-form.select id="order_type" style="font-size: 12px; border-radius: 8px;">
+                                <option value="dine-in">Makan di Tempat (Dine-In)</option>
+                                <option value="take-away">Bawa Pulang (Take-Away)</option>
+                                <option value="online">Pesanan Online (Delivery)</option>
+                            </x-form.select>
+                        </div>
+                    </div>
                     <div class="row g-2">
                         <div class="col-6">
                             <x-form.input type="text" id="customer_name" placeholder="Nama Pelanggan" style="font-size: 12px; border-radius: 8px;" />
@@ -343,6 +387,13 @@ $(document).ready(function() {
         minimumResultsForSearch: -1
     });
 
+    // Initialize Select2 on Order Type
+    $('#order_type').select2({
+        theme: 'bootstrap-5',
+        width: '100%',
+        minimumResultsForSearch: -1
+    });
+
     var cart = [];
     var grandTotal = 0;
     var taxAmount = 0;
@@ -370,18 +421,163 @@ $(document).ready(function() {
         localStorage.setItem('pos_view_mode', 'list');
     });
 
-    // Search Product
-    $('#search-product').on('keyup', function() {
+    // Helper to check empty state
+    function checkEmptyState(visibleCount) {
+        if (visibleCount === 0) {
+            $('#product-empty-state').show();
+        } else {
+            $('#product-empty-state').hide();
+        }
+    }
+
+    // Reload Data via AJAX
+    $('#btn-reload-data').on('click', function() {
+        var btn = $(this);
+        var icon = btn.find('i');
+        icon.addClass('fa-spin');
+        btn.prop('disabled', true);
+
+        // Clear search input
+        $('#search-product').val('');
+
+        // Show loading state inside the product grid
+        var loadingHtml = `
+            <div class="col-12 text-center py-5" style="margin-top: 5vh; animation: fadeIn 0.3s;">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem; border-width: 0.25em;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="text-heading fw-bold">Menyinkronkan Data...</h5>
+                <p class="text-muted" style="font-size: 13px;">Mengambil pembaruan menu dan stok terbaru dari server.</p>
+            </div>
+        `;
+        $('#product-grid').html(loadingHtml);
+
+        $.get(window.location.href, function(html) {
+            var newGridHtml = $(html).find('#product-grid').html();
+            $('#product-grid').html(newGridHtml);
+            
+            // Re-apply current view mode
+            if (localStorage.getItem('pos_view_mode') === 'list') {
+                $('#product-grid').addClass('list-view');
+            }
+
+            // Re-trigger search/filter
+            var activeCategory = $('.category-tab-btn.active').data('category-id') || 'all';
+            $('.category-tab-btn[data-category-id="'+activeCategory+'"]').trigger('click');
+
+            // Re-init tooltips if any
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            icon.removeClass('fa-spin');
+            btn.prop('disabled', false);
+        }).fail(function() {
+            // Restore by reloading the whole page if AJAX fails
+            window.location.reload();
+        });
+    });
+
+    // Search Product & Autocomplete
+    $('#search-product').on('input', function() {
         var value = $(this).val().toLowerCase();
+        var catId = $('.category-tab-btn.active').data('category-id');
+        var visibleCount = 0;
+        var dropdownHtml = '<div class="list-group list-group-flush">';
+
         $('.product-card-item').each(function() {
             var name = $(this).data('name');
             var code = $(this).data('code');
-            if (name.indexOf(value) > -1 || code.indexOf(value) > -1) {
+            var itemCatId = $(this).data('category-id');
+            var matchesSearch = value === '' || name.indexOf(value) > -1 || code.indexOf(value) > -1;
+            var matchesCategory = catId === 'all' || itemCatId == catId;
+
+            // Update grid visibility
+            if (matchesSearch && matchesCategory) {
                 $(this).show();
+                visibleCount++;
             } else {
                 $(this).hide();
             }
+
+            // Build autocomplete items if user is searching
+            if (value.length >= 2 && (name.indexOf(value) > -1 || code.indexOf(value) > -1)) {
+                var btnEl = $(this).find('.product-btn');
+                var id = btnEl.data('id');
+                var realName = btnEl.data('name');
+                var price = btnEl.data('price');
+                var type = btnEl.data('type');
+                var stock = btnEl.data('stock');
+                var unit = btnEl.data('unit');
+                
+                var priceStr = new Intl.NumberFormat('id-ID', { minimumFractionDigits: 0 }).format(price);
+                
+                var badgeHtml = type === 'raw_material' 
+                    ? '<span class="badge bg-warning-subtle text-warning border border-warning-subtle ms-2" style="font-size: 9px; padding: 2px 6px;">Bahan Baku</span>' 
+                    : '<span class="badge bg-success-subtle text-success border border-success-subtle ms-2" style="font-size: 9px; padding: 2px 6px;">Menu Tersedia</span>';
+                    
+                var stockHtml = stock === 'BTO'
+                    ? '<div class="text-muted text-end mt-1" style="font-size: 10px;">Stok: <strong class="text-info">Menu (BTO)</strong></div>'
+                    : '<div class="text-muted text-end mt-1" style="font-size: 10px;">Stok: <strong class="text-heading">' + stock + '</strong> <span style="font-size: 9px;">' + unit + '</span></div>';
+
+                dropdownHtml += `
+                    <button type="button" class="list-group-item list-group-item-action p-3 border-0 d-flex justify-content-between align-items-center autocomplete-item" 
+                            data-id="${id}" data-name="${realName}"
+                            style="background: transparent; color: var(--text-heading); border-bottom: 1px solid var(--border-color) !important;">
+                        <div>
+                            <div class="d-flex align-items-center mb-1">
+                                <strong style="font-size: 13px;">${realName}</strong>
+                                ${badgeHtml}
+                            </div>
+                            <div class="text-muted" style="font-size: 11px;">${code.toUpperCase()}</div>
+                        </div>
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="fw-semibold text-primary">Rp ${priceStr}</span>
+                            ${stockHtml}
+                        </div>
+                    </button>
+                `;
+            }
         });
+        
+        dropdownHtml += '</div>';
+        checkEmptyState(visibleCount);
+
+        // Show or hide autocomplete dropdown
+        if (value.length >= 2) {
+            if ($('.autocomplete-item', $(dropdownHtml)).length > 0) {
+                $('#autocomplete-dropdown').html(dropdownHtml).removeClass('d-none');
+            } else {
+                $('#autocomplete-dropdown').html('<div class="p-3 text-center text-muted" style="font-size: 13px;">Menu tidak ditemukan</div>').removeClass('d-none');
+            }
+        } else {
+            $('#autocomplete-dropdown').addClass('d-none');
+        }
+    });
+
+    // Handle Autocomplete Item Click
+    $(document).on('click', '.autocomplete-item', function(e) {
+        e.preventDefault();
+        var name = $(this).attr('data-name');
+        
+        // Set search input to exact name
+        $('#search-product').val(name);
+        
+        // Trigger input to filter the grid, but pass a flag so we don't reopen dropdown
+        $('#search-product').trigger('input');
+        
+        // Force hide dropdown
+        setTimeout(function() {
+            $('#autocomplete-dropdown').addClass('d-none');
+        }, 50);
+    });
+
+    // Hide dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('#search-product, #autocomplete-dropdown').length) {
+            $('#autocomplete-dropdown').addClass('d-none');
+        }
     });
 
     // Category Filters
@@ -389,18 +585,7 @@ $(document).ready(function() {
         $('.category-tab-btn').removeClass('active');
         $(this).addClass('active');
 
-        var catId = $(this).data('category-id');
-        if (catId === 'all') {
-            $('.product-card-item').show();
-        } else {
-            $('.product-card-item').each(function() {
-                if ($(this).data('category-id') == catId) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        }
+        $('#search-product').trigger('input'); // Trigger combined filter
     });
 
     // Toggle Bank Selection container
@@ -413,8 +598,8 @@ $(document).ready(function() {
         }
     });
 
-    // Add Product to Cart
-    $('.product-btn').on('click', function() {
+    // Add Product to Cart (Delegated event so it works after AJAX reload)
+    $(document).on('click', '.product-btn', function() {
         var id = $(this).data('id');
         var name = $(this).data('name');
         var price = parseFloat($(this).data('price'));
@@ -604,6 +789,7 @@ $(document).ready(function() {
             type: "POST",
             data: {
                 _token: "{{ csrf_token() }}",
+                order_type: $('#order_type').val(),
                 customer_name: $('#customer_name').val(),
                 table_number: $('#table_number').val(),
                 payment_method: method,
@@ -612,9 +798,17 @@ $(document).ready(function() {
             success: function(res) {
                 $('#paymentModal').modal('hide');
                 AppAlert.success('Sukses!', 'Transaksi berhasil diproses.');
+                
+                // Buka jendela cetak struk
+                if (res.order && res.order.uuid) {
+                    var printUrl = "{{ route('operational.pos.terminal.receipt', ':uuid') }}".replace(':uuid', res.order.uuid);
+                    window.open(printUrl, '_blank', 'width=400,height=600');
+                }
+
                 cart = [];
                 updateCart();
                 $('#customer_name, #table_number').val('');
+                $('#order_type').val('dine-in');
             },
             error: function(xhr) {
                 AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan pemrosesan transaksi.');

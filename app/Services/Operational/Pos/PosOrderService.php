@@ -58,6 +58,7 @@ class PosOrderService
                 'payment_method' => $data['payment_method'] ?? 'cash',
                 'payment_status' => $data['payment_status'] ?? 'paid',
                 'status' => $data['status'] ?? 'completed',
+                'order_type' => $data['order_type'] ?? 'dine-in',
                 'customer_name' => $data['customer_name'] ?? null,
                 'table_number' => $data['table_number'] ?? null,
                 'created_by' => $userId,

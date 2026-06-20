@@ -53,6 +53,7 @@ class PosTerminalController extends Controller
         $request->validate([
             'customer_name' => 'nullable|string|max:100',
             'table_number' => 'nullable|string|max:20',
+            'order_type' => 'required|string|in:dine-in,take-away,online',
             'payment_method' => 'required|string|max:50',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
@@ -87,6 +88,7 @@ class PosTerminalController extends Controller
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'paid',
                 'status' => 'pending', // starts as pending, will become processing when kitchen/barista starts cooking
+                'order_type' => $request->order_type,
                 'customer_name' => $request->customer_name,
                 'table_number' => $request->table_number,
                 'notes' => $request->notes,
@@ -104,5 +106,16 @@ class PosTerminalController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    public function receipt($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $order = \App\Models\Operational\Pos\PosOrder::with(['items.product', 'creator'])
+            ->where('tenant_id', $tenantId)
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+
+        return view('pages.operational.pos.terminal.receipt', compact('order'));
     }
 }

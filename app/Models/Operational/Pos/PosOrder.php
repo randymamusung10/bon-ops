@@ -27,6 +27,7 @@ class PosOrder extends Model
         'payment_method',
         'payment_status',
         'status',
+        'order_type',
         'customer_name',
         'table_number',
         'created_by',

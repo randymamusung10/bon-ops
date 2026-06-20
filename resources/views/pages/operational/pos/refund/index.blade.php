@@ -3,6 +3,24 @@
 @section('page_title', 'Refund Transaksi (Void)')
 @section('page_description', 'Batalkan transaksi POS yang telah dibayar dan kembalikan stok produk otomatis.')
 
+@push('styles')
+<style>
+/* Autocomplete Hover Effect */
+.autocomplete-item {
+    transition: all 0.2s ease;
+    position: relative;
+}
+.autocomplete-item:hover, .autocomplete-item:focus {
+    background-color: color-mix(in srgb, var(--primary-accent) 5%, transparent) !important;
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--primary-accent) 15%, transparent);
+    z-index: 2;
+    transform: translateY(-1px);
+    border-radius: 8px;
+    margin: 0 4px;
+}
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid px-0">
     <div class="row g-4">
