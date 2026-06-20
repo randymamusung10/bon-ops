@@ -44,6 +44,77 @@
     color: #ffffff !important;
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
 }
+
+/* Toggle View Styles */
+.view-mode-btn {
+    color: var(--text-muted);
+    border-color: rgba(226, 232, 240, 0.2);
+    background: transparent;
+}
+.view-mode-btn:hover {
+    background: rgba(226, 232, 240, 0.05);
+    color: var(--text-heading);
+}
+.view-mode-btn.active {
+    background: var(--primary-accent) !important;
+    border-color: var(--primary-accent) !important;
+    color: white !important;
+}
+
+/* List View Styles */
+#product-grid.list-view .product-card-item {
+    width: 50% !important; /* 2 Columns to reduce empty space */
+}
+@media (max-width: 992px) {
+    #product-grid.list-view .product-card-item {
+        width: 100% !important;
+    }
+}
+#product-grid.list-view .card {
+    flex-direction: row !important;
+    height: auto !important;
+    padding: 10px !important;
+}
+#product-grid.list-view .product-visual {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 18px !important;
+    border-radius: 10px !important;
+    flex-shrink: 0;
+}
+#product-grid.list-view .product-details {
+    flex-direction: row !important;
+    align-items: center;
+    padding: 0 0 0 12px !important;
+}
+#product-grid.list-view .product-info-top {
+    flex-grow: 1;
+}
+#product-grid.list-view .product-price-stock {
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    margin-top: 0 !important;
+    gap: 4px;
+}
+#product-grid.list-view .product-badges {
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px;
+}
+#product-grid.list-view .product-stock {
+    margin-top: 0 !important;
+}
+#product-grid.list-view .product-title {
+    margin-top: 4px !important;
+    font-size: 14px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+#product-grid.list-view .product-price {
+    font-size: 14px !important;
+}
 </style>
 @endpush
 
@@ -62,15 +133,23 @@
                         </div>
                     </div>
                     <div class="col-12 col-md-7">
-                        <div class="d-flex gap-2 overflow-x-auto p-1 align-items-center" id="category-tabs" style="background: rgba(226, 232, 240, 0.05); border-radius: 10px; scrollbar-width: none; -ms-overflow-style: none;">
-                            <button type="button" class="btn btn-sm category-tab-btn active px-3 py-2 text-nowrap flex-shrink-0" data-category-id="all">
-                                Semua
-                            </button>
-                            @foreach($categories as $cat)
-                                <button type="button" class="btn btn-sm category-tab-btn px-3 py-2 text-nowrap flex-shrink-0" data-category-id="{{ $cat->id }}">
-                                    {{ $cat->name }}
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex gap-2 overflow-x-auto p-1 align-items-center flex-grow-1" id="category-tabs" style="background: rgba(226, 232, 240, 0.05); border-radius: 10px; scrollbar-width: none; -ms-overflow-style: none;">
+                                <button type="button" class="btn btn-sm category-tab-btn active px-3 py-2 text-nowrap flex-shrink-0" data-category-id="all">
+                                    Semua
                                 </button>
-                            @endforeach
+                                @foreach($categories as $cat)
+                                    <button type="button" class="btn btn-sm category-tab-btn px-3 py-2 text-nowrap flex-shrink-0" data-category-id="{{ $cat->id }}">
+                                        {{ $cat->name }}
+                                    </button>
+                                @endforeach
+                            </div>
+                            
+                            <!-- View Toggle -->
+                            <div class="btn-group flex-shrink-0 ms-1 shadow-sm" role="group" style="border-radius: 8px; overflow: hidden;">
+                                <button type="button" class="btn btn-sm view-mode-btn active px-3" id="btn-grid-view" data-bs-toggle="tooltip" title="Grid View"><i class="bi bi-grid-fill"></i></button>
+                                <button type="button" class="btn btn-sm view-mode-btn px-3" id="btn-list-view" data-bs-toggle="tooltip" title="List View"><i class="bi bi-list-ul"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -87,21 +166,30 @@
                              style="background: var(--bg-dark-secondary); cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(226, 232, 240, 0.1) !important;">
                             
                             <!-- Header visual or initials -->
-                            <div class="d-flex align-items-center justify-content-center text-white fw-bold" style="height: 120px; background: linear-gradient(135deg, var(--primary-accent), var(--primary-hover)); font-size: 24px;">
+                            <div class="product-visual d-flex align-items-center justify-content-center text-white fw-bold" style="height: 120px; background: linear-gradient(135deg, var(--primary-accent), var(--primary-hover)); font-size: 24px;">
                                 {{ strtoupper(substr($prod->name, 0, 2)) }}
                             </div>
                             
-                            <div class="p-3">
-                                <span class="text-muted d-block" style="font-size: 11px;">{{ $prod->code }}</span>
-                                <h6 class="fw-bold mb-1 text-heading mt-1" style="font-family: 'Outfit', sans-serif;">{{ $prod->name }}</h6>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <span class="fw-bold text-primary" style="font-size: 14px;">Rp {{ number_format($prod->price, 0, ',', '.') }}</span>
-                                    <div class="d-flex flex-column align-items-end">
+                            <div class="p-3 product-details d-flex flex-column w-100">
+                                <div class="product-info-top">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted" style="font-size: 11px;">{{ $prod->code }}</span>
+                                        @if($prod->type === 'raw_material')
+                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 9px; padding: 2px 6px;">Bahan Baku</span>
+                                        @else
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9px; padding: 2px 6px;">Menu Tersedia</span>
+                                        @endif
+                                    </div>
+                                    <h6 class="fw-bold mb-0 text-heading mt-1 product-title" style="font-family: 'Outfit', sans-serif;">{{ $prod->name }}</h6>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2 product-price-stock mt-auto">
+                                    <span class="fw-bold text-primary product-price" style="font-size: 14px;">Rp {{ number_format($prod->price, 0, ',', '.') }}</span>
+                                    <div class="d-flex flex-column align-items-end product-badges">
                                         <span class="badge bg-secondary-subtle text-secondary rounded-pill" style="font-size: 10px; font-weight: 600;">{{ $prod->unit->name ?? 'pcs' }}</span>
                                         @if($prod->type === 'raw_material')
-                                            <span class="text-muted mt-1" style="font-size: 10.5px;">Stok: <strong class="text-heading">{{ (float)$prod->inventoryBalances->sum('qty') }}</strong></span>
+                                            <span class="text-muted mt-1 product-stock" style="font-size: 10.5px;">Stok: <strong class="text-heading">{{ (float)$prod->inventoryBalances->sum('qty') }}</strong></span>
                                         @else
-                                            <span class="text-muted mt-1" style="font-size: 10.5px;">Stok: <strong class="text-info" data-bs-toggle="tooltip" title="BTO (Built To Order): Menu ini dibuat langsung saat ada pesanan, sehingga tidak memiliki stok fisik instan.">Menu (BTO) <i class="bi bi-info-circle ms-1"></i></strong></span>
+                                            <span class="text-muted mt-1 product-stock" style="font-size: 10.5px;">Stok: <strong class="text-info" data-bs-toggle="tooltip" title="BTO (Built To Order): Menu ini dibuat langsung saat ada pesanan, sehingga tidak memiliki stok fisik instan.">Menu (BTO) <i class="bi bi-info-circle ms-1"></i></strong></span>
                                         @endif
                                     </div>
                                 </div>
@@ -264,6 +352,28 @@ $(document).ready(function() {
     var grandTotal = 0;
     var taxAmount = 0;
     var subtotal = 0;
+
+    // View Toggle
+    var savedViewMode = localStorage.getItem('pos_view_mode') || 'grid';
+    if (savedViewMode === 'list') {
+        $('#btn-grid-view').removeClass('active');
+        $('#btn-list-view').addClass('active');
+        $('#product-grid').addClass('list-view');
+    }
+
+    $('#btn-grid-view').on('click', function() {
+        $('#btn-list-view').removeClass('active');
+        $(this).addClass('active');
+        $('#product-grid').removeClass('list-view');
+        localStorage.setItem('pos_view_mode', 'grid');
+    });
+
+    $('#btn-list-view').on('click', function() {
+        $('#btn-grid-view').removeClass('active');
+        $(this).addClass('active');
+        $('#product-grid').addClass('list-view');
+        localStorage.setItem('pos_view_mode', 'list');
+    });
 
     // Search Product
     $('#search-product').on('keyup', function() {

@@ -54,40 +54,89 @@
             <!-- Detail Result Panel (Hidden by default) -->
             <div class="card rounded-4 border-0 shadow-sm p-4 d-none" id="detail-panel">
                 <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="fw-bold text-heading mb-0" style="font-family: 'Outfit', sans-serif;">Detail Invoice</h5>
-                    <div id="badge-container"></div>
+                    <h5 class="fw-bold text-heading mb-0 d-flex align-items-center gap-2" style="font-family: 'Outfit', sans-serif;">
+                        <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+                        Detail Invoice
+                    </h5>
+                    <div id="badge-container" class="d-flex gap-1 flex-wrap justify-content-end"></div>
                 </div>
 
-                <div class="p-3 rounded-4 mb-4" style="background: var(--bg-dark-tertiary); border: 1px solid var(--border-color);">
-                    <div class="row g-2" style="font-size: 13px;">
+                <div class="p-3 rounded-4 mb-4" style="background: color-mix(in srgb, var(--primary-accent) 4%, transparent); border: 1px solid rgba(226, 232, 240, 0.1);">
+                    <div class="row gy-3 gx-4">
                         <div class="col-6">
-                            <span class="text-muted d-block">Nomor Invoice</span>
-                            <strong class="text-heading" id="res-invoice">-</strong>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-hash text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Nomor Invoice</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block" id="res-invoice" style="font-size: 14px;">-</strong>
                         </div>
                         <div class="col-6">
-                            <span class="text-muted d-block">Kasir Pembuat</span>
-                            <strong class="text-heading" id="res-cashier">-</strong>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-person text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Kasir Pembuat</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block" id="res-cashier" style="font-size: 14px;">-</strong>
                         </div>
-                        <div class="col-6 mt-2">
-                            <span class="text-muted d-block">Waktu Transaksi</span>
-                            <strong class="text-heading" id="res-time">-</strong>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-clock text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Waktu Transaksi</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block" id="res-time" style="font-size: 14px;">-</strong>
                         </div>
-                        <div class="col-6 mt-2">
-                            <span class="text-muted d-block">Metode Pembayaran</span>
-                            <strong class="text-heading text-uppercase" id="res-payment-method">-</strong>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-wallet2 text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Metode Pembayaran</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block text-uppercase" id="res-payment-method" style="font-size: 14px;">-</strong>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-shop text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Cabang</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block" id="res-branch" style="font-size: 14px;">-</strong>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-person-badge text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Nama Pelanggan</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block" id="res-customer" style="font-size: 14px;">-</strong>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-display text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Nomor Meja</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block" id="res-table" style="font-size: 14px;">-</strong>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <i class="bi bi-journal-text text-muted"></i>
+                                <span class="text-muted" style="font-size: 12px; font-weight: 500;">Catatan Pesanan</span>
+                            </div>
+                            <strong class="text-heading ms-4 d-block" id="res-notes" style="font-size: 14px;">-</strong>
                         </div>
                     </div>
                 </div>
 
-                <h6 class="fw-bold text-heading mb-2">Daftar Item Menu</h6>
-                <div class="table-responsive mb-4">
-                    <table class="table table-sm align-middle" style="--bs-table-bg: transparent; font-size: 13px;">
-                        <thead>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-cart3 text-primary fs-5"></i>
+                    <h6 class="fw-bold text-heading mb-0" style="font-family: 'Outfit', sans-serif;">Daftar Item Menu</h6>
+                </div>
+
+                <div class="table-responsive mb-4 rounded-4 overflow-hidden border" style="border-color: rgba(226, 232, 240, 0.2) !important;">
+                    <table class="table table-hover table-borderless align-middle mb-0" style="--bs-table-bg: transparent; font-size: 13px; --bs-table-border-color: rgba(226, 232, 240, 0.2);">
+                        <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent); border-bottom: 1px solid rgba(226, 232, 240, 0.2);">
                             <tr class="text-muted">
-                                <th>Menu/Produk</th>
-                                <th class="text-center" style="width: 15%;">Qty</th>
-                                <th class="text-end" style="width: 25%;">Harga</th>
-                                <th class="text-end" style="width: 25%;">Subtotal</th>
+                                <th class="py-3 px-3 fw-semibold">Menu/Produk</th>
+                                <th class="text-center py-3 fw-semibold" style="width: 15%;">Qty</th>
+                                <th class="text-end py-3 fw-semibold" style="width: 25%;">Harga</th>
+                                <th class="text-end py-3 px-3 fw-semibold" style="width: 25%;">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody id="res-items-body" class="text-heading">
@@ -96,14 +145,28 @@
                     </table>
                 </div>
 
-                <hr style="opacity: 0.1;">
-                <div class="d-flex justify-content-between mb-3">
-                    <span class="fw-bold text-heading">Total Pembayaran</span>
-                    <span class="fw-bold text-primary" id="res-grandtotal" style="font-size: 16px;">Rp 0</span>
+                <div class="d-flex flex-column gap-1 mb-3 px-3">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted" style="font-size: 13px;">Subtotal</span>
+                        <strong class="text-heading" id="res-subtotal" style="font-size: 13px;">Rp 0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted" style="font-size: 13px;">Diskon</span>
+                        <strong class="text-danger" id="res-discount" style="font-size: 13px;">Rp 0</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted" style="font-size: 13px;">Pajak (Tax)</span>
+                        <strong class="text-heading" id="res-tax" style="font-size: 13px;">Rp 0</strong>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded-4 mb-4 d-flex justify-content-between align-items-center" style="background: color-mix(in srgb, var(--primary-accent) 6%, transparent); border: 1px solid rgba(226, 232, 240, 0.15);">
+                    <span class="fw-bold text-heading" style="font-family: 'Outfit', sans-serif; font-size: 15px;">Grand Total</span>
+                    <span class="fw-bold text-primary" id="res-grandtotal" style="font-size: 20px;">Rp 0</span>
                 </div>
 
                 <!-- Refund Button trigger -->
-                <div class="d-flex gap-2 justify-content-end pt-3" style="border-top: 1px solid var(--border-color);" id="action-container">
+                <div id="action-container" class="mt-2">
                     <!-- Void button will be generated here -->
                 </div>
             </div>
@@ -226,8 +289,16 @@ $(document).ready(function() {
                     $('#res-invoice').text(order.order_number);
                     $('#res-cashier').text(order.creator?.name || 'Kasir');
                     $('#res-time').text(new Date(order.created_at).toLocaleString('id-ID'));
-                    $('#res-payment-method').text(order.payment_method);
-                    $('#res-grandtotal').text('Rp ' + formatMoney(order.grand_total));
+                    $('#res-payment-method').text(order.payment_method || '-');
+                    $('#res-branch').text(order.branch?.name || '-');
+                    $('#res-customer').text(order.customer_name || 'Pelanggan Umum');
+                    $('#res-table').text(order.table_number || '-');
+                    $('#res-notes').text(order.notes || '-');
+                    
+                    $('#res-subtotal').text('Rp ' + formatMoney(order.total_amount || 0));
+                    $('#res-discount').text('- Rp ' + formatMoney(order.discount_amount || 0));
+                    $('#res-tax').text('Rp ' + formatMoney(order.tax_amount || 0));
+                    $('#res-grandtotal').text('Rp ' + formatMoney(order.grand_total || 0));
                     
                     // Payment Status Badge
                     var badgeHtml = '';
@@ -255,11 +326,11 @@ $(document).ready(function() {
                     var itemsHtml = '';
                     $.each(order.items, function(index, item) {
                         itemsHtml += `
-                            <tr>
-                                <td>${item.product?.name}</td>
-                                <td class="text-center">${parseInt(item.qty)}</td>
-                                <td class="text-end">Rp ${formatMoney(item.price)}</td>
-                                <td class="text-end">Rp ${formatMoney(item.subtotal)}</td>
+                            <tr style="border-bottom: 1px solid rgba(226, 232, 240, 0.2);">
+                                <td class="px-3 py-2 fw-medium">${item.product?.name}</td>
+                                <td class="text-center py-2"><span class="badge bg-secondary-subtle text-secondary px-2 py-1 rounded-pill">${parseInt(item.qty)}x</span></td>
+                                <td class="text-end py-2 text-muted">Rp ${formatMoney(item.price)}</td>
+                                <td class="text-end px-3 py-2 fw-semibold text-heading">Rp ${formatMoney(item.subtotal)}</td>
                             </tr>
                         `;
                     });
