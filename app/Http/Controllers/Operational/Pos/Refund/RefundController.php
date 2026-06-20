@@ -30,10 +30,21 @@ class RefundController extends Controller
         ]);
 
         $tenantId = Auth::user()->tenant_id ?? 1;
+        $searchQuery = trim($request->order_number);
+
+        // 1. Try exact match (case-insensitive)
         $order = PosOrder::with(['items.product', 'creator', 'branch'])
             ->where('tenant_id', $tenantId)
-            ->where('order_number', trim($request->order_number))
+            ->whereRaw('LOWER(order_number) = ?', [strtolower($searchQuery)])
             ->first();
+
+        // 2. Fallback to partial match if not found
+        if (!$order) {
+            $order = PosOrder::with(['items.product', 'creator', 'branch'])
+                ->where('tenant_id', $tenantId)
+                ->where('order_number', 'LIKE', '%' . $searchQuery . '%')
+                ->first();
+        }
 
         if (!$order) {
             return response()->json([
