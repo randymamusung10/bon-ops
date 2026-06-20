@@ -216,4 +216,71 @@ class PosOrderService
             throw $e;
         }
     }
+
+    public function refundOrder(string $uuid, string $notes = null)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            $order = PosOrder::where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
+
+            if ($order->payment_status === 'refunded') {
+                throw new Exception("Transaksi ini sudah di-refund sebelumnya.");
+            }
+
+            // Update order status
+            $order->update([
+                'payment_status' => 'refunded',
+                'status' => 'cancelled',
+                'notes' => ($order->notes ? $order->notes . "\n" : "") . "Refund Notes: " . ($notes ?? 'Customer cancel order'),
+            ]);
+
+            // Update all order items status to cancelled
+            $order->items()->update(['status' => 'cancelled']);
+
+            // Revert inventory deductions if they were deducted
+            $movements = InventoryMovement::where('tenant_id', $tenantId)
+                ->where('reference_type', 'pos_order')
+                ->where('reference_id', $order->id)
+                ->where('qty_out', '>', 0)
+                ->get();
+
+            foreach ($movements as $movement) {
+                // Find balance
+                $balance = InventoryBalance::where([
+                    'tenant_id' => $tenantId,
+                    'warehouse_id' => $movement->warehouse_id,
+                    'product_id' => $movement->product_id,
+                ])->lockForUpdate()->first();
+
+                if ($balance) {
+                    $newQty = $balance->qty + $movement->qty_out;
+                    $balance->update(['qty' => $newQty]);
+
+                    // Log positive movement to record the return
+                    InventoryMovement::create([
+                        'tenant_id' => $tenantId,
+                        'branch_id' => $order->branch_id,
+                        'warehouse_id' => $movement->warehouse_id,
+                        'product_id' => $movement->product_id,
+                        'reference_type' => 'pos_order',
+                        'reference_id' => $order->id,
+                        'reference_number' => $order->order_number,
+                        'date' => now()->toDateString(),
+                        'qty_in' => $movement->qty_out,
+                        'qty_out' => 0,
+                        'balance_after' => $newQty,
+                        'notes' => "Pengembalian stok akibat pembatalan/refund pesanan " . $order->order_number,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return $order;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 }

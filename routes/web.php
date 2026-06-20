@@ -77,6 +77,8 @@ Route::middleware('auth')->group(function () {
             Route::get('terminal', [PosTerminalController::class, 'index'])->name('terminal');
             Route::post('terminal', [PosTerminalController::class, 'store'])->name('terminal.store');
             Route::get('history', [SalesHistoryController::class, 'index'])->name('history');
+            Route::get('history/data', [SalesHistoryController::class, 'data'])->name('history.data');
+            Route::get('history/{uuid}', [SalesHistoryController::class, 'detail'])->name('history.detail');
             
             Route::get('shift', [ShiftController::class, 'index'])->name('shift');
             Route::get('shift/data', [ShiftController::class, 'data'])->name('shift.data');
@@ -85,6 +87,8 @@ Route::middleware('auth')->group(function () {
             Route::post('shift/close/{uuid}', [ShiftController::class, 'close'])->name('shift.close');
             
             Route::get('refund', [RefundController::class, 'index'])->name('refund');
+            Route::get('refund/search', [RefundController::class, 'search'])->name('refund.search');
+            Route::post('refund/process/{uuid}', [RefundController::class, 'process'])->name('refund.process');
         });
         Route::prefix('restaurant')->name('restaurant.')->group(function () {
             Route::get('tables', [TableManagementController::class, 'index'])->name('tables');
