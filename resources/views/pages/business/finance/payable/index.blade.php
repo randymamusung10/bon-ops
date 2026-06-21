@@ -21,6 +21,7 @@
                         <th class="py-3 text-end">Total Tagihan</th>
                         <th class="py-3 text-end">Sisa Hutang</th>
                         <th class="py-3 text-center">Status</th>
+                        <th class="py-3 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody style="font-size: 13px; color: var(--text-heading);">
@@ -42,6 +43,10 @@
     </div>
 </div>
 @endsection
+
+@push('modals')
+<div id="modal-container"></div>
+@endpush
 
 @push('scripts')
 <script>
@@ -65,7 +70,8 @@ $(document).ready(function() {
             { data: 'due_date', name: 'due_date' },
             { data: 'grand_total', name: 'grand_total', class: 'text-end fw-semibold' },
             { data: 'remaining_balance', name: 'remaining_balance', class: 'text-end fw-bold text-danger' },
-            { data: 'status_badge', name: 'status', class: 'text-center', orderable: false, searchable: false }
+            { data: 'status_badge', name: 'status', class: 'text-center', orderable: false, searchable: false },
+            { data: 'action', name: 'action', class: 'text-center', orderable: false, searchable: false }
         ],
         language: {
             search: '_INPUT_',
@@ -88,6 +94,16 @@ $(document).ready(function() {
     window.refreshTable = function() {
         table.ajax.reload(null, false);
     };
+
+    $(document).on('click', '.btn-show', function(e) {
+        e.preventDefault();
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('business/finance/payable') }}/" + uuid + "/show-modal";
+        
+        ERPLoader.loadModal(url, '#show-modal-payable', {
+            title: 'Detail Hutang'
+        });
+    });
 });
 </script>
 @endpush

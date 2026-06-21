@@ -98,6 +98,16 @@ $(document).ready(function() {
         table.ajax.reload(null, false);
     };
 
+    $(document).on('click', '.btn-show', function(e) {
+        e.preventDefault();
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('business/finance/receivable') }}/" + uuid + "/show-modal";
+        
+        ERPLoader.loadModal(url, '#show-modal-receivable', {
+            title: 'Detail Piutang'
+        });
+    });
+
     $(document).on('click', '.btn-pay', function(e) {
         e.preventDefault();
         var uuid = $(this).data('uuid');

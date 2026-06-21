@@ -70,7 +70,22 @@ class AccountsPayableController extends Controller
                 
                 return '<span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill">Belum Dibayar</span>';
             })
-            ->rawColumns(['status_badge'])
+            ->addColumn('action', function ($row) {
+                return '<div class="d-inline-flex gap-2">
+                            <button class="btn-icon-modern text-info btn-show" data-uuid="'.$row->uuid.'" title="Detail" style="background: rgba(14, 165, 233, 0.12);"><i class="bi bi-eye"></i></button>
+                        </div>';
+            })
+            ->rawColumns(['status_badge', 'action'])
             ->make(true);
+    }
+
+    public function showModal($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $invoice = SupplierInvoice::with(['supplier', 'purchaseOrder', 'items.product', 'payments' => function($q) {
+            $q->where('status', 'posted');
+        }])->where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
+        
+        return view('pages.business.finance.payable.partials.show_modal', compact('invoice'));
     }
 }

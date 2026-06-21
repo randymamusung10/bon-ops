@@ -405,9 +405,11 @@ Route::middleware('auth')->group(function () {
 
             Route::get('payable', [AccountsPayableController::class, 'index'])->name('payable');
             Route::get('payable/data', [AccountsPayableController::class, 'data'])->name('payable.data');
+            Route::get('payable/{uuid}/show-modal', [AccountsPayableController::class, 'showModal'])->name('payable.show_modal');
             Route::get('receivable', [AccountsReceivableController::class, 'index'])->name('receivable');
             Route::get('receivable/data', [AccountsReceivableController::class, 'data'])->name('receivable.data');
             Route::get('receivable/{uuid}/payment-modal', [AccountsReceivableController::class, 'paymentModal'])->name('receivable.payment_modal');
+            Route::get('receivable/{uuid}/show-modal', [AccountsReceivableController::class, 'showModal'])->name('receivable.show_modal');
             Route::post('receivable/{uuid}/pay', [AccountsReceivableController::class, 'pay'])->name('receivable.pay');
             Route::get('ledger', [GeneralLedgerController::class, 'index'])->name('ledger');
             Route::get('ledger/data', [GeneralLedgerController::class, 'data'])->name('ledger.data');

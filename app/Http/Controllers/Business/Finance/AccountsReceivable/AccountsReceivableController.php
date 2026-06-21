@@ -59,10 +59,12 @@ class AccountsReceivableController extends Controller
                 return '<span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill">Belum Dibayar</span>';
             })
             ->addColumn('action', function ($row) {
+                $btnShow = '<button class="btn-icon-modern text-info btn-show" data-uuid="'.$row->uuid.'" title="Detail" style="background: rgba(14, 165, 233, 0.12);"><i class="bi bi-eye"></i></button>';
                 if ($row->payment_status === 'paid') {
-                    return '<span class="text-muted"><i class="bi bi-check-lg"></i></span>';
+                    return '<div class="d-inline-flex gap-2">'.$btnShow.'</div>';
                 }
-                return '<div class="d-inline-flex gap-2"><button class="btn-icon-modern text-success btn-pay" data-uuid="'.$row->uuid.'" title="Lunasi Piutang" style="background: rgba(16, 185, 129, 0.12);"><i class="bi bi-check2-circle"></i></button></div>';
+                $btnPay = '<button class="btn-icon-modern text-success btn-pay" data-uuid="'.$row->uuid.'" title="Lunasi Piutang" style="background: rgba(16, 185, 129, 0.12);"><i class="bi bi-check2-circle"></i></button>';
+                return '<div class="d-inline-flex gap-2">'.$btnShow.$btnPay.'</div>';
             })
             ->rawColumns(['status_badge', 'action'])
             ->make(true);
@@ -73,6 +75,13 @@ class AccountsReceivableController extends Controller
         $tenantId = Auth::user()->tenant_id ?? 1;
         $order = PosOrder::with('payments.creator')->where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
         return view('pages.business.finance.receivable.partials.payment_modal', compact('order', 'uuid'));
+    }
+
+    public function showModal($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $order = PosOrder::with(['items.product', 'payments.creator'])->where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
+        return view('pages.business.finance.receivable.partials.show_modal', compact('order'));
     }
 
     public function pay(Request $request, $uuid)
@@ -92,7 +101,7 @@ class AccountsReceivableController extends Controller
             if ($request->hasFile('attachment')) {
                 $file = $request->file('attachment');
                 $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('public/payments', $filename);
+                $path = $file->storeAs('payments', $filename, 'public');
                 $attachmentPath = 'storage/payments/' . $filename;
             }
 

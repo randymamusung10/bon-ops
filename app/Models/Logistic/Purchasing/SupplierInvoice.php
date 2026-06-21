@@ -51,6 +51,11 @@ class SupplierInvoice extends Model
         return $this->hasMany(SupplierInvoiceItem::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(SupplierPayment::class);
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
