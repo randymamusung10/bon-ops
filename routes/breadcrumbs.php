@@ -364,3 +364,18 @@ Breadcrumbs::for('operational.restaurant.queue', function (BreadcrumbTrail $trai
     $trail->push('Restaurant', '#');
     $trail->push('Antrean Pesanan', route('operational.restaurant.queue'));
 });
+
+// Finance > Penerimaan Kas
+Breadcrumbs::for('business.finance.cash_receipt.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Penerimaan Kas', route('business.finance.cash_receipt.index'));
+});
+
+// Finance > Pengeluaran Kas
+Breadcrumbs::for('business.finance.cash_disbursement.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Pengeluaran Kas', route('business.finance.cash_disbursement.index'));
+});
+

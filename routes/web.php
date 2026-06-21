@@ -371,6 +371,36 @@ Route::middleware('auth')->group(function () {
             Route::post('journal/{uuid}/approve', [GeneralJournalController::class, 'approve'])->name('journal.approve');
             Route::post('journal/{uuid}/post', [GeneralJournalController::class, 'post'])->name('journal.post');
             Route::get('journal/{uuid}/print', [GeneralJournalController::class, 'printVoucher'])->name('journal.print');
+
+            // Cash & Bank
+            Route::prefix('cash-receipt')->name('cash_receipt.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'index'])->name('index');
+                Route::get('data', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'data'])->name('data');
+                Route::get('create', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'create'])->name('create');
+                Route::post('/', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'store'])->name('store');
+                Route::get('{uuid}', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'show'])->name('show');
+                Route::get('{uuid}/edit', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'edit'])->name('edit');
+                Route::put('{uuid}', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'update'])->name('update');
+                Route::delete('{uuid}', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'destroy'])->name('destroy');
+                Route::post('{uuid}/submit', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'submit'])->name('submit');
+                Route::post('{uuid}/approve', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'approve'])->name('approve');
+                Route::post('{uuid}/post', [\App\Http\Controllers\Business\Finance\CashBank\CashReceiptController::class, 'post'])->name('post');
+            });
+            
+            Route::prefix('cash-disbursement')->name('cash_disbursement.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'index'])->name('index');
+                Route::get('data', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'data'])->name('data');
+                Route::get('create', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'create'])->name('create');
+                Route::post('/', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'store'])->name('store');
+                Route::get('{uuid}', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'show'])->name('show');
+                Route::get('{uuid}/edit', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'edit'])->name('edit');
+                Route::put('{uuid}', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'update'])->name('update');
+                Route::delete('{uuid}', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'destroy'])->name('destroy');
+                Route::post('{uuid}/submit', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'submit'])->name('submit');
+                Route::post('{uuid}/approve', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'approve'])->name('approve');
+                Route::post('{uuid}/post', [\App\Http\Controllers\Business\Finance\CashBank\CashDisbursementController::class, 'post'])->name('post');
+            });
+
             Route::get('payable', [AccountsPayableController::class, 'index'])->name('payable');
             Route::get('receivable', [AccountsReceivableController::class, 'index'])->name('receivable');
             Route::get('ledger', [GeneralLedgerController::class, 'index'])->name('ledger');
