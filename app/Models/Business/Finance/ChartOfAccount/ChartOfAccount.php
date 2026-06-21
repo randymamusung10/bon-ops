@@ -25,4 +25,9 @@ class ChartOfAccount extends BaseMasterModel
     {
         return $this->hasMany(ChartOfAccount::class, 'parent_id');
     }
+
+    public function generalLedgers()
+    {
+        return $this->hasMany(\App\Models\Business\Finance\GeneralLedger\GeneralLedger::class, 'chart_of_account_id');
+    }
 }

@@ -86,7 +86,7 @@ class ChartOfAccountService
         foreach ($coas as $coa) {
             $results[] = [
                 'id' => $coa->id,
-                'text' => '[' . $coa->code . '] ' . $coa->name
+                'text' => '[' . trim($coa->code) . '] ' . trim($coa->name)
             ];
         }
 

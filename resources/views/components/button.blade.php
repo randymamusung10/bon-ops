@@ -17,6 +17,11 @@
     $classes .= "btn-variant-{$variant} ";
 
     if ($block) $classes .= 'w-100 ';
+    
+    $hasSlot = trim((string) $slot) !== '';
+    if (!$hasSlot) {
+        $classes .= 'btn-icon-only ';
+    }
 @endphp
 
 @once
@@ -47,6 +52,10 @@
         font-size: 17px !important;
         border-radius: 12px !important;
     }
+    
+    .btn-icon-only.btn-size-sm { padding: 7px !important; width: 34px; height: 34px; }
+    .btn-icon-only.btn-size-md { padding: 10px !important; width: 43px; height: 43px; }
+    .btn-icon-only.btn-size-lg { padding: 12px !important; width: 48px; height: 48px; }
 
     /* Variant Backgrounds & Colors */
     .btn-variant-primary {
@@ -143,7 +152,9 @@
         @if($icon)
             <i class="bi {{ $icon }}"></i>
         @endif
+        @if($hasSlot)
         <span style="font-weight: 600;">{{ $slot }}</span>
+        @endif
     </span>
     <span class="ripple-overlay"></span>
 </button>

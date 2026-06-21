@@ -52,7 +52,7 @@ class User extends Authenticatable
      */
     public function branch()
     {
-        return $this->belongsTo(Branch::class);
+        return $this->belongsTo(\App\Models\Logistic\Master\Branch\Branch::class);
     }
 
     /**

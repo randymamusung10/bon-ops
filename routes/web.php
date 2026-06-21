@@ -374,6 +374,9 @@ Route::middleware('auth')->group(function () {
             Route::get('payable', [AccountsPayableController::class, 'index'])->name('payable');
             Route::get('receivable', [AccountsReceivableController::class, 'index'])->name('receivable');
             Route::get('ledger', [GeneralLedgerController::class, 'index'])->name('ledger');
+            Route::get('ledger/data', [GeneralLedgerController::class, 'data'])->name('ledger.data');
+            Route::get('ledger/summary', [GeneralLedgerController::class, 'summary'])->name('ledger.summary');
+            Route::get('ledger/print', [GeneralLedgerController::class, 'print'])->name('ledger.print');
             Route::get('profit-loss', [ProfitLossController::class, 'index'])->name('profit_loss');
             Route::get('balance-sheet', [BalanceSheetController::class, 'index'])->name('balance_sheet');
         });
@@ -413,3 +416,4 @@ Route::middleware('auth')->group(function () {
         });
     });
 });
+require __DIR__.'/test_dt.php';
