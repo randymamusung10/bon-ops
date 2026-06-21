@@ -124,6 +124,19 @@
     border-radius: 8px;
     margin: 0 4px;
 }
+
+/* Unpaid Order Hover Effect */
+.unpaid-order-item {
+    transition: all 0.2s ease-in-out !important;
+    cursor: pointer;
+}
+.unpaid-order-item:hover, .unpaid-order-item:focus {
+    background-color: color-mix(in srgb, var(--bs-warning) 8%, transparent) !important;
+    border-color: color-mix(in srgb, var(--bs-warning) 30%, transparent) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--bs-warning) 10%, transparent) !important;
+    z-index: 2;
+}
 </style>
 @endpush
 
@@ -202,12 +215,10 @@
                             
                             <div class="p-3 product-details d-flex flex-column w-100">
                                 <div class="product-info-top">
-                                    <div class="d-flex align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <span class="text-muted" style="font-size: 11px;">{{ $prod->code }}</span>
-                                        @if($prod->type === 'raw_material')
-                                            <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="font-size: 9px; padding: 2px 6px;">Bahan Baku</span>
-                                        @else
-                                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 9px; padding: 2px 6px;">Menu Tersedia</span>
+                                        @if($prod->category)
+                                            <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 9px; padding: 2px 6px;"><i class="bi bi-tag-fill me-1"></i>{{ $prod->category->name }}</span>
                                         @endif
                                     </div>
                                     <h6 class="fw-bold mb-0 text-heading mt-1 product-title" style="font-family: 'Outfit', sans-serif;">{{ $prod->name }}</h6>
@@ -236,13 +247,18 @@
                 <!-- Header -->
                 <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="border-color: rgba(226, 232, 240, 0.1) !important;">
                     <h6 class="fw-bold mb-0 text-heading"><i class="bi bi-cart3 me-2 text-primary"></i>Keranjang Belanja</h6>
-                    <x-button type="button" variant="ghost-danger" size="sm" class="rounded-3" id="clear-cart" data-bs-toggle="tooltip" title="Hapus semua menu yang ada di keranjang belanja">
-                        <i class="bi bi-trash me-1"></i>Reset
-                    </x-button>
+                    <div class="d-flex gap-2">
+                        <x-button type="button" variant="warning" size="sm" class="rounded-3 px-3 shadow-sm text-white" id="btn-unpaid-orders" data-bs-toggle="offcanvas" data-bs-target="#offcanvasUnpaidOrders" title="Lihat Pesanan Belum Lunas (Kasbon)" style="background: color-mix(in srgb, var(--bs-warning) 80%, transparent); color: #fff !important; border-color: var(--bs-warning);">
+                            <i class="bi bi-clock-history me-1"></i> Kasbon
+                        </x-button>
+                        <x-button type="button" variant="ghost-danger" size="sm" class="rounded-3" id="clear-cart" data-bs-toggle="tooltip" title="Hapus semua menu yang ada di keranjang belanja">
+                            <i class="bi bi-trash"></i>
+                        </x-button>
+                    </div>
                 </div>
 
                 <!-- Customer info inputs -->
-                <div class="p-3 border-bottom bg-light-subtle" style="border-color: rgba(226, 232, 240, 0.1) !important;">
+                <div class="p-3 border-bottom" style="background: rgba(226, 232, 240, 0.03); border-color: rgba(226, 232, 240, 0.1) !important;">
                     <div class="row g-2 mb-2">
                         <div class="col-12">
                             <x-form.select id="order_type" style="font-size: 12px; border-radius: 8px;">
@@ -254,10 +270,10 @@
                     </div>
                     <div class="row g-2">
                         <div class="col-6">
-                            <x-form.input type="text" id="customer_name" placeholder="Nama Pelanggan" style="font-size: 12px; border-radius: 8px;" />
+                            <x-form.input type="text" id="customer_name" placeholder="Nama Pelanggan" style="font-size: 12px; border-radius: 8px; background: transparent; color: var(--text-heading); border-color: rgba(226, 232, 240, 0.2);" />
                         </div>
                         <div class="col-6">
-                            <x-form.input type="text" id="table_number" placeholder="No. Meja" style="font-size: 12px; border-radius: 8px;" />
+                            <x-form.input type="text" id="table_number" placeholder="No. Meja" style="font-size: 12px; border-radius: 8px; background: transparent; color: var(--text-heading); border-color: rgba(226, 232, 240, 0.2);" />
                         </div>
                     </div>
                 </div>
@@ -323,6 +339,13 @@
                         </x-form.select>
                     </div>
 
+                    <!-- Due Date Selection (Hidden by default, shown for Tempo) -->
+                    <div class="mb-3 d-none" id="due-date-container">
+                        <x-form.label class="mb-2" style="font-size: 11px;">Tanggal Jatuh Tempo <i class="bi bi-question-circle text-muted ms-1" style="cursor: help;" data-bs-toggle="tooltip" title="Jika diisi, pelunasan tagihan ini akan masuk ke menu Piutang (AR). Jika dikosongkan, tagihan wajib dilunasi di Kasir sebelum shift berakhir."></i></x-form.label>
+                        <x-form.input type="date" id="due-date-input" style="font-size: 12px; border-radius: 8px;" min="{{ date('Y-m-d') }}" />
+                        <small class="text-muted d-block mt-1" style="font-size: 10px;">Kosongkan jika hanya kasbon harian.</small>
+                    </div>
+
                     <!-- Checkout Button -->
                     <x-button type="button" variant="primary" class="w-100 py-2.5 rounded-3 fw-bold" id="btn-checkout" size="md">
                         Bayar Sekarang <i class="bi bi-arrow-right-short ms-1" style="font-size: 18px;"></i>
@@ -378,6 +401,95 @@
         <x-button type="button" variant="primary" size="sm" id="btn-submit-payment" icon="bi-check2">Selesaikan Transaksi</x-button>
     </x-slot>
 </x-modal>
+
+<!-- Offcanvas Pesanan Belum Lunas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasUnpaidOrders" aria-labelledby="offcanvasUnpaidOrdersLabel" style="width: 400px; background: var(--bg-dark-secondary);">
+    <div class="offcanvas-header border-bottom" style="border-color: rgba(226, 232, 240, 0.1) !important;">
+        <h5 class="offcanvas-title fw-bold text-heading" id="offcanvasUnpaidOrdersLabel"><i class="bi bi-clock-history me-2 text-warning"></i>Pesanan Belum Lunas</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        <!-- Tabs -->
+        <style>
+            #unpaidOrdersTab {
+                background: rgba(226, 232, 240, 0.05);
+                border-radius: 12px;
+                padding: 6px;
+                margin: 16px;
+            }
+            #unpaidOrdersTab .nav-link {
+                color: var(--text-light) !important;
+                border-radius: 8px;
+                transition: all 0.2s ease;
+                font-weight: 600;
+                background: transparent;
+            }
+            #unpaidOrdersTab .nav-link:hover {
+                background: rgba(226, 232, 240, 0.08) !important;
+                color: var(--text-heading) !important;
+            }
+            #unpaidOrdersTab .nav-link.active {
+                color: #ffffff !important;
+                background-color: var(--primary-accent) !important;
+            }
+            #unpaidOrdersTab .nav-link .badge {
+                background-color: var(--bg-dark-secondary, rgba(226, 232, 240, 0.8)) !important;
+                color: var(--text-heading) !important;
+                font-weight: 700;
+                border: 1px solid rgba(226, 232, 240, 0.2);
+            }
+            #unpaidOrdersTab .nav-link.active .badge {
+                background-color: rgba(255, 255, 255, 0.9) !important;
+                color: var(--primary-accent) !important;
+                border: none;
+            }
+        </style>
+        <ul class="nav nav-pills nav-justified mb-3" id="unpaidOrdersTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active py-2 border-0" id="harian-tab" data-bs-toggle="tab" data-bs-target="#harian-pane" type="button" role="tab" style="font-size: 13px;">
+                    Kasbon Harian <span class="badge ms-1 rounded-pill" id="badge-harian">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link py-2 border-0" id="piutang-tab" data-bs-toggle="tab" data-bs-target="#piutang-pane" type="button" role="tab" style="font-size: 13px;">
+                    Piutang (JT) <span class="badge ms-1 rounded-pill" id="badge-piutang">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <div id="unpaid-orders-loader" class="text-center py-5 d-none">
+            <div class="spinner-border text-warning mb-2" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="text-muted" style="font-size: 13px;">Memuat data pesanan...</p>
+        </div>
+        
+        <div class="tab-content" id="unpaidOrdersTabContent">
+            <!-- Tab Harian -->
+            <div class="tab-pane fade show active" id="harian-pane" role="tabpanel" tabindex="0">
+                <div id="harian-orders-empty" class="text-center py-5 d-none">
+                    <i class="bi bi-check2-circle text-success mb-2" style="font-size: 40px;"></i>
+                    <p class="text-muted" style="font-size: 13px;">Semua kasbon harian sudah lunas.</p>
+                </div>
+                <div class="list-group list-group-flush" id="harian-orders-list"></div>
+            </div>
+
+            <!-- Tab Piutang -->
+            <div class="tab-pane fade" id="piutang-pane" role="tabpanel" tabindex="0">
+                <div id="piutang-orders-empty" class="text-center py-5 d-none">
+                    <i class="bi bi-check2-circle text-success mb-2" style="font-size: 40px;"></i>
+                    <p class="text-muted" style="font-size: 13px;">Tidak ada tagihan piutang / jatuh tempo.</p>
+                </div>
+                <div class="list-group list-group-flush" id="piutang-orders-list"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer with Close button -->
+    <div class="offcanvas-footer p-3 border-top" style="background: var(--bg-dark-secondary); border-color: rgba(226, 232, 240, 0.1) !important;">
+        <button type="button" class="btn btn-light w-100 py-2 fw-medium" data-bs-dismiss="offcanvas" style="border-radius: 8px;">Tutup</button>
+    </div>
+</div>
 @endpush
 
 @push('scripts')
@@ -401,6 +513,7 @@ $(document).ready(function() {
     var grandTotal = 0;
     var taxAmount = 0;
     var subtotal = 0;
+    var currentOrderUuid = null;
 
     // View Toggle
     var savedViewMode = localStorage.getItem('pos_view_mode') || 'grid';
@@ -591,13 +704,20 @@ $(document).ready(function() {
         $('#search-product').trigger('input'); // Trigger combined filter
     });
 
-    // Toggle Bank Selection container
+    // Toggle Bank Selection and Due Date container
     $('input[name="payment_method"]').on('change', function() {
         var val = $(this).val();
         if (val === 'debit' || val === 'credit') {
             $('#bank-selection-container').removeClass('d-none');
         } else {
             $('#bank-selection-container').addClass('d-none');
+        }
+
+        if (val === 'tempo') {
+            $('#due-date-container').removeClass('d-none');
+        } else {
+            $('#due-date-container').addClass('d-none');
+            $('#due-date-input').val(''); // Reset value when hidden
         }
     });
 
@@ -641,7 +761,7 @@ $(document).ready(function() {
                 subtotal += itemSubtotal;
 
                 var row = `
-                    <div class="p-3 rounded-4" style="background: color-mix(in srgb, var(--primary-accent) 3%, transparent); border: 1px solid rgba(226, 232, 240, 0.15);">
+                    <div class="p-3 rounded-4 mb-2" style="background: var(--bg-dark-secondary); border: 1px solid rgba(226, 232, 240, 0.1) !important;">
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <div>
                                 <span class="fw-semibold text-heading d-block" style="font-size: 13px;">${item.name}</span>
@@ -650,11 +770,11 @@ $(document).ready(function() {
                             <span class="fw-bold text-heading" style="font-size: 13px;">Rp ${formatMoney(itemSubtotal)}</span>
                         </div>
                         <div class="d-flex justify-content-between align-items-center">
-                            <input type="text" class="form-control form-control-sm item-notes-input" data-index="${index}" value="${item.notes}" placeholder="Notes (es batu, dll)" style="max-width: 150px; font-size: 11px; height: 26px; border-radius: 6px;">
+                            <input type="text" class="form-control form-control-sm item-notes-input" data-index="${index}" value="${item.notes}" placeholder="Notes (es batu, dll)" style="max-width: 150px; font-size: 11px; height: 26px; border-radius: 6px; background: transparent; color: var(--text-heading); border-color: rgba(226, 232, 240, 0.2);">
                             <div class="d-flex align-items-center gap-2">
-                                <button class="btn btn-icon-modern btn-minus bg-danger-subtle text-danger border-0 d-flex align-items-center justify-content-center" data-index="${index}" style="width: 26px; height: 26px; font-size: 14px; border-radius: 6px;"><i class="bi bi-dash"></i></button>
+                                <button class="btn btn-icon-modern btn-minus" data-index="${index}" style="width: 26px; height: 26px; font-size: 14px; border-radius: 6px; background: color-mix(in srgb, var(--bs-danger) 15%, transparent); color: var(--bs-danger); border: none;"><i class="bi bi-dash"></i></button>
                                 <span class="fw-bold text-heading text-center" style="font-size: 14px; width: 20px;">${item.qty}</span>
-                                <button class="btn btn-icon-modern btn-plus bg-primary-subtle text-primary border-0 d-flex align-items-center justify-content-center" data-index="${index}" style="width: 26px; height: 26px; font-size: 14px; border-radius: 6px;"><i class="bi bi-plus"></i></button>
+                                <button class="btn btn-icon-modern btn-plus" data-index="${index}" style="width: 26px; height: 26px; font-size: 14px; border-radius: 6px; background: color-mix(in srgb, var(--primary-accent) 15%, transparent); color: var(--primary-accent); border: none;"><i class="bi bi-plus"></i></button>
                             </div>
                         </div>
                     </div>
@@ -703,6 +823,7 @@ $(document).ready(function() {
     // Clear Cart
     $('#clear-cart').on('click', function() {
         cart = [];
+        currentOrderUuid = null;
         updateCart();
     });
 
@@ -796,11 +917,13 @@ $(document).ready(function() {
                 customer_name: $('#customer_name').val(),
                 table_number: $('#table_number').val(),
                 payment_method: method,
+                due_date: $('#due-date-input').val(),
+                order_uuid: currentOrderUuid,
                 items: itemsData
             },
             success: function(res) {
                 $('#paymentModal').modal('hide');
-                AppAlert.success('Sukses!', 'Transaksi berhasil diproses.');
+                AppAlert.success('Berhasil!', res.message || 'Transaksi berhasil diproses.');
                 
                 // Buka jendela cetak struk
                 if (res.order && res.order.uuid) {
@@ -809,9 +932,10 @@ $(document).ready(function() {
                 }
 
                 cart = [];
+                currentOrderUuid = null;
                 updateCart();
                 $('#customer_name, #table_number').val('');
-                $('#order_type').val('dine-in');
+                $('#order_type').val('dine-in').trigger('change');
             },
             error: function(xhr) {
                 AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Terjadi kesalahan pemrosesan transaksi.');
@@ -821,6 +945,149 @@ $(document).ready(function() {
             }
         });
     }
+
+    // Load Unpaid Orders into Offcanvas
+    $('#offcanvasUnpaidOrders').on('show.bs.offcanvas', function () {
+        $('#unpaid-orders-loader').removeClass('d-none');
+        $('#harian-orders-list, #piutang-orders-list').empty();
+        $('#harian-orders-empty, #piutang-orders-empty').addClass('d-none');
+
+        $.ajax({
+            url: "{{ route('operational.pos.terminal.unpaid') }}",
+            type: "GET",
+            success: function(res) {
+                $('#unpaid-orders-loader').addClass('d-none');
+                
+                var harianCount = 0;
+                var piutangCount = 0;
+                var harianHtml = '';
+                var piutangHtml = '';
+
+                if (res.data && res.data.length > 0) {
+                    res.data.forEach(function(order) {
+                        var date = new Date(order.created_at).toLocaleString('id-ID', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'});
+                        var customerStr = order.customer_name ? order.customer_name : 'Pelanggan Umum';
+                        if (order.table_number) {
+                            customerStr += ' - Meja ' + order.table_number;
+                        }
+                        
+                        var grandTotalFormatted = formatMoney(parseFloat(order.grand_total));
+                        
+                        var itemHtml = `
+                            <button type="button" class="list-group-item list-group-item-action p-3 mb-2 rounded-3 border unpaid-order-item shadow-sm" 
+                                    data-uuid="${order.uuid}" style="background: rgba(226,232,240,0.02); border-color: rgba(226,232,240,0.1) !important;">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <strong class="text-heading d-block mb-1" style="font-size: 14px;">${order.order_number}</strong>
+                                        <span class="text-muted" style="font-size: 12px;"><i class="bi bi-person me-1"></i> ${customerStr}</span>
+                                    </div>
+                                    <div class="d-flex flex-column align-items-end gap-1">
+                                        <span class="badge bg-warning-subtle text-warning px-2 py-1 rounded-pill border border-warning-subtle" style="font-size: 10px;">Belum Lunas</span>
+                                        ${order.due_date ? `<span class="badge bg-danger-subtle text-danger px-2 py-1 rounded-pill" style="font-size: 9px;"><i class="bi bi-calendar-event me-1"></i> JT: ${new Date(order.due_date).toLocaleDateString('id-ID')}</span>` : ''}
+                                    </div>
+                                </div>
+                                <hr style="opacity: 0.1; margin: 10px 0;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-muted" style="font-size: 11px;"><i class="bi bi-clock me-1"></i> ${date}</span>
+                                    <span class="fw-bold text-primary" style="font-size: 14px;">Rp ${grandTotalFormatted}</span>
+                                </div>
+                            </button>
+                        `;
+
+                        if (order.due_date) {
+                            piutangHtml += itemHtml;
+                            piutangCount++;
+                        } else {
+                            harianHtml += itemHtml;
+                            harianCount++;
+                        }
+                    });
+                }
+                
+                // Update badges
+                $('#badge-harian').text(harianCount);
+                $('#badge-piutang').text(piutangCount);
+
+                if (harianCount > 0) {
+                    $('#harian-orders-list').html(harianHtml);
+                } else {
+                    $('#harian-orders-empty').removeClass('d-none');
+                }
+
+                if (piutangCount > 0) {
+                    $('#piutang-orders-list').html(piutangHtml);
+                } else {
+                    $('#piutang-orders-empty').removeClass('d-none');
+                }
+            },
+            error: function() {
+                $('#unpaid-orders-loader').addClass('d-none');
+                AppAlert.error('Gagal!', 'Tidak dapat memuat pesanan belum lunas.');
+            }
+        });
+    });
+
+    // Handle Unpaid Order Click
+    $(document).on('click', '.unpaid-order-item', function() {
+        var uuid = $(this).data('uuid');
+        var btn = $(this);
+        
+        AppAlert.confirm('Muat Pesanan?', 'Isi keranjang saat ini akan dihapus dan digantikan dengan pesanan ini.', 'Ya, Muat Pesanan').then((result) => {
+            if (result.isConfirmed) {
+                // Close Offcanvas immediately
+                var offcanvasElement = document.getElementById('offcanvasUnpaidOrders');
+                var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                if (offcanvas) {
+                    offcanvas.hide();
+                }
+
+                // Show loading state on button
+                var originalHtml = btn.html();
+                btn.html('<div class="text-center"><div class="spinner-border spinner-border-sm text-primary" role="status"></div></div>');
+                btn.prop('disabled', true);
+
+                $.ajax({
+                    url: "{{ url('operational/pos/terminal/order') }}/" + uuid,
+                    type: "GET",
+                    success: function(res) {
+                        var order = res.data;
+                        if (!order) return;
+
+                        // Set Cart
+                        cart = [];
+                        currentOrderUuid = order.uuid;
+
+                        order.items.forEach(function(item) {
+                            cart.push({
+                                product_id: item.product_id,
+                                name: item.product ? item.product.name : 'Unknown Product',
+                                price: parseFloat(item.price),
+                                qty: parseFloat(item.qty),
+                                notes: item.notes || ''
+                            });
+                        });
+
+                        // Update UI Fields
+                        $('#customer_name').val(order.customer_name);
+                        $('#table_number').val(order.table_number);
+                        $('#order_type').val(order.order_type).trigger('change');
+
+                        updateCart();
+
+                        AppAlert.success('Berhasil!', 'Pesanan kasbon berhasil dimuat ke keranjang.');
+                    },
+                    error: function() {
+                        AppAlert.error('Gagal!', 'Tidak dapat memuat detail pesanan.');
+                    },
+                    complete: function() {
+                        btn.html(originalHtml);
+                        btn.prop('disabled', false);
+                    }
+                });
+            }
+        });
+    });
+
 });
 </script>
 @endpush

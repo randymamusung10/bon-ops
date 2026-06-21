@@ -22,6 +22,7 @@ class AccountsReceivableController extends Controller
         // Fetch POS orders that are not fully paid (acts as AR)
         // Mengambil transaksi yang memang merupakan piutang (Tempo) atau belum lunas
         $query = PosOrder::where('tenant_id', $tenantId)
+            ->whereNotNull('due_date')
             ->where(function($q) {
                 $q->where('payment_method', 'tempo')
                   ->orWhereIn('payment_status', ['unpaid', 'partial']);

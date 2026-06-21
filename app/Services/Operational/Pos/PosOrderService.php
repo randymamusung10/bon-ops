@@ -63,6 +63,7 @@ class PosOrderService
                 'table_number' => $data['table_number'] ?? null,
                 'created_by' => $userId,
                 'notes' => $data['notes'] ?? null,
+                'due_date' => $data['due_date'] ?? null,
             ]);
 
             foreach ($data['items'] as $item) {
@@ -79,6 +80,72 @@ class PosOrderService
                     'notes' => $item['notes'] ?? null,
                 ]);
             }
+
+            // If order is paid, deduct inventory
+            if ($order->payment_status === 'paid') {
+                $this->deductInventoryForOrder($order);
+            }
+
+            DB::commit();
+            return $order;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    public function updateOrder(string $uuid, array $data)
+    {
+        try {
+            DB::beginTransaction();
+
+            $tenantId = Auth::user()->tenant_id ?? 1;
+            $userId = Auth::id();
+
+            $order = \App\Models\Operational\Pos\PosOrder::where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
+
+            if ($order->payment_status === 'paid') {
+                throw new Exception("Pesanan sudah dilunasi dan tidak dapat diubah.");
+            }
+
+            // Update order details
+            $order->update([
+                'total_amount' => $data['total_amount'],
+                'tax_amount' => $data['tax_amount'] ?? 0,
+                'discount_amount' => $data['discount_amount'] ?? 0,
+                'grand_total' => $data['grand_total'],
+                'payment_method' => $data['payment_method'] ?? $order->payment_method,
+                'payment_status' => $data['payment_status'] ?? $order->payment_status,
+                'status' => $data['status'] ?? $order->status,
+                'order_type' => $data['order_type'] ?? $order->order_type,
+                'customer_name' => $data['customer_name'] ?? $order->customer_name,
+                'table_number' => $data['table_number'] ?? $order->table_number,
+                'updated_by' => $userId,
+                'notes' => $data['notes'] ?? $order->notes,
+                'due_date' => $data['due_date'] ?? $order->due_date,
+            ]);
+
+            // Remove old items
+            PosOrderItem::where('pos_order_id', $order->id)->delete();
+
+            // Re-insert new items
+            foreach ($data['items'] as $item) {
+                $subtotal = $item['price'] * $item['qty'];
+                PosOrderItem::create([
+                    'pos_order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'qty' => $item['qty'],
+                    'price' => $item['price'],
+                    'tax_amount' => $item['tax_amount'] ?? 0,
+                    'discount_amount' => $item['discount_amount'] ?? 0,
+                    'subtotal' => $subtotal,
+                    'status' => 'pending',
+                    'notes' => $item['notes'] ?? null,
+                ]);
+            }
+
+            // Reload items
+            $order->load('items');
 
             // If order is paid, deduct inventory
             if ($order->payment_status === 'paid') {

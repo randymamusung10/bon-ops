@@ -61,6 +61,16 @@ class PosShiftService
                 throw new Exception("Shift kasir sudah ditutup sebelumnya.");
             }
 
+            // Check if there are any unpaid daily kasbon (no due_date)
+            $unpaidDailyOrders = PosOrder::where('pos_shift_id', $shift->id)
+                ->whereIn('payment_status', ['unpaid', 'partial'])
+                ->whereNull('due_date')
+                ->count();
+
+            if ($unpaidDailyOrders > 0) {
+                throw new Exception("Terdapat {$unpaidDailyOrders} transaksi kasbon harian yang belum dilunasi. Harap lunasi terlebih dahulu sebelum menutup shift.");
+            }
+
             // Calculate expected cash in drawer
             $cashOrdersTotal = PosOrder::where('pos_shift_id', $shift->id)
                 ->where('payment_status', 'paid')

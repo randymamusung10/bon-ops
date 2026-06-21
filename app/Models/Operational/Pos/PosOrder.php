@@ -32,10 +32,12 @@ class PosOrder extends Model
         'table_number',
         'created_by',
         'notes',
+        'due_date',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'due_date' => 'date',
         'total_amount' => 'decimal:4',
         'tax_amount' => 'decimal:4',
         'discount_amount' => 'decimal:4',

@@ -38,7 +38,7 @@ class PosTerminalController extends Controller
         $branchId = $activeShift->branch_id;
 
         // POS usually sells finished goods or menu items.
-        $products = Product::with(['unit', 'inventoryBalances' => function($q) use ($branchId) {
+        $products = Product::with(['unit', 'category', 'inventoryBalances' => function($q) use ($branchId) {
             $q->where('branch_id', $branchId);
         }])
             ->where('tenant_id', $tenantId)
@@ -81,7 +81,7 @@ class PosTerminalController extends Controller
             $taxAmount = $totalAmount * 0.10;
             $grandTotal = $totalAmount + $taxAmount;
 
-            $order = $this->orderService->createOrder([
+            $orderData = [
                 'total_amount' => $totalAmount,
                 'tax_amount' => $taxAmount,
                 'grand_total' => $grandTotal,
@@ -92,8 +92,15 @@ class PosTerminalController extends Controller
                 'customer_name' => $request->customer_name,
                 'table_number' => $request->table_number,
                 'notes' => $request->notes,
+                'due_date' => $request->due_date,
                 'items' => $itemsData,
-            ]);
+            ];
+
+            if ($request->has('order_uuid') && !empty($request->order_uuid)) {
+                $order = $this->orderService->updateOrder($request->order_uuid, $orderData);
+            } else {
+                $order = $this->orderService->createOrder($orderData);
+            }
 
             return response()->json([
                 'success' => true,
@@ -106,6 +113,34 @@ class PosTerminalController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
+    }
+
+    public function unpaidOrders(Request $request)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $orders = \App\Models\Operational\Pos\PosOrder::where('tenant_id', $tenantId)
+            ->whereIn('payment_status', ['unpaid', 'partial'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $orders
+        ]);
+    }
+
+    public function orderDetail($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $order = \App\Models\Operational\Pos\PosOrder::with('items.product')
+            ->where('tenant_id', $tenantId)
+            ->where('uuid', $uuid)
+            ->firstOrFail();
+
+        return response()->json([
+            'success' => true,
+            'data' => $order
+        ]);
     }
 
     public function receipt($uuid)

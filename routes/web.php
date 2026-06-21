@@ -76,7 +76,9 @@ Route::middleware('auth')->group(function () {
         Route::prefix('pos')->name('pos.')->group(function () {
             Route::get('terminal', [PosTerminalController::class, 'index'])->name('terminal');
             Route::post('terminal', [PosTerminalController::class, 'store'])->name('terminal.store');
-            Route::get('terminal/receipt/{uuid}', [PosTerminalController::class, 'receipt'])->name('terminal.receipt');
+            Route::get('terminal/unpaid', [PosTerminalController::class, 'unpaidOrders'])->name('terminal.unpaid');
+            Route::get('terminal/order/{uuid}', [PosTerminalController::class, 'orderDetail'])->name('terminal.order');
+            Route::get('terminal/{uuid}/receipt', [PosTerminalController::class, 'receipt'])->name('terminal.receipt');
             Route::get('history', [SalesHistoryController::class, 'index'])->name('history');
             Route::get('history/data', [SalesHistoryController::class, 'data'])->name('history.data');
             Route::get('history/{uuid}', [SalesHistoryController::class, 'detail'])->name('history.detail');
