@@ -198,19 +198,28 @@
                 </div>
 
                 @foreach($products as $prod)
+                    @php
+                        $stock = $prod->type === 'raw_material' ? (float)$prod->inventoryBalances->sum('qty') : 'BTO';
+                        $isOutOfStock = $stock !== 'BTO' && $stock <= 0;
+                    @endphp
                     <div class="col-md-4 col-sm-6 product-card-item" data-category-id="{{ $prod->product_category_id }}" data-name="{{ strtolower($prod->name) }}" data-code="{{ strtolower($prod->code) }}">
-                        <div class="card h-100 rounded-4 border-0 shadow-sm overflow-hidden position-relative product-btn" 
+                        <div class="card h-100 rounded-4 border-0 shadow-sm overflow-hidden position-relative {{ $isOutOfStock ? '' : 'product-btn' }}" 
                              data-id="{{ $prod->id }}" 
                              data-name="{{ $prod->name }}" 
                              data-price="{{ (float)$prod->price }}"
                              data-type="{{ $prod->type }}"
-                             data-stock="{{ $prod->type === 'raw_material' ? (float)$prod->inventoryBalances->sum('qty') : 'BTO' }}"
+                             data-stock="{{ $stock }}"
                              data-unit="{{ $prod->unit->name ?? 'pcs' }}"
-                             style="background: var(--bg-dark-secondary); cursor: pointer; transition: transform 0.2s; border: 1px solid rgba(226, 232, 240, 0.1) !important;">
+                             style="background: var(--bg-dark-secondary); {{ $isOutOfStock ? 'opacity: 0.6; cursor: not-allowed;' : 'cursor: pointer;' }} transition: transform 0.2s; border: 1px solid rgba(226, 232, 240, 0.1) !important;">
                             
                             <!-- Header visual or initials -->
-                            <div class="product-visual d-flex align-items-center justify-content-center text-white fw-bold" style="height: 120px; background: linear-gradient(135deg, var(--primary-accent), var(--primary-hover)); font-size: 24px;">
+                            <div class="product-visual d-flex align-items-center justify-content-center text-white fw-bold position-relative" style="height: 120px; background: linear-gradient(135deg, var(--primary-accent), var(--primary-hover)); font-size: 24px;">
                                 {{ strtoupper(substr($prod->name, 0, 2)) }}
+                                @if($isOutOfStock)
+                                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(0,0,0,0.5); z-index: 2;">
+                                        <span class="badge bg-danger px-3 py-2 shadow-sm" style="font-size: 14px; letter-spacing: 1px;">HABIS</span>
+                                    </div>
+                                @endif
                             </div>
                             
                             <div class="p-3 product-details d-flex flex-column w-100">
@@ -228,7 +237,7 @@
                                     <div class="d-flex flex-column align-items-end product-badges">
                                         <span class="badge bg-secondary-subtle text-secondary rounded-pill" style="font-size: 10px; font-weight: 600;">{{ $prod->unit->name ?? 'pcs' }}</span>
                                         @if($prod->type === 'raw_material')
-                                            <span class="text-muted mt-1 product-stock" style="font-size: 10.5px;">Stok: <strong class="text-heading">{{ (float)$prod->inventoryBalances->sum('qty') }}</strong></span>
+                                            <span class="text-muted mt-1 product-stock" style="font-size: 10.5px;">Stok: <strong class="{{ $isOutOfStock ? 'text-danger' : 'text-heading' }}">{{ $stock }}</strong></span>
                                         @else
                                             <span class="text-muted mt-1 product-stock" style="font-size: 10.5px;">Stok: <strong class="text-info" data-bs-toggle="tooltip" title="BTO (Built To Order): Menu ini dibuat langsung saat ada pesanan, sehingga tidak memiliki stok fisik instan.">Menu (BTO) <i class="bi bi-info-circle ms-1"></i></strong></span>
                                         @endif

@@ -48,6 +48,10 @@
 </div>
 @endsection
 
+@push('modals')
+<div id="modal-container"></div>
+@endpush
+
 @push('scripts')
 <script>
 $(document).ready(function() {
@@ -94,23 +98,13 @@ $(document).ready(function() {
         table.ajax.reload(null, false);
     };
 
-    $(document).on('click', '.btn-pay', function() {
+    $(document).on('click', '.btn-pay', function(e) {
+        e.preventDefault();
         var uuid = $(this).data('uuid');
-        AppAlert.confirm('Konfirmasi Aksi', 'Apakah Anda yakin ingin melunasi piutang ini?', 'Ya, Lanjutkan!').then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "{{ url('business/finance/receivable') }}/" + uuid + "/pay",
-                    type: "POST",
-                    data: { _token: "{{ csrf_token() }}" },
-                    success: function(response) {
-                        table.ajax.reload(null, false);
-                        AppAlert.success('Berhasil!', response.message);
-                    },
-                    error: function(xhr) {
-                        AppAlert.error('Gagal!', xhr.responseJSON?.message || 'Gagal melunasi piutang.');
-                    }
-                });
-            }
+        var url = "{{ url('business/finance/receivable') }}/" + uuid + "/payment-modal";
+        
+        ERPLoader.loadModal(url, '#modal-payment', {
+            title: 'Pelunasan Piutang'
         });
     });
 });

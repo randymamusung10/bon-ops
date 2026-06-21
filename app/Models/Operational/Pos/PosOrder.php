@@ -33,11 +33,13 @@ class PosOrder extends Model
         'created_by',
         'notes',
         'due_date',
+        'paid_at',
     ];
 
     protected $casts = [
         'date' => 'date',
         'due_date' => 'date',
+        'paid_at' => 'date',
         'total_amount' => 'decimal:4',
         'tax_amount' => 'decimal:4',
         'discount_amount' => 'decimal:4',
@@ -58,4 +60,10 @@ class PosOrder extends Model
     public function posShift() { return $this->belongsTo(PosShift::class); }
     public function creator() { return $this->belongsTo(User::class, 'created_by'); }
     public function items() { return $this->hasMany(PosOrderItem::class); }
+    public function payments() { return $this->hasMany(PosOrderPayment::class); }
+
+    public function getPaidAmountAttribute()
+    {
+        return $this->payments()->sum('amount');
+    }
 }

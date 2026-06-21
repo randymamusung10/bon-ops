@@ -46,7 +46,8 @@ class AccountsReceivableController extends Controller
                 if ($row->payment_status === 'paid') {
                     return number_format(0, 2, ',', '.');
                 }
-                return number_format($row->grand_total, 2, ',', '.');
+                $remaining = max(0, $row->grand_total - $row->paid_amount);
+                return number_format($remaining, 2, ',', '.');
             })
             ->addColumn('status_badge', function ($row) {
                 if ($row->payment_status === 'paid') {
@@ -67,19 +68,57 @@ class AccountsReceivableController extends Controller
             ->make(true);
     }
 
-    public function pay($uuid)
+    public function paymentModal($uuid)
+    {
+        $tenantId = Auth::user()->tenant_id ?? 1;
+        $order = PosOrder::with('payments.creator')->where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
+        return view('pages.business.finance.receivable.partials.payment_modal', compact('order', 'uuid'));
+    }
+
+    public function pay(Request $request, $uuid)
     {
         try {
+            $request->validate([
+                'payment_date' => 'required|date',
+                'amount' => 'required|numeric|min:1',
+                'payment_method' => 'required|string',
+                'attachment' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120'
+            ]);
+
             $tenantId = Auth::user()->tenant_id ?? 1;
             $order = PosOrder::where('tenant_id', $tenantId)->where('uuid', $uuid)->firstOrFail();
+
+            $attachmentPath = null;
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('public/payments', $filename);
+                $attachmentPath = 'storage/payments/' . $filename;
+            }
+
+            $order->payments()->create([
+                'payment_date' => $request->payment_date,
+                'amount' => $request->amount,
+                'payment_method' => $request->payment_method,
+                'attachment_path' => $attachmentPath,
+                'notes' => $request->payment_notes,
+                'created_by' => Auth::id()
+            ]);
+
+            $newPaidAmount = $order->paid_amount; // Note: Since paid_amount is dynamically calculated, it will reflect the newly inserted payment immediately.
             
-            $order->payment_status = 'paid';
-            // We do not change payment_method to 'cash', so it remains 'tempo' to signify it was originally a receivable.
+            if ($newPaidAmount >= $order->grand_total) {
+                $order->payment_status = 'paid';
+                $order->paid_at = $request->payment_date;
+            } else {
+                $order->payment_status = 'partial';
+            }
+            
             $order->save();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Piutang berhasil dilunasi.'
+                'message' => 'Pembayaran berhasil dicatat.'
             ]);
         } catch (\Exception $e) {
             return response()->json([
