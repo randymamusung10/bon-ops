@@ -358,6 +358,19 @@ Route::middleware('auth')->group(function () {
             Route::delete('coa/{uuid}', [\App\Http\Controllers\Business\Finance\ChartOfAccount\ChartOfAccountController::class, 'destroy'])->name('coa.destroy');
 
             Route::get('journal', [GeneralJournalController::class, 'index'])->name('journal');
+            Route::get('journal/data', [GeneralJournalController::class, 'data'])->name('journal.data');
+            Route::get('journal/references', [GeneralJournalController::class, 'getReferences'])->name('journal.references');
+            Route::get('journal/reference-details', [GeneralJournalController::class, 'getReferenceDetails'])->name('journal.reference_details');
+            Route::get('journal/create', [GeneralJournalController::class, 'create'])->name('journal.create');
+            Route::post('journal', [GeneralJournalController::class, 'store'])->name('journal.store');
+            Route::get('journal/{uuid}', [GeneralJournalController::class, 'show'])->name('journal.show');
+            Route::get('journal/{uuid}/edit', [GeneralJournalController::class, 'edit'])->name('journal.edit');
+            Route::put('journal/{uuid}', [GeneralJournalController::class, 'update'])->name('journal.update');
+            Route::delete('journal/{uuid}', [GeneralJournalController::class, 'destroy'])->name('journal.destroy');
+            Route::post('journal/{uuid}/submit', [GeneralJournalController::class, 'submit'])->name('journal.submit');
+            Route::post('journal/{uuid}/approve', [GeneralJournalController::class, 'approve'])->name('journal.approve');
+            Route::post('journal/{uuid}/post', [GeneralJournalController::class, 'post'])->name('journal.post');
+            Route::get('journal/{uuid}/print', [GeneralJournalController::class, 'printVoucher'])->name('journal.print');
             Route::get('payable', [AccountsPayableController::class, 'index'])->name('payable');
             Route::get('receivable', [AccountsReceivableController::class, 'index'])->name('receivable');
             Route::get('ledger', [GeneralLedgerController::class, 'index'])->name('ledger');
@@ -376,8 +389,25 @@ Route::middleware('auth')->group(function () {
     // System Settings
     Route::prefix('system')->name('system.')->group(function () {
         Route::prefix('settings')->name('settings.')->group(function () {
-            Route::get('users', [UserController::class, 'index'])->name('users');
-            Route::get('roles', [RoleController::class, 'index'])->name('roles');
+            // Users
+            Route::get('users', [UserController::class, 'index'])->name('users.index');
+            Route::get('users/data', [UserController::class, 'data'])->name('users.data');
+            Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+            Route::post('users', [UserController::class, 'store'])->name('users.store');
+            Route::get('users/{user}', [UserController::class, 'show'])->name('users.show');
+            Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+            Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
+            Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+            // Roles
+            Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
+            Route::get('roles/data', [RoleController::class, 'data'])->name('roles.data');
+            Route::get('roles/create', [RoleController::class, 'create'])->name('roles.create');
+            Route::post('roles', [RoleController::class, 'store'])->name('roles.store');
+            Route::get('roles/{role}', [RoleController::class, 'show'])->name('roles.show');
+            Route::get('roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+            Route::put('roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+            Route::delete('roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
             Route::get('permissions', [PermissionController::class, 'index'])->name('permissions');
             Route::get('branch-config', [BranchConfigController::class, 'index'])->name('branch_config');
         });

@@ -256,7 +256,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item dropdown-item-custom" href="{{ route('system.settings.users') }}">
+                            <a class="dropdown-item dropdown-item-custom" href="{{ route('system.settings.users.index') }}">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="dropdown-icon-wrapper"><i class="bi bi-shield-lock"></i></div>
                                     <div class="d-flex flex-column">

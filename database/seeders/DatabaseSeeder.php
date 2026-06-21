@@ -77,6 +77,11 @@ class DatabaseSeeder extends Seeder
             'branch_id' => $branch1->id,
         ]);
 
+        // 5.5. Roles & Permissions (System)
+        $this->call([
+            SystemRoleUserSeeder::class,
+        ]);
+
         // 6. Master Data Financial (Independent)
         $this->call([
             CurrencySeeder::class,

@@ -203,8 +203,8 @@
                 </a>
                 <div class="collapse submenu-list-wrapper {{ Request::is('system/settings*') ? 'show' : '' }}" id="settingsMenu">
                     <div class="submenu-list">
-                        <a href="{{ route('system.settings.users') }}" class="submenu-link {{ Route::is('system.settings.users') ? 'active' : '' }}"><i class="bi bi-person-gear"></i><span>Manajemen User</span><span class="sidebar-sub-badge sidebar-badge-success ms-auto">8</span></a>
-                        <a href="{{ route('system.settings.roles') }}" class="submenu-link {{ Route::is('system.settings.roles') ? 'active' : '' }}"><i class="bi bi-briefcase"></i><span>Role & Jabatan</span></a>
+                        <a href="{{ route('system.settings.users.index') }}" class="submenu-link {{ Route::is('system.settings.users.*') ? 'active' : '' }}"><i class="bi bi-person-gear"></i><span>Manajemen User</span><span class="sidebar-sub-badge sidebar-badge-success ms-auto">8</span></a>
+                        <a href="{{ route('system.settings.roles.index') }}" class="submenu-link {{ Route::is('system.settings.roles.*') ? 'active' : '' }}"><i class="bi bi-briefcase"></i><span>Role & Jabatan</span></a>
                         <a href="{{ route('system.settings.permissions') }}" class="submenu-link {{ Route::is('system.settings.permissions') ? 'active' : '' }}"><i class="bi bi-key"></i><span>Hak Akses (Permissions)</span><span class="sidebar-sub-badge sidebar-badge-danger ms-auto">1 !</span></a>
                         <a href="{{ route('system.settings.branch_config') }}" class="submenu-link {{ Route::is('system.settings.branch_config') ? 'active' : '' }}"><i class="bi bi-sliders"></i><span>Konfigurasi Cabang</span></a>
                     </div>

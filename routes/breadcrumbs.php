@@ -15,10 +15,17 @@ Breadcrumbs::for('dashboard', function (BreadcrumbTrail $trail) {
 });
 
 // Sistem > Manajemen User
-Breadcrumbs::for('system.settings.users', function (BreadcrumbTrail $trail) {
+Breadcrumbs::for('system.settings.users.index', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
     $trail->push('Sistem', '#');
-    $trail->push('Manajemen User', route('system.settings.users'));
+    $trail->push('Manajemen User', route('system.settings.users.index'));
+});
+
+// Sistem > Role & Jabatan
+Breadcrumbs::for('system.settings.roles.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Sistem', '#');
+    $trail->push('Role & Jabatan', route('system.settings.roles.index'));
 });
 
 // Master Data > Perusahaan
@@ -232,4 +239,128 @@ Breadcrumbs::for('operational.pos.refund', function (BreadcrumbTrail $trail) {
     $trail->push('Refund Transaksi', route('operational.pos.refund'));
 });
 
+// Finance > Jurnal Umum
+Breadcrumbs::for('business.finance.journal', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Jurnal Umum', route('business.finance.journal'));
+});
 
+// Finance > Hutang (AP)
+Breadcrumbs::for('business.finance.payable', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Hutang (AP)', route('business.finance.payable'));
+});
+
+// Finance > Piutang (AR)
+Breadcrumbs::for('business.finance.receivable', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Piutang (AR)', route('business.finance.receivable'));
+});
+
+// Finance > Buku Besar
+Breadcrumbs::for('business.finance.ledger', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Buku Besar', route('business.finance.ledger'));
+});
+
+// Finance > Laba Rugi
+Breadcrumbs::for('business.finance.profit_loss', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Laba Rugi', route('business.finance.profit_loss'));
+});
+
+// Finance > Neraca
+Breadcrumbs::for('business.finance.balance_sheet', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Keuangan', '#');
+    $trail->push('Neraca', route('business.finance.balance_sheet'));
+});
+
+// CRM > Pelanggan
+Breadcrumbs::for('business.crm.customer', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('CRM', '#');
+    $trail->push('Pelanggan', route('business.crm.customer'));
+});
+
+// CRM > Membership
+Breadcrumbs::for('business.crm.membership', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('CRM', '#');
+    $trail->push('Membership', route('business.crm.membership'));
+});
+
+// CRM > Loyalitas
+Breadcrumbs::for('business.crm.loyalty', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('CRM', '#');
+    $trail->push('Poin Loyalitas', route('business.crm.loyalty'));
+});
+
+// CRM > Voucher
+Breadcrumbs::for('business.crm.voucher', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('CRM', '#');
+    $trail->push('Voucher', route('business.crm.voucher'));
+});
+
+// Laporan > Sales
+Breadcrumbs::for('business.reports.sales', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Laporan', '#');
+    $trail->push('Laporan Penjualan', route('business.reports.sales'));
+});
+
+// Laporan > Stock
+Breadcrumbs::for('business.reports.stock', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Laporan', '#');
+    $trail->push('Laporan Stok', route('business.reports.stock'));
+});
+
+// Laporan > Food Cost
+Breadcrumbs::for('business.reports.food_cost', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Laporan', '#');
+    $trail->push('Laporan Food Cost', route('business.reports.food_cost'));
+});
+
+// Laporan > Pembelian
+Breadcrumbs::for('business.reports.purchase', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Laporan', '#');
+    $trail->push('Laporan Pembelian', route('business.reports.purchase'));
+});
+
+// Laporan > Dashboard Eksekutif
+Breadcrumbs::for('business.reports.executive', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Laporan', '#');
+    $trail->push('Dashboard Eksekutif', route('business.reports.executive'));
+});
+
+// Restaurant > Manajemen Meja
+Breadcrumbs::for('operational.restaurant.tables', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Restaurant', '#');
+    $trail->push('Manajemen Meja', route('operational.restaurant.tables'));
+});
+
+// Restaurant > Reservasi
+Breadcrumbs::for('operational.restaurant.reservations', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Restaurant', '#');
+    $trail->push('Reservasi', route('operational.restaurant.reservations'));
+});
+
+// Restaurant > Antrean Pesanan
+Breadcrumbs::for('operational.restaurant.queue', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Restaurant', '#');
+    $trail->push('Antrean Pesanan', route('operational.restaurant.queue'));
+});
