@@ -319,7 +319,12 @@
                     confirmButtonText: confirmText,
                     cancelButtonText: 'Batal',
                     reverseButtons: true, // Confirm button on the right
-                    showCloseButton: true
+                    showCloseButton: true,
+                    customClass: {
+                        confirmButton: 'btn custom-btn position-relative overflow-hidden btn-size-md btn-variant-primary',
+                        cancelButton: 'btn custom-btn position-relative overflow-hidden btn-size-md btn-variant-light',
+                        popup: 'rounded-4'
+                    }
                 });
             },
             

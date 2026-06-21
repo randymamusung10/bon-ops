@@ -86,7 +86,7 @@ class PosTerminalController extends Controller
                 'tax_amount' => $taxAmount,
                 'grand_total' => $grandTotal,
                 'payment_method' => $request->payment_method,
-                'payment_status' => 'paid',
+                'payment_status' => $request->payment_method === 'tempo' ? 'unpaid' : 'paid',
                 'status' => 'pending', // starts as pending, will become processing when kitchen/barista starts cooking
                 'order_type' => $request->order_type,
                 'customer_name' => $request->customer_name,

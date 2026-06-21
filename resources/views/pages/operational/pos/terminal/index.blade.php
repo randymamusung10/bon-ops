@@ -305,6 +305,9 @@
 
                             <input type="radio" class="btn-check" name="payment_method" id="pay-qris" value="qris" autocomplete="off">
                             <label class="btn payment-method-btn py-2" for="pay-qris" data-bs-toggle="tooltip" title="QRIS (Quick Response Code): Pembayaran digital dengan scan barcode lewat aplikasi E-Wallet/M-Banking (Gopay, Ovo, Dana, dll)"><i class="bi bi-qr-code me-1"></i> QRIS</label>
+
+                            <input type="radio" class="btn-check" name="payment_method" id="pay-tempo" value="tempo" autocomplete="off">
+                            <label class="btn payment-method-btn py-2" for="pay-tempo" data-bs-toggle="tooltip" title="Kasbon / Tempo: Pembayaran ditangguhkan (menjadi Piutang)"><i class="bi bi-calendar-x me-1"></i> Tempo</label>
                         </div>
                     </div>
 
