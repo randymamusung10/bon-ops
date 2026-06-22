@@ -108,13 +108,15 @@ class AccountsPayableController extends Controller
             ->where('status', 'posted')
             ->sum('payment_amount');
             
-        $totalPending = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+        $pendingPayments = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
             ->whereIn('status', ['draft', 'submitted', 'approved'])
-            ->sum('payment_amount');
+            ->get();
+            
+        $totalPending = $pendingPayments->sum('payment_amount');
             
         $invoice->remaining_amount = max(0, $invoice->grand_total - ($totalPosted + $totalPending));
         
-        return view('pages.business.finance.payable.partials.payment_modal', compact('invoice', 'uuid', 'totalPending'));
+        return view('pages.business.finance.payable.partials.payment_modal', compact('invoice', 'uuid', 'totalPending', 'pendingPayments'));
     }
 
     public function pay(Request $request, $uuid, SupplierPaymentService $paymentService)

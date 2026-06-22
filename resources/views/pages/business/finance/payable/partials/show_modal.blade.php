@@ -228,10 +228,15 @@
         @endif
     </div>
 
-    <div class="d-flex justify-content-end mt-4 pt-3" style="border-top: 1px dashed var(--border-color);">
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3" style="border-top: 1px dashed var(--border-color);">
         <x-button type="button" variant="light" size="sm" data-bs-dismiss="modal">
             Tutup
         </x-button>
+        @if($invoice->status !== 'paid')
+            <x-button type="button" variant="success" size="sm" class="btn-pay-from-show" data-uuid="{{ $invoice->uuid }}" icon="bi-check2-circle">
+                Lunasi Hutang
+            </x-button>
+        @endif
     </div>
 </x-modal>
 

@@ -114,6 +114,20 @@ $(document).ready(function() {
             title: 'Bayar Hutang Dagang'
         });
     });
+
+    $(document).on('click', '.btn-pay-from-show', function(e) {
+        e.preventDefault();
+        $('#show-modal-payable').modal('hide');
+        
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('business/finance/payable') }}/" + uuid + "/payment-modal";
+        
+        setTimeout(function() {
+            ERPLoader.loadModal(url, '#payment-modal-payable', {
+                title: 'Bayar Hutang Dagang'
+            });
+        }, 300);
+    });
 });
 </script>
 @endpush
