@@ -107,9 +107,9 @@
                 </tbody>
                 <tfoot>
                     <tr style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent);">
-                        <td colspan="3" class="py-2 ps-4 text-end fw-bold">Total Keseluruhan (Rp)</td>
-                        <td class="py-2 text-end fw-bold text-primary fs-6">{{ number_format($journal->total_debit, 0, ',', '.') }}</td>
-                        <td class="py-2 pe-4 text-end fw-bold text-primary fs-6">{{ number_format($journal->total_credit, 0, ',', '.') }}</td>
+                        <td colspan="3" class="py-1 ps-4 text-end fw-bold">Total Keseluruhan (Rp)</td>
+                        <td class="py-1 text-end fw-bold text-primary fs-6">{{ number_format($journal->total_debit, 0, ',', '.') }}</td>
+                        <td class="py-1 pe-4 text-end fw-bold text-primary fs-6">{{ number_format($journal->total_credit, 0, ',', '.') }}</td>
                     </tr>
                 </tfoot>
             </table>

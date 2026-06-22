@@ -104,12 +104,12 @@
         <table class="table table-hover align-middle mb-0" style="font-size: 13px; --bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.2);">
             <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent); border-bottom: 1px solid rgba(226, 232, 240, 0.2);">
                 <tr class="text-muted" style="letter-spacing: 0.2px;">
-                    <th width="5%" class="text-center py-3 ps-4 border-0">No</th>
-                    <th width="35%" class="py-3 border-0">Produk</th>
-                    <th width="15%" class="py-3 border-0">Satuan</th>
-                    <th width="15%" class="text-end py-3 border-0">Qty Ditagihkan</th>
-                    <th width="15%" class="text-end py-3 border-0">Harga Satuan</th>
-                    <th width="15%" class="text-end py-3 pe-4 border-0">Total Harga</th>
+                    <th width="5%" class="text-center py-2 ps-4 border-0">No</th>
+                    <th width="35%" class="py-2 border-0">Produk</th>
+                    <th width="15%" class="py-2 border-0">Satuan</th>
+                    <th width="15%" class="text-end py-2 border-0">Qty Ditagihkan</th>
+                    <th width="15%" class="text-end py-2 border-0">Harga Satuan</th>
+                    <th width="15%" class="text-end py-2 pe-4 border-0">Total Harga</th>
                 </tr>
             </thead>
             <tbody class="border-top-0 text-heading">
@@ -131,20 +131,20 @@
             </tbody>
             <tfoot>
                 <tr style="background-color: color-mix(in srgb, var(--primary-accent) 2%, transparent);">
-                    <td colspan="5" class="py-2 text-end fw-medium text-muted border-0" style="font-size: 12px;">Subtotal</td>
-                    <td class="py-2 pe-4 text-end fw-semibold border-0">Rp {{ number_format($invoice->subtotal, 2, ',', '.') }}</td>
+                    <td colspan="5" class="py-1 text-end fw-medium text-muted border-0" style="font-size: 12px;">Subtotal</td>
+                    <td class="py-1 pe-4 text-end fw-semibold border-0">Rp {{ number_format($invoice->subtotal, 2, ',', '.') }}</td>
                 </tr>
                 <tr style="background-color: color-mix(in srgb, var(--primary-accent) 2%, transparent);">
-                    <td colspan="5" class="py-2 text-end fw-medium text-muted border-0" style="font-size: 12px;">Pajak / Tax (Rp)</td>
-                    <td class="py-2 pe-4 text-end fw-semibold border-0">Rp {{ number_format($invoice->tax_amount, 2, ',', '.') }}</td>
+                    <td colspan="5" class="py-1 text-end fw-medium text-muted border-0" style="font-size: 12px;">Pajak / Tax (Rp)</td>
+                    <td class="py-1 pe-4 text-end fw-semibold border-0">Rp {{ number_format($invoice->tax_amount, 2, ',', '.') }}</td>
                 </tr>
                 <tr style="background-color: color-mix(in srgb, var(--primary-accent) 2%, transparent);">
-                    <td colspan="5" class="py-2 text-end fw-medium text-muted border-0" style="font-size: 12px;">Diskon (Rp)</td>
-                    <td class="py-2 pe-4 text-end fw-semibold text-danger border-0">- Rp {{ number_format($invoice->discount_amount, 2, ',', '.') }}</td>
+                    <td colspan="5" class="py-1 text-end fw-medium text-muted border-0" style="font-size: 12px;">Diskon (Rp)</td>
+                    <td class="py-1 pe-4 text-end fw-semibold text-danger border-0">- Rp {{ number_format($invoice->discount_amount, 2, ',', '.') }}</td>
                 </tr>
                 <tr style="background-color: color-mix(in srgb, var(--primary-accent) 6%, transparent);">
-                    <td colspan="5" class="py-3 text-end fw-bold border-0">Grand Total (Hutang AP)</td>
-                    <td class="py-3 pe-4 text-end fw-bold text-primary border-0" style="font-size: 15px;">Rp {{ number_format($invoice->grand_total, 2, ',', '.') }}</td>
+                    <td colspan="5" class="py-1 text-end fw-bold border-0">Grand Total (Hutang AP)</td>
+                    <td class="py-1 pe-4 text-end fw-bold text-primary border-0" style="font-size: 15px;">Rp {{ number_format($invoice->grand_total, 2, ',', '.') }}</td>
                 </tr>
                 @if(in_array($invoice->status, ['posted', 'paid']))
                     @php
@@ -154,8 +154,8 @@
                         $remaining = max(0, $invoice->grand_total - $totalPaid);
                     @endphp
                     <tr style="background-color: color-mix(in srgb, var(--primary-accent) 2%, transparent);">
-                        <td colspan="5" class="py-2 text-end fw-bold border-0" style="font-size: 12px;">Sisa Tagihan</td>
-                        <td class="py-2 pe-4 text-end fw-bold text-danger border-0" style="font-size: 13px;">Rp {{ number_format($remaining, 2, ',', '.') }}</td>
+                        <td colspan="5" class="py-1 text-end fw-bold border-0" style="font-size: 12px;">Sisa Tagihan</td>
+                        <td class="py-1 pe-4 text-end fw-bold text-danger border-0" style="font-size: 13px;">Rp {{ number_format($remaining, 2, ',', '.') }}</td>
                     </tr>
                 @endif
             </tfoot>

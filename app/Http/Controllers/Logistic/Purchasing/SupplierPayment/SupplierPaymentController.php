@@ -61,10 +61,15 @@ class SupplierPaymentController extends Controller
             ->whereIn('status', ['posted'])
             ->get()
             ->map(function($invoice) {
-                $totalPaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
-                    ->where('status', 'posted')
+                $totalActivePaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                    ->whereIn('status', ['draft', 'submitted', 'approved', 'posted'])
                     ->sum('payment_amount');
-                $invoice->remaining_amount = max(0, $invoice->grand_total - $totalPaid);
+                $invoice->remaining_amount = max(0, $invoice->grand_total - $totalActivePaid);
+                
+                $invoice->total_pending = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                    ->whereIn('status', ['draft', 'submitted', 'approved'])
+                    ->sum('payment_amount');
+
                 return $invoice;
             })
             ->filter(function($invoice) {
@@ -85,10 +90,25 @@ class SupplierPaymentController extends Controller
             'bank_name'           => 'nullable|string|max:100',
             'bank_account_number' => 'nullable|string|max:100',
             'notes'               => 'nullable|string',
+            'attachment'          => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120',
         ]);
 
         try {
-            $this->service->createDraft($request->all());
+            $data = $request->all();
+            
+            // Remove dots from payment amount
+            if (isset($data['payment_amount'])) {
+                $data['payment_amount'] = (float) str_replace('.', '', $data['payment_amount']);
+            }
+
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('payments/supplier', $filename, 'public');
+                $data['attachment_path'] = 'storage/payments/supplier/' . $filename;
+            }
+
+            $this->service->createDraft($data);
             return response()->json(['success' => true, 'message' => 'Pembayaran berhasil disimpan sebagai Draft.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
@@ -149,11 +169,19 @@ class SupplierPaymentController extends Controller
                   ->orWhere('id', $payment->supplier_invoice_id);
             })
             ->get()
-            ->map(function($invoice) {
-                $totalPaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
-                    ->where('status', 'posted')
+            ->map(function($invoice) use ($payment) {
+                // For edit, we exclude the current payment amount so it can be re-allocated
+                $totalActivePaid = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                    ->where('uuid', '!=', $payment->uuid)
+                    ->whereIn('status', ['draft', 'submitted', 'approved', 'posted'])
                     ->sum('payment_amount');
-                $invoice->remaining_amount = max(0, $invoice->grand_total - $totalPaid);
+                $invoice->remaining_amount = max(0, $invoice->grand_total - $totalActivePaid);
+                
+                $invoice->total_pending = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                    ->where('uuid', '!=', $payment->uuid)
+                    ->whereIn('status', ['draft', 'submitted', 'approved'])
+                    ->sum('payment_amount');
+
                 return $invoice;
             })
             ->filter(function($invoice) use ($payment) {
@@ -174,10 +202,25 @@ class SupplierPaymentController extends Controller
             'bank_name'           => 'nullable|string|max:100',
             'bank_account_number' => 'nullable|string|max:100',
             'notes'               => 'nullable|string',
+            'attachment'          => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120',
         ]);
 
         try {
-            $this->service->updateDraft($uuid, $request->all());
+            $data = $request->all();
+            
+            // Remove dots from payment amount
+            if (isset($data['payment_amount'])) {
+                $data['payment_amount'] = (float) str_replace('.', '', $data['payment_amount']);
+            }
+
+            if ($request->hasFile('attachment')) {
+                $file = $request->file('attachment');
+                $filename = time() . '_' . \Illuminate\Support\Str::random(10) . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('payments/supplier', $filename, 'public');
+                $data['attachment_path'] = 'storage/payments/supplier/' . $filename;
+            }
+
+            $this->service->updateDraft($uuid, $data);
             return response()->json(['success' => true, 'message' => 'Pembayaran berhasil diperbarui.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 422);

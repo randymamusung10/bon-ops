@@ -89,12 +89,12 @@
         <table class="table table-hover align-middle mb-0" style="font-size: 13px; --bs-table-bg: transparent; --bs-table-border-color: rgba(226, 232, 240, 0.2);">
             <thead style="background-color: color-mix(in srgb, var(--primary-accent) 4%, transparent); border-bottom: 1px solid rgba(226, 232, 240, 0.2);">
                 <tr class="text-muted" style="letter-spacing: 0.2px;">
-                    <th width="5%" class="text-center py-3 ps-4 border-0">No</th>
-                    <th width="35%" class="py-3 border-0">Produk</th>
-                    <th width="15%" class="text-end py-3 border-0">Stok Sistem</th>
-                    <th width="15%" class="text-end py-3 border-0">Stok Fisik</th>
-                    <th width="15%" class="text-end py-3 border-0">Selisih</th>
-                    <th width="15%" class="py-3 pe-4 border-0">Keterangan</th>
+                    <th width="5%" class="text-center py-2 ps-4 border-0">No</th>
+                    <th width="35%" class="py-2 border-0">Produk</th>
+                    <th width="15%" class="text-end py-2 border-0">Stok Sistem</th>
+                    <th width="15%" class="text-end py-2 border-0">Stok Fisik</th>
+                    <th width="15%" class="text-end py-2 border-0">Selisih</th>
+                    <th width="15%" class="py-2 pe-4 border-0">Keterangan</th>
                 </tr>
             </thead>
             <tbody class="border-top-0 text-heading">

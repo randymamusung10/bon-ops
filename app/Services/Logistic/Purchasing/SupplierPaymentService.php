@@ -28,6 +28,19 @@ class SupplierPaymentService
             // Fetch the invoice to get amount reference
             $invoice = SupplierInvoice::findOrFail($data['supplier_invoice_id']);
 
+            // Validasi overpayment
+            $totalActivePayments = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                ->whereIn('status', ['draft', 'submitted', 'approved', 'posted'])
+                ->sum('payment_amount');
+
+            $remainingAmount = max(0, $invoice->grand_total - $totalActivePayments);
+            
+            $paymentAmount = \App\Helpers\NumberHelper::parse($data['payment_amount'] ?? 0);
+
+            if ($paymentAmount > $remainingAmount) {
+                throw new Exception("Nominal pembayaran melebihi sisa tagihan. Terdapat kemungkinan pembayaran ganda atau antrean pembayaran (Sisa yang dapat dibayar: Rp " . number_format($remainingAmount, 2, ',', '.') . ").");
+            }
+
             $payment = $this->repository->create([
                 'tenant_id'              => $tenantId,
                 'branch_id'              => $invoice->branch_id,
@@ -43,6 +56,7 @@ class SupplierPaymentService
                 'invoice_amount'         => $invoice->grand_total,
                 'status'                 => 'draft',
                 'notes'                  => $data['notes'] ?? null,
+                'attachment_path'        => $data['attachment_path'] ?? null,
                 'created_by'             => Auth::id(),
             ]);
 
@@ -152,6 +166,20 @@ class SupplierPaymentService
 
             $invoice = SupplierInvoice::findOrFail($data['supplier_invoice_id']);
 
+            // Validasi overpayment (exclude current payment uuid)
+            $totalActivePayments = \App\Models\Logistic\Purchasing\SupplierPayment::where('supplier_invoice_id', $invoice->id)
+                ->where('uuid', '!=', $uuid)
+                ->whereIn('status', ['draft', 'submitted', 'approved', 'posted'])
+                ->sum('payment_amount');
+
+            $remainingAmount = max(0, $invoice->grand_total - $totalActivePayments);
+            
+            $paymentAmount = \App\Helpers\NumberHelper::parse($data['payment_amount'] ?? 0);
+
+            if ($paymentAmount > $remainingAmount) {
+                throw new Exception("Nominal pembayaran melebihi sisa tagihan. Terdapat kemungkinan pembayaran ganda atau antrean pembayaran (Sisa yang dapat dibayar: Rp " . number_format($remainingAmount, 2, ',', '.') . ").");
+            }
+
             $payment->update([
                 'supplier_invoice_id' => $invoice->id,
                 'branch_id'           => $invoice->branch_id,
@@ -164,6 +192,7 @@ class SupplierPaymentService
                 'payment_amount'      => \App\Helpers\NumberHelper::parse($data['payment_amount']),
                 'invoice_amount'      => $invoice->grand_total,
                 'notes'               => $data['notes'] ?? null,
+                'attachment_path'     => $data['attachment_path'] ?? $payment->attachment_path,
             ]);
 
             DB::commit();

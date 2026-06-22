@@ -1,5 +1,5 @@
 <x-modal id="createModal" title="Buat Pembayaran Supplier" size="lg">
-    <form id="form-create-payment">
+    <form id="form-create-payment" enctype="multipart/form-data">
         @csrf
         <div class="row g-3 mb-4">
             <div class="col-md-12">
@@ -7,7 +7,7 @@
                 <x-form.select name="supplier_invoice_id" required>
                     <option value="">Pilih Faktur (Invoice) yang akan dilunasi</option>
                     @foreach($invoices as $inv)
-                        <option value="{{ $inv->id }}" data-grand-total="{{ $inv->remaining_amount }}">
+                        <option value="{{ $inv->id }}" data-grand-total="{{ $inv->remaining_amount }}" data-pending="{{ $inv->total_pending ?? 0 }}">
                             {{ $inv->document_number }} — {{ $inv->supplier->name ?? '-' }} — Sisa: Rp {{ number_format($inv->remaining_amount, 2, ',', '.') }} (Total: Rp {{ number_format($inv->grand_total, 2, ',', '.') }})
                         </option>
                     @endforeach
@@ -62,6 +62,7 @@
             <div class="col-md-6">
                 <x-form.label required>Jumlah Dibayar (Rp)</x-form.label>
                 <x-form.input type="text" class="format-rupiah" name="payment_amount" required placeholder="0" />
+                <div class="form-text mt-1" style="font-size: 11px; display: none;">Sisa pelunasan setelah pembayaran: <span class="fw-bold preview-remaining-create">Rp 0</span></div>
                 <div class="invalid-feedback"></div>
             </div>
 
@@ -69,6 +70,18 @@
                 <x-form.label>Catatan</x-form.label>
                 <x-form.textarea name="notes" rows="2" placeholder="Catatan pembayaran (Opsional)"></x-form.textarea>
                 <div class="invalid-feedback"></div>
+            </div>
+
+            <div class="col-12">
+                <x-form.label>Bukti Pembayaran (Opsional)</x-form.label>
+                <div class="position-relative p-3 text-center rounded-3 bg-light hover-shadow-sm" style="border: 1px dashed #cbd5e1; transition: all 0.2s;" id="dropzone-payment-create">
+                    <input type="file" id="payment_attachment_create" name="attachment" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" style="cursor: pointer; z-index: 2;" accept=".pdf,.jpg,.jpeg,.png">
+                    <div class="d-flex flex-column align-items-center justify-content-center">
+                        <i class="bi bi-cloud-arrow-up text-primary mb-1" style="font-size: 1.2rem;"></i>
+                        <span class="text-muted fw-medium" style="font-size: 11px;" id="file-name-payment-create">Pilih atau Letakkan File</span>
+                        <span class="text-muted mt-1" style="font-size: 10px;">Maks 5MB (PDF/JPG/PNG)</span>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -78,3 +91,14 @@
         </div>
     </form>
 </x-modal>
+
+<script>
+    $('#payment_attachment_create').on('change', function() {
+        var fileName = $(this).val().split('\\').pop();
+        if (fileName) {
+            $('#file-name-payment-create').text(fileName).removeClass('text-muted').addClass('text-primary');
+        } else {
+            $('#file-name-payment-create').text('Pilih atau Letakkan File').removeClass('text-primary').addClass('text-muted');
+        }
+    });
+</script>

@@ -17,7 +17,8 @@ class SupplierPaymentRepository
     {
         return SupplierPayment::with([
             'supplier',
-            'supplierInvoice',
+            'supplierInvoice.items.product',
+            'supplierInvoice.payments',
             'creator',
             'approver',
             'poster'

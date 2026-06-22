@@ -104,6 +104,16 @@ $(document).ready(function() {
             title: 'Detail Hutang'
         });
     });
+
+    $(document).on('click', '.btn-pay', function(e) {
+        e.preventDefault();
+        var uuid = $(this).data('uuid');
+        var url = "{{ url('business/finance/payable') }}/" + uuid + "/payment-modal";
+        
+        ERPLoader.loadModal(url, '#payment-modal-payable', {
+            title: 'Bayar Hutang Dagang'
+        });
+    });
 });
 </script>
 @endpush

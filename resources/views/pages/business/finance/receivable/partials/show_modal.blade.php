@@ -146,8 +146,8 @@
                         </tr>
                         @endif
                         <tr style="background-color: rgba(14, 165, 233, 0.05);">
-                            <td colspan="3" class="text-end text-primary fw-bold py-2" style="font-size: 14px;">Total Akhir:</td>
-                            <td class="text-end pe-4 text-primary fw-bold py-2" style="font-size: 14px;">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</td>
+                            <td colspan="3" class="text-end text-primary fw-bold py-1" style="font-size: 14px;">Total Akhir:</td>
+                            <td class="text-end pe-4 text-primary fw-bold py-1" style="font-size: 14px;">Rp {{ number_format($order->grand_total, 0, ',', '.') }}</td>
                         </tr>
                     </tfoot>
                 </table>

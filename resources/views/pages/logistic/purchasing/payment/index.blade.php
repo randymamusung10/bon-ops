@@ -150,12 +150,32 @@ $(document).ready(function() {
             title: 'Edit Pembayaran',
             errorMessage: 'Gagal mengambil form edit pembayaran.'
         });
+        
+        // Trigger preview update after modal loads
+        setTimeout(function() {
+            var editModal = $('#editModal');
+            if(editModal.length) {
+                editModal.find('input[name="payment_amount"]').trigger('input');
+            }
+        }, 800);
     });
 
     // Submit form Create
     $(document).on('submit', '#form-create-payment', function(e) {
         e.preventDefault();
         let form = $(this);
+        
+        let amountInput = form.find('input[name="payment_amount"]');
+        let option = form.find('select[name="supplier_invoice_id"] option:selected');
+        let remainingBalance = option.data('grand-total') || 0;
+        let inputAmount = parseFloat(window.AppFormat.unmaskNumber(amountInput.val())) || 0;
+        
+        if (option.val() && inputAmount > remainingBalance) {
+            let kelebihan = inputAmount - remainingBalance;
+            AppAlert.error('Gagal!', 'Jumlah bayar melebihi sisa hutang sebesar Rp ' + window.AppFormat.formatRupiah(kelebihan) + '.');
+            return false;
+        }
+        
         let submitBtn = form.find('button[type="submit"]');
         let originalText = submitBtn.html();
         submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...').prop('disabled', true);
@@ -163,7 +183,9 @@ $(document).ready(function() {
         $.ajax({
             url: "{{ route('logistic.purchasing.payment.store') }}",
             type: 'POST',
-            data: form.serialize(),
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
             success: function(res) {
                 if (res.success) {
                     $('#createModal').modal('hide');
@@ -185,14 +207,32 @@ $(document).ready(function() {
         e.preventDefault();
         let form = $(this);
         let uuid = form.data('uuid');
+        
+        let amountInput = form.find('input[name="payment_amount"]');
+        let option = form.find('select[name="supplier_invoice_id"] option:selected');
+        let remainingBalance = option.data('grand-total') || 0;
+        let inputAmount = parseFloat(window.AppFormat.unmaskNumber(amountInput.val())) || 0;
+        
+        if (option.val() && inputAmount > remainingBalance) {
+            let kelebihan = inputAmount - remainingBalance;
+            AppAlert.error('Gagal!', 'Jumlah bayar melebihi sisa hutang sebesar Rp ' + window.AppFormat.formatRupiah(kelebihan) + '.');
+            return false;
+        }
+        
         let submitBtn = form.find('button[type="submit"]');
         let originalText = submitBtn.html();
         submitBtn.html('<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...').prop('disabled', true);
 
+        let formData = new FormData(this);
+        // Method override for PUT
+        formData.append('_method', 'PUT');
+
         $.ajax({
             url: "{{ url('logistic/purchasing/payment') }}/" + uuid,
             type: 'POST',
-            data: form.serialize(),
+            data: formData,
+            processData: false,
+            contentType: false,
             success: function(res) {
                 if (res.success) {
                     $('#editModal').modal('hide');
@@ -265,13 +305,75 @@ $(document).ready(function() {
     $(document).on('change', 'select[name="supplier_invoice_id"]', function() {
         let option = $(this).find('option:selected');
         let grandTotal = option.data('grand-total') || 0;
+        let pending = option.data('pending') || 0;
         let isEdit = $(this).closest('form').attr('id') === 'form-edit-payment';
         let amountInput = isEdit ? $('#editModal').find('input[name="payment_amount"]') : $('#createModal').find('input[name="payment_amount"]');
         let displayEl = isEdit ? $('#invoice-amount-display-edit') : $('#invoice-amount-display');
+        let formEl = $(this).closest('form');
         
         amountInput.val(window.AppFormat.formatRupiah(grandTotal));
         displayEl.text('Rp ' + parseFloat(grandTotal).toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        
+        updatePreview(formEl, isEdit);
+        
+        // Handle pending warning
+        formEl.find('.pending-warning-box').remove();
+        if (pending > 0) {
+            let warningHtml = `
+            <div class="col-12 pending-warning-box mt-2">
+                <div class="alert alert-warning d-flex align-items-center rounded-3 mb-0" style="font-size: 13px; border-left: 4px solid var(--bs-warning);">
+                    <i class="bi bi-exclamation-triangle-fill fs-5 me-3 text-warning"></i>
+                    <div>
+                        <strong>Pembayaran Dalam Proses!</strong> Ada transaksi senilai <strong>Rp ${parseFloat(pending).toLocaleString('id-ID')}</strong> yang masih dalam antrean persetujuan. Sisa yang bisa dibayarkan di atas telah disesuaikan.
+                    </div>
+                </div>
+            </div>`;
+            $(warningHtml).insertAfter($(this).closest('.col-md-12'));
+        }
     });
+
+    function updatePreview(formEl, isEdit) {
+        let option = formEl.find('select[name="supplier_invoice_id"] option:selected');
+        if(!option.val()) {
+            formEl.find('.form-text').hide();
+            return;
+        }
+        
+        let remainingBalance = option.data('grand-total') || 0;
+        let amountInput = formEl.find('input[name="payment_amount"]');
+        let inputVal = amountInput.val();
+        let inputAmount = parseFloat(window.AppFormat.unmaskNumber(inputVal)) || 0;
+        
+        let sisa = Math.max(0, remainingBalance - inputAmount);
+        
+        let previewElClass = isEdit ? '.preview-remaining-edit' : '.preview-remaining-create';
+        formEl.find(previewElClass).text('Rp ' + sisa.toLocaleString('id-ID'));
+
+        let container = amountInput.closest('div');
+
+        if (inputAmount > remainingBalance) {
+            let kelebihan = inputAmount - remainingBalance;
+            amountInput.addClass('is-invalid');
+            
+            if (container.find('.payment-feedback').length === 0) {
+                $('<div class="payment-feedback text-danger fw-medium mt-1" style="font-size: 11px;"></div>').insertAfter(amountInput);
+            }
+            container.find('.payment-feedback').html('<i class="bi bi-exclamation-triangle-fill me-1"></i>Jumlah melebihi sisa hutang! Kelebihan: <b>Rp ' + window.AppFormat.formatRupiah(kelebihan) + '</b>').show();
+            container.find('.form-text').hide();
+            container.find('.invalid-feedback').remove();
+        } else {
+            amountInput.removeClass('is-invalid');
+            container.find('.payment-feedback').hide();
+            container.find('.form-text').show();
+        }
+    }
+
+    $(document).on('input', 'input[name="payment_amount"]', function() {
+        let formEl = $(this).closest('form');
+        let isEdit = formEl.attr('id') === 'form-edit-payment';
+        updatePreview(formEl, isEdit);
+    });
+
 });
 </script>
 @endpush
