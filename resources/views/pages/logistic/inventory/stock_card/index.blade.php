@@ -3,8 +3,8 @@
 @section('page_title', 'Kartu Stok')
 @section('page_description', 'Lacak riwayat pergerakan stok barang masuk dan keluar.')
 @section('page_actions')
-    <x-button id="btn-export-excel" variant="ghost-success" size="sm" icon="bi-file-earmark-excel">
-        Excel
+    <x-button onclick="window.location.href='{{ route('logistic.inventory.card.export') }}'" id="btn-export-csv" variant="ghost-success" size="sm" icon="bi-file-earmark-excel">
+        Export Excel
     </x-button>
 @endsection
 
@@ -126,7 +126,7 @@ $(document).ready(function() {
         }
     });
 
-    $('#btn-export-excel').on('click', function(e) { e.preventDefault(); table.button('.buttons-excel').trigger(); });
+    // Backend export handled by a tag link
 });
 </script>
 @endpush

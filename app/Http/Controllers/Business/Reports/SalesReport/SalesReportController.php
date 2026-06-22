@@ -59,4 +59,10 @@ class SalesReportController extends Controller
             ->rawColumns(['payment_status_badge'])
             ->make(true);
     }
+
+    public function export(Request $request)
+    {
+        $filename = "sales_report_" . date('Ymd_His') . ".xlsx";
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SalesReportExport($request->all()), $filename);
+    }
 }

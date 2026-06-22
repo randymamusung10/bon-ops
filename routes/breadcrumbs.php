@@ -316,6 +316,13 @@ Breadcrumbs::for('business.reports.sales', function (BreadcrumbTrail $trail) {
     $trail->push('Laporan Penjualan', route('business.reports.sales'));
 });
 
+// Laporan > Penjualan per Produk
+Breadcrumbs::for('business.reports.sales_itemized', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Laporan', '#');
+    $trail->push('Penjualan per Produk', route('business.reports.sales_itemized'));
+});
+
 // Laporan > Stock
 Breadcrumbs::for('business.reports.stock', function (BreadcrumbTrail $trail) {
     $trail->parent('home');
@@ -335,6 +342,13 @@ Breadcrumbs::for('business.reports.purchase', function (BreadcrumbTrail $trail) 
     $trail->parent('home');
     $trail->push('Laporan', '#');
     $trail->push('Laporan Pembelian', route('business.reports.purchase'));
+});
+
+// Laporan > Pembelian per Produk
+Breadcrumbs::for('business.reports.purchase_itemized', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Laporan', '#');
+    $trail->push('Pembelian per Produk', route('business.reports.purchase_itemized'));
 });
 
 // Laporan > Dashboard Eksekutif

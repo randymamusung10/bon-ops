@@ -205,6 +205,7 @@ Route::middleware('auth')->group(function () {
 
             Route::get('card', [StockCardController::class, 'index'])->name('card');
             Route::get('card/data', [StockCardController::class, 'data'])->name('card.data');
+            Route::get('card/export', [StockCardController::class, 'export'])->name('card.export');
 
             Route::get('adjustment', [StockAdjustmentController::class, 'index'])->name('adjustment');
             Route::get('adjustment/data', [StockAdjustmentController::class, 'data'])->name('adjustment.data');
@@ -423,11 +424,20 @@ Route::middleware('auth')->group(function () {
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('sales', [SalesReportController::class, 'index'])->name('sales');
             Route::get('sales/data', [SalesReportController::class, 'data'])->name('sales.data');
+            Route::get('sales/export', [SalesReportController::class, 'export'])->name('sales.export');
+            Route::get('sales-itemized', [\App\Http\Controllers\Business\Reports\ItemizedSalesReport\ItemizedSalesReportController::class, 'index'])->name('sales_itemized');
+            Route::get('sales-itemized/data', [\App\Http\Controllers\Business\Reports\ItemizedSalesReport\ItemizedSalesReportController::class, 'data'])->name('sales_itemized.data');
+            Route::get('sales-itemized/export', [\App\Http\Controllers\Business\Reports\ItemizedSalesReport\ItemizedSalesReportController::class, 'export'])->name('sales_itemized.export');
             Route::get('stock', [StockReportController::class, 'index'])->name('stock');
             Route::get('stock/data', [StockReportController::class, 'data'])->name('stock.data');
+            Route::get('stock/export', [StockReportController::class, 'export'])->name('stock.export');
             Route::get('food-cost', [FoodCostReportController::class, 'index'])->name('food_cost');
             Route::get('purchase', [PurchaseReportController::class, 'index'])->name('purchase');
             Route::get('purchase/data', [PurchaseReportController::class, 'data'])->name('purchase.data');
+            Route::get('purchase/export', [PurchaseReportController::class, 'export'])->name('purchase.export');
+            Route::get('purchase-itemized', [\App\Http\Controllers\Business\Reports\ItemizedPurchaseReport\ItemizedPurchaseReportController::class, 'index'])->name('purchase_itemized');
+            Route::get('purchase-itemized/data', [\App\Http\Controllers\Business\Reports\ItemizedPurchaseReport\ItemizedPurchaseReportController::class, 'data'])->name('purchase_itemized.data');
+            Route::get('purchase-itemized/export', [\App\Http\Controllers\Business\Reports\ItemizedPurchaseReport\ItemizedPurchaseReportController::class, 'export'])->name('purchase_itemized.export');
             Route::get('executive', [ExecutiveDashboardController::class, 'index'])->name('executive');
         });
     });

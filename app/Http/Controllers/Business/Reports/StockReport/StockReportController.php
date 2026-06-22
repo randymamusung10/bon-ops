@@ -52,4 +52,10 @@ class StockReportController extends Controller
             })
             ->make(true);
     }
+
+    public function export(Request $request)
+    {
+        $filename = "stock_balance_report_" . date('Ymd_His') . ".xlsx";
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StockReportExport($request->all()), $filename);
+    }
 }

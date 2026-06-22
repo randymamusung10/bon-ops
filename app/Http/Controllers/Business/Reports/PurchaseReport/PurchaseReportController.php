@@ -62,4 +62,10 @@ class PurchaseReportController extends Controller
             ->rawColumns(['status_badge'])
             ->make(true);
     }
+
+    public function export(Request $request)
+    {
+        $filename = "purchase_report_" . date('Ymd_His') . ".xlsx";
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\PurchaseReportExport($request->all()), $filename);
+    }
 }

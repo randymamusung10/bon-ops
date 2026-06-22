@@ -6,7 +6,7 @@
 @section('content')
 <div class="container-fluid px-0">
     <div class="card rounded-4 p-4 mb-4 border-0 shadow-sm" style="background: var(--bg-dark-secondary);">
-        <form id="filter-form">
+        <form id="filter-form" action="{{ route('business.reports.stock.export') }}" method="GET">
             <div class="row g-3">
                 <div class="col-lg-4 col-md-6">
                     <x-form.label>Gudang</x-form.label>
@@ -17,8 +17,9 @@
                         @endforeach
                     </x-form.select>
                 </div>
-                <div class="col-lg-8 col-md-12 d-flex align-items-end justify-content-lg-end gap-2 mt-md-3 mt-lg-0">
+                <div class="col-lg-8 col-md-12 d-flex align-items-end gap-2 mt-md-3 mt-lg-0">
                     <x-button type="button" id="btn-filter" variant="primary" icon="bi-search">Tampilkan</x-button>
+                    <x-button type="submit" variant="ghost-success" icon="bi-file-earmark-excel">Export Excel</x-button>
                 </div>
             </div>
         </form>

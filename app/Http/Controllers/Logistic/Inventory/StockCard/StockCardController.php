@@ -38,4 +38,10 @@ class StockCardController extends Controller
             })
             ->make(true);
     }
+
+    public function export(Request $request)
+    {
+        $filename = "stock_card_report_" . date('Ymd_His') . ".xlsx";
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\StockCardExport($request->all()), $filename);
+    }
 }
