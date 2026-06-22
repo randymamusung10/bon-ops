@@ -422,9 +422,12 @@ Route::middleware('auth')->group(function () {
         });
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('sales', [SalesReportController::class, 'index'])->name('sales');
+            Route::get('sales/data', [SalesReportController::class, 'data'])->name('sales.data');
             Route::get('stock', [StockReportController::class, 'index'])->name('stock');
+            Route::get('stock/data', [StockReportController::class, 'data'])->name('stock.data');
             Route::get('food-cost', [FoodCostReportController::class, 'index'])->name('food_cost');
             Route::get('purchase', [PurchaseReportController::class, 'index'])->name('purchase');
+            Route::get('purchase/data', [PurchaseReportController::class, 'data'])->name('purchase.data');
             Route::get('executive', [ExecutiveDashboardController::class, 'index'])->name('executive');
         });
     });
