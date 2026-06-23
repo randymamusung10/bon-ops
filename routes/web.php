@@ -419,7 +419,9 @@ Route::middleware('auth')->group(function () {
             Route::get('ledger/summary', [GeneralLedgerController::class, 'summary'])->name('ledger.summary');
             Route::get('ledger/print', [GeneralLedgerController::class, 'print'])->name('ledger.print');
             Route::get('profit-loss', [ProfitLossController::class, 'index'])->name('profit_loss');
+            Route::get('profit-loss/export-pdf', [ProfitLossController::class, 'exportPdf'])->name('profit_loss.export_pdf');
             Route::get('balance-sheet', [BalanceSheetController::class, 'index'])->name('balance_sheet');
+            Route::get('balance-sheet/export-pdf', [BalanceSheetController::class, 'exportPdf'])->name('balance_sheet.export_pdf');
         });
         Route::prefix('reports')->name('reports.')->group(function () {
             Route::get('sales', [SalesReportController::class, 'index'])->name('sales');

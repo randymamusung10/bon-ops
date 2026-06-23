@@ -23,7 +23,7 @@
                 </div>
                 <div class="col-lg-4 col-md-12 d-flex gap-2 mt-md-3 mt-lg-0">
                     <x-button type="submit" variant="primary" icon="bi-filter">Terapkan Filter</x-button>
-                    <x-button type="button" variant="light" icon="bi-printer" onclick="window.print()">Cetak Dokumen</x-button>
+                    <x-button type="button" variant="light" icon="bi-file-earmark-pdf" onclick="window.location.href='{{ route('business.finance.profit_loss.export_pdf', ['start_date' => $startDate, 'end_date' => $endDate]) }}'">Export PDF</x-button>
                 </div>
             </div>
         </form>
@@ -35,15 +35,7 @@
             
             <!-- Document Header -->
             <div class="text-center mb-5 pb-4 border-bottom" style="border-color: rgba(226, 232, 240, 0.8) !important;">
-                <h4 class="fw-bold mb-1" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">{{ Auth::user()->tenant->name ?? 'BONOPS CORP' }}</h4>
-                <p class="text-muted mb-3" style="font-size: 13px;">
-                    @if(Auth::user()->tenant && Auth::user()->tenant->companies->count() > 0)
-                        {{ Auth::user()->tenant->companies->first()->address ?? 'Alamat Perusahaan' }}<br>
-                        Telp: {{ Auth::user()->tenant->companies->first()->phone ?? '-' }}
-                    @else
-                        Sistem Informasi Manajemen BonOps
-                    @endif
-                </p>
+                <h4 class="fw-bold mb-3" style="color: var(--text-heading); font-family: 'Outfit', sans-serif; font-size: 20px; text-transform: uppercase; letter-spacing: 1px;">{{ Auth::user()->tenant->name ?? 'BONOPS CORP' }}</h4>
                 <h5 class="fw-bold mb-1" style="color: var(--text-heading); font-size: 16px; text-transform: uppercase;">Laporan Laba Rugi</h5>
                 <p class="text-muted mb-0" style="font-size: 13.5px;">Periode: {{ \Carbon\Carbon::parse($startDate)->isoFormat('D MMMM Y') }} - {{ \Carbon\Carbon::parse($endDate)->isoFormat('D MMMM Y') }}</p>
                 <p class="text-muted mb-0 mt-1" style="font-size: 12px; font-style: italic;">(Disajikan dalam Rupiah, kecuali dinyatakan lain)</p>
