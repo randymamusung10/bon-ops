@@ -165,8 +165,8 @@
                         <a href="{{ route('business.finance.payable') }}" class="submenu-link {{ Route::is('business.finance.payable') ? 'active' : '' }}"><i class="bi bi-box-arrow-right"></i><span>Hutang (AP)</span></a>
                         <a href="{{ route('business.finance.receivable') }}" class="submenu-link {{ Route::is('business.finance.receivable') ? 'active' : '' }}"><i class="bi bi-box-arrow-in-left"></i><span>Piutang (AR)</span></a>
                         <a href="{{ route('business.finance.ledger') }}" class="submenu-link {{ Route::is('business.finance.ledger') ? 'active' : '' }}"><i class="bi bi-journal-bookmark"></i><span>Buku Besar</span></a>
-                        <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('business.finance.profit_loss') ? 'active' : '' }}"><i class="bi bi-graph-down"></i><span>Laba Rugi</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
-                        <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('business.finance.balance_sheet') ? 'active' : '' }}"><i class="bi bi-journal-check"></i><span>Neraca (Balance Sheet)</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
+                        <a href="{{ route('business.finance.profit_loss') }}" class="submenu-link {{ Route::is('business.finance.profit_loss') ? 'active' : '' }}"><i class="bi bi-graph-down"></i><span>Laba Rugi</span></a>
+                        <a href="{{ route('business.finance.balance_sheet') }}" class="submenu-link {{ Route::is('business.finance.balance_sheet') ? 'active' : '' }}"><i class="bi bi-journal-check"></i><span>Neraca (Balance Sheet)</span></a>
                     </div>
                 </div>
             </div>
