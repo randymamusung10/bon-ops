@@ -32,6 +32,8 @@ class ChartOfAccountSeeder extends Seeder
             ['code' => '2000', 'name' => 'Kewajiban', 'account_type' => 'liability', 'is_header' => true, 'parent_code' => null],
             ['code' => '2100', 'name' => 'Kewajiban Jangka Pendek', 'account_type' => 'liability', 'is_header' => true, 'parent_code' => '2000'],
             ['code' => '2110', 'name' => 'Utang Usaha', 'account_type' => 'liability', 'is_header' => false, 'parent_code' => '2100'],
+            ['code' => '2120', 'name' => 'Hutang Pajak (PPN Keluaran)', 'account_type' => 'liability', 'is_header' => false, 'parent_code' => '2100'],
+            ['code' => '2130', 'name' => 'Hutang Pajak (PPN Masukan)', 'account_type' => 'liability', 'is_header' => false, 'parent_code' => '2100'],
             
             // Ekuitas (3)
             ['code' => '3000', 'name' => 'Ekuitas', 'account_type' => 'equity', 'is_header' => true, 'parent_code' => null],
@@ -41,7 +43,7 @@ class ChartOfAccountSeeder extends Seeder
             // Pendapatan (4)
             ['code' => '4000', 'name' => 'Pendapatan', 'account_type' => 'revenue', 'is_header' => true, 'parent_code' => null],
             ['code' => '4100', 'name' => 'Pendapatan Usaha', 'account_type' => 'revenue', 'is_header' => true, 'parent_code' => '4000'],
-            ['code' => '4110', 'name' => 'Penjualan Produk', 'account_type' => 'revenue', 'is_header' => false, 'parent_code' => '4100'],
+            ['code' => '4110', 'name' => 'Pendapatan Penjualan', 'account_type' => 'revenue', 'is_header' => false, 'parent_code' => '4100'],
             ['code' => '4120', 'name' => 'Pendapatan Jasa', 'account_type' => 'revenue', 'is_header' => false, 'parent_code' => '4100'],
             
             // Beban (5)
@@ -60,17 +62,18 @@ class ChartOfAccountSeeder extends Seeder
                 $parentId = $insertedCoas[$coaData['parent_code']] ?? null;
             }
 
-            $coa = \App\Models\Business\Finance\ChartOfAccount\ChartOfAccount::create([
-                'tenant_id' => $tenantId,
-                'company_id' => $companyId,
-                'code' => $coaData['code'],
-                'name' => $coaData['name'],
-                'account_type' => $coaData['account_type'],
-                'is_header' => $coaData['is_header'],
-                'parent_id' => $parentId,
-                'status' => 'active',
-                'created_by' => $adminId,
-            ]);
+            $coa = \App\Models\Business\Finance\ChartOfAccount\ChartOfAccount::updateOrCreate(
+                ['code' => $coaData['code'], 'tenant_id' => $tenantId],
+                [
+                    'company_id' => $companyId,
+                    'name' => $coaData['name'],
+                    'account_type' => $coaData['account_type'],
+                    'is_header' => $coaData['is_header'],
+                    'parent_id' => $parentId,
+                    'status' => 'active',
+                    'created_by' => $adminId,
+                ]
+            );
 
             $insertedCoas[$coa->code] = $coa->id;
         }

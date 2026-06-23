@@ -289,24 +289,24 @@ Breadcrumbs::for('business.crm.customer', function (BreadcrumbTrail $trail) {
 });
 
 // CRM > Membership
-Breadcrumbs::for('business.crm.membership', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('CRM', '#');
-    $trail->push('Membership', route('business.crm.membership'));
+Breadcrumbs::for('business.crm.membership.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('CRM');
+    $trail->push('Membership', route('business.crm.membership.index'));
 });
 
-// CRM > Loyalitas
+// Business > CRM > Loyalty
 Breadcrumbs::for('business.crm.loyalty', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('CRM', '#');
+    $trail->parent('dashboard');
+    $trail->push('CRM');
     $trail->push('Poin Loyalitas', route('business.crm.loyalty'));
 });
 
-// CRM > Voucher
-Breadcrumbs::for('business.crm.voucher', function (BreadcrumbTrail $trail) {
-    $trail->parent('home');
-    $trail->push('CRM', '#');
-    $trail->push('Voucher', route('business.crm.voucher'));
+// Business > CRM > Voucher
+Breadcrumbs::for('business.crm.voucher.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('dashboard');
+    $trail->push('CRM');
+    $trail->push('Voucher', route('business.crm.voucher.index'));
 });
 
 // Laporan > Sales
@@ -391,5 +391,12 @@ Breadcrumbs::for('business.finance.cash_disbursement.index', function (Breadcrum
     $trail->parent('home');
     $trail->push('Keuangan', '#');
     $trail->push('Pengeluaran Kas', route('business.finance.cash_disbursement.index'));
+});
+
+// System > Finance Config
+Breadcrumbs::for('system.settings.finance_config', function (BreadcrumbTrail $trail) {
+    $trail->parent('home');
+    $trail->push('Sistem & Pengaturan', '#');
+    $trail->push('Konfigurasi Keuangan', route('system.settings.finance_config'));
 });
 

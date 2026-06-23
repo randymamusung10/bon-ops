@@ -14,7 +14,7 @@ class Customer extends BaseMasterModel
         'contact_person_name', 'contact_person_phone', 'email', 'phone',
         'address', 'city', 'credit_limit',
         'account_receivable_id', 'default_currency_id', 'tax_id',
-        'status', 'created_by', 'updated_by'
+        'status', 'membership_id', 'loyalty_points_balance', 'created_by', 'updated_by'
     ];
     
     protected $casts = [

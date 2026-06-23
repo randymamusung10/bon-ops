@@ -139,10 +139,10 @@
                 </a>
                 <div class="collapse submenu-list-wrapper {{ Request::is('business/crm*') ? 'show' : '' }}" id="crmMenu">
                     <div class="submenu-list">
-                        <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('business.crm.customer') ? 'active' : '' }}"><i class="bi bi-person-badge"></i><span>Pelanggan</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
-                        <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('business.crm.membership') ? 'active' : '' }}"><i class="bi bi-patch-check"></i><span>Membership</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
-                        <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('business.crm.loyalty') ? 'active' : '' }}"><i class="bi bi-award"></i><span>Poin Loyalitas</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
-                        <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('business.crm.voucher') ? 'active' : '' }}"><i class="bi bi-ticket-perforated"></i><span>Voucher</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
+                        <a href="{{ route('business.crm.customer') }}" class="submenu-link {{ Route::is('business.crm.customer*') ? 'active' : '' }}"><i class="bi bi-person-badge"></i><span>Pelanggan</span></a>
+                        <a href="{{ route('business.crm.membership.index') }}" class="submenu-link {{ Route::is('business.crm.membership*') ? 'active' : '' }}"><i class="bi bi-patch-check"></i><span>Membership</span></a>
+                        <a href="{{ route('business.crm.loyalty') }}" class="submenu-link {{ Route::is('business.crm.loyalty*') ? 'active' : '' }}"><i class="bi bi-award"></i><span>Poin Loyalitas</span></a>
+                        <a href="{{ route('business.crm.voucher.index') }}" class="submenu-link {{ Route::is('business.crm.voucher*') ? 'active' : '' }}"><i class="bi bi-ticket-perforated"></i><span>Voucher</span></a>
                     </div>
                 </div>
             </div>
@@ -211,6 +211,7 @@
                         <a href="{{ route('system.settings.roles.index') }}" class="submenu-link {{ Route::is('system.settings.roles.*') ? 'active' : '' }}"><i class="bi bi-briefcase"></i><span>Role & Jabatan</span></a>
                         <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('system.settings.permissions') ? 'active' : '' }}"><i class="bi bi-key"></i><span>Hak Akses (Permissions)</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
                         <a href="javascript:void(0)" onclick="showDevAlert()" class="submenu-link {{ Route::is('system.settings.branch_config') ? 'active' : '' }}"><i class="bi bi-sliders"></i><span>Konfigurasi Cabang</span><span class="sidebar-sub-badge bg-secondary bg-opacity-25 text-secondary ms-auto" style="font-size: 10px; padding: 2px 6px; border-radius: 4px;"><i class="bi bi-tools me-1"></i>Dev</span></a>
+                        <a href="{{ route('system.settings.finance_config') }}" class="submenu-link {{ Route::is('system.settings.finance_config') ? 'active' : '' }}"><i class="bi bi-bank"></i><span>Konfigurasi Keuangan</span></a>
                     </div>
                 </div>
             </div>

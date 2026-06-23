@@ -84,6 +84,7 @@ class PosOrderService
             // If order is paid, deduct inventory
             if ($order->payment_status === 'paid') {
                 $this->deductInventoryForOrder($order);
+                $this->createJournalForOrder($order);
             }
 
             DB::commit();
@@ -150,6 +151,7 @@ class PosOrderService
             // If order is paid, deduct inventory
             if ($order->payment_status === 'paid') {
                 $this->deductInventoryForOrder($order);
+                $this->createJournalForOrder($order);
             }
 
             DB::commit();
@@ -257,6 +259,108 @@ class PosOrderService
 
         // Update balance
         $balance->update(['qty' => $newBalance]);
+    }
+
+    public function createJournalForOrder(PosOrder $order)
+    {
+        $tenantId = $order->tenant_id;
+        $branchId = $order->branch_id;
+
+        $config = \App\Models\System\Settings\FinanceConfig::where('tenant_id', $tenantId)
+            ->where('branch_id', $branchId)
+            ->first();
+
+        if (!$config || !$config->sales_revenue_account_id || !$config->cash_account_id) {
+            return; // Cannot generate journal without config
+        }
+
+        // Check if journal already exists
+        $existingJournal = \App\Models\Business\Finance\GeneralJournal\GeneralJournal::where('reference_type', 'pos_order')
+            ->where('reference_id', $order->id)
+            ->first();
+
+        if ($existingJournal) {
+            return; // Journal already exists
+        }
+
+        // Calculate COGS if possible
+        $totalCogs = 0;
+        foreach ($order->items as $item) {
+            // Very simplified COGS calculation: get average or last purchase price
+            // Here we assume Product has a standard price or we query average.
+            // For now, we will just set COGS = 0 if we don't have exact value or just use product's default cost.
+            $product = \App\Models\Logistic\Master\Product\Product::find($item->product_id);
+            if ($product && $product->cost_price) {
+                $totalCogs += ($product->cost_price * $item->qty);
+            }
+        }
+
+        $journalNo = 'JV-' . date('YmdHis') . '-' . rand(100, 999);
+        $totalDebit = $order->grand_total + $totalCogs;
+        $totalCredit = $order->total_amount + $order->tax_amount + $totalCogs;
+
+        $journal = \App\Models\Business\Finance\GeneralJournal\GeneralJournal::create([
+            'tenant_id' => $tenantId,
+            'branch_id' => $branchId,
+            'date' => $order->date,
+            'journal_number' => $journalNo,
+            'reference_type' => 'pos_order',
+            'reference_id' => $order->id,
+            'notes' => 'Penjualan Kasir POS #' . $order->order_number,
+            'total_debit' => $totalDebit,
+            'total_credit' => $totalCredit,
+            'status' => 'posted',
+        ]);
+
+        // Debit Cash/Receivable
+        \App\Models\Business\Finance\GeneralJournal\GeneralJournalItem::create([
+            'general_journal_id' => $journal->id,
+            'chart_of_account_id' => $config->cash_account_id,
+            'description' => 'Penerimaan Kas - Penjualan #' . $order->order_number,
+            'debit' => $order->grand_total,
+            'credit' => 0,
+        ]);
+
+        // Credit Sales Revenue
+        \App\Models\Business\Finance\GeneralJournal\GeneralJournalItem::create([
+            'general_journal_id' => $journal->id,
+            'chart_of_account_id' => $config->sales_revenue_account_id,
+            'description' => 'Pendapatan Penjualan #' . $order->order_number,
+            'debit' => 0,
+            'credit' => $order->total_amount,
+        ]);
+
+        // Credit Tax Payable
+        if ($order->tax_amount > 0 && $config->tax_payable_account_id) {
+            \App\Models\Business\Finance\GeneralJournal\GeneralJournalItem::create([
+                'general_journal_id' => $journal->id,
+                'chart_of_account_id' => $config->tax_payable_account_id,
+                'description' => 'PPN Keluaran #' . $order->order_number,
+                'debit' => 0,
+                'credit' => $order->tax_amount,
+            ]);
+        }
+
+        // COGS and Inventory (if both config exists and COGS > 0)
+        if ($totalCogs > 0 && $config->cogs_account_id && $config->inventory_account_id) {
+            // Debit COGS
+            \App\Models\Business\Finance\GeneralJournal\GeneralJournalItem::create([
+                'general_journal_id' => $journal->id,
+                'chart_of_account_id' => $config->cogs_account_id,
+                'description' => 'HPP Penjualan #' . $order->order_number,
+                'debit' => $totalCogs,
+                'credit' => 0,
+            ]);
+
+            // Credit Inventory
+            \App\Models\Business\Finance\GeneralJournal\GeneralJournalItem::create([
+                'general_journal_id' => $journal->id,
+                'chart_of_account_id' => $config->inventory_account_id,
+                'description' => 'Persediaan Berkurang #' . $order->order_number,
+                'debit' => 0,
+                'credit' => $totalCogs,
+            ]);
+        }
     }
 
     public function updateOrderItemStatus(int $itemId, string $status)

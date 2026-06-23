@@ -51,6 +51,7 @@ use App\Http\Controllers\Operational\Restaurant\OrderQueue\OrderQueueController;
 use App\Http\Controllers\Operational\Restaurant\Reservation\ReservationController;
 use App\Http\Controllers\Operational\Restaurant\TableManagement\TableManagementController;
 use App\Http\Controllers\System\Settings\BranchConfig\BranchConfigController;
+use App\Http\Controllers\System\Settings\FinanceConfig\FinanceConfigController;
 use App\Http\Controllers\System\Settings\Permission\PermissionController;
 use App\Http\Controllers\System\Settings\Role\RoleController;
 use App\Http\Controllers\System\Settings\User\UserController;
@@ -323,9 +324,28 @@ Route::middleware('auth')->group(function () {
     Route::prefix('business')->name('business.')->group(function () {
         Route::prefix('crm')->name('crm.')->group(function () {
             Route::get('customer', [CrmCustomerController::class, 'index'])->name('customer');
-            Route::get('membership', [CrmMembershipController::class, 'index'])->name('membership');
+            Route::prefix('membership')->name('membership.')->group(function () {
+                Route::get('/', [CrmMembershipController::class, 'index'])->name('index');
+                Route::get('data', [CrmMembershipController::class, 'data'])->name('data');
+                Route::get('create', [CrmMembershipController::class, 'create'])->name('create');
+                Route::post('/', [CrmMembershipController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [CrmMembershipController::class, 'edit'])->name('edit');
+                Route::put('{id}', [CrmMembershipController::class, 'update'])->name('update');
+                Route::delete('{id}', [CrmMembershipController::class, 'destroy'])->name('destroy');
+            });
+            
+            // Business > CRM > Loyalty
             Route::get('loyalty', [CrmLoyaltyController::class, 'index'])->name('loyalty');
-            Route::get('voucher', [CrmVoucherController::class, 'index'])->name('voucher');
+            
+            Route::prefix('voucher')->name('voucher.')->group(function () {
+                Route::get('/', [CrmVoucherController::class, 'index'])->name('index');
+                Route::get('data', [CrmVoucherController::class, 'data'])->name('data');
+                Route::get('create', [CrmVoucherController::class, 'create'])->name('create');
+                Route::post('/', [CrmVoucherController::class, 'store'])->name('store');
+                Route::get('{id}/edit', [CrmVoucherController::class, 'edit'])->name('edit');
+                Route::put('{id}', [CrmVoucherController::class, 'update'])->name('update');
+                Route::delete('{id}', [CrmVoucherController::class, 'destroy'])->name('destroy');
+            });
         });
         Route::prefix('finance')->name('finance.')->group(function () {
             // Currency
@@ -468,6 +488,8 @@ Route::middleware('auth')->group(function () {
             Route::delete('roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
             Route::get('permissions', [PermissionController::class, 'index'])->name('permissions');
             Route::get('branch-config', [BranchConfigController::class, 'index'])->name('branch_config');
+            Route::get('finance-config', [FinanceConfigController::class, 'index'])->name('finance_config');
+            Route::post('finance-config', [FinanceConfigController::class, 'update'])->name('finance_config.update');
         });
     });
 });

@@ -4,93 +4,51 @@
     <meta charset="UTF-8">
     <title>Journal Voucher - {{ $journal->journal_number }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 18px;
-            text-transform: uppercase;
-        }
-        .info-table {
-            width: 100%;
-            margin-bottom: 20px;
-        }
-        .info-table td {
-            padding: 4px;
-            vertical-align: top;
-        }
-        .info-table .label {
-            font-weight: bold;
-            width: 120px;
-        }
-        .lines-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-        .lines-table th, .lines-table td {
-            border: 1px solid #000;
-            padding: 8px;
-        }
-        .lines-table th {
-            background-color: #f0f0f0;
-            text-align: center;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .font-bold {
-            font-weight: bold;
-        }
-        .signatures {
-            width: 100%;
-            margin-top: 50px;
-        }
-        .signatures td {
-            text-align: center;
-            width: 33%;
-            vertical-align: bottom;
-            height: 80px;
-        }
-        .signature-line {
-            border-top: 1px solid #000;
-            width: 80%;
-            margin: 0 auto;
-            padding-top: 5px;
-        }
+        body { font-family: 'Helvetica', 'Arial', sans-serif; font-size: 11px; color: #1f2937; margin: 0; padding: 20px; }
+        .document-header { width: 100%; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
+        .document-header h1 { font-size: 18px; margin: 0 0 5px 0; color: #111827; text-transform: uppercase; letter-spacing: 0.5px; }
+        .document-header p { margin: 0; font-size: 11px; color: #4b5563; }
+        .document-header h2 { font-size: 14px; margin: 10px 0 5px 0; color: #111827; text-transform: uppercase; }
+        
+        .table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+        .table th, .table td { padding: 6px 10px; text-align: left; }
+        .table th { background-color: #f8fafc; border-bottom: 2px solid #e5e7eb; color: #4b5563; font-weight: 600; }
+        .border-bottom td { border-bottom: 1px solid #e5e7eb; }
+        .border-top td { border-top: 1px solid #e5e7eb; }
+        
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .fw-bold { font-weight: bold; }
+        
+        .info-table { width: 100%; margin-bottom: 20px; font-size: 11px; }
+        .info-table td { padding: 4px; vertical-align: top; }
+        .info-table .label { font-weight: 600; width: 120px; color: #4b5563; }
+        
+        .signatures { width: 100%; margin-top: 50px; font-size: 11px; }
+        .signatures td { text-align: center; width: 33%; vertical-align: bottom; height: 80px; }
+        .signature-line { border-top: 1px solid #1f2937; width: 80%; margin: 0 auto; padding-top: 5px; font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>JOURNAL VOUCHER</h1>
-        <div>{{ $journal->tenant->name ?? 'Perusahaan' }} - {{ $journal->branch->name ?? 'Pusat' }}</div>
+    <div class="document-header">
+        <h1 style="margin-bottom: 10px;">{{ Auth::user()->tenant->name ?? 'BONOPS CORP' }}</h1>
+        <h2>Journal Voucher</h2>
+        <p>No. Jurnal: {{ $journal->journal_number }}</p>
     </div>
 
     <table class="info-table">
         <tr>
-            <td class="label">No. Jurnal</td>
-            <td>: {{ $journal->journal_number }}</td>
             <td class="label">Status</td>
-            <td>: {{ strtoupper($journal->status) }}</td>
-        </tr>
-        <tr>
+            <td>: <span style="text-transform: uppercase;">{{ $journal->status }}</span></td>
             <td class="label">Tanggal</td>
             <td>: {{ \Carbon\Carbon::parse($journal->date)->format('d F Y') }}</td>
+        </tr>
+        <tr>
             <td class="label">Referensi</td>
             <td>: {{ $journal->reference_type }} {{ $journal->reference_id ? ' - '.$journal->reference_id : '' }}</td>
+            <td class="label">Dibuat Oleh</td>
+            <td>: {{ $journal->creator->name ?? '-' }}</td>
         </tr>
         <tr>
             <td class="label">Keterangan</td>
@@ -98,19 +56,19 @@
         </tr>
     </table>
 
-    <table class="lines-table">
+    <table class="table">
         <thead>
             <tr>
-                <th width="5%">No</th>
+                <th width="5%" class="text-center">No</th>
                 <th width="30%">Kode & Nama Akun</th>
                 <th width="35%">Keterangan Baris</th>
-                <th width="15%">Debit (Rp)</th>
-                <th width="15%">Kredit (Rp)</th>
+                <th width="15%" class="text-right">Debit (Rp)</th>
+                <th width="15%" class="text-right">Kredit (Rp)</th>
             </tr>
         </thead>
         <tbody>
             @foreach($journal->items as $index => $item)
-            <tr>
+            <tr class="border-bottom">
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td>{{ $item->account->code ?? '' }} - {{ $item->account->name ?? '' }}</td>
                 <td>{{ $item->description }}</td>
@@ -120,10 +78,10 @@
             @endforeach
         </tbody>
         <tfoot>
-            <tr>
-                <td colspan="3" class="text-right font-bold">TOTAL KESELURUHAN</td>
-                <td class="text-right font-bold">{{ number_format($journal->total_debit, 0, ',', '.') }}</td>
-                <td class="text-right font-bold">{{ number_format($journal->total_credit, 0, ',', '.') }}</td>
+            <tr class="border-top" style="background-color: #f9fafb;">
+                <td colspan="3" class="text-right fw-bold" style="padding: 10px;">TOTAL KESELURUHAN</td>
+                <td class="text-right fw-bold" style="padding: 10px;">{{ number_format($journal->total_debit, 0, ',', '.') }}</td>
+                <td class="text-right fw-bold" style="padding: 10px;">{{ number_format($journal->total_credit, 0, ',', '.') }}</td>
             </tr>
         </tfoot>
     </table>
@@ -132,22 +90,29 @@
         <tr>
             <td>
                 <div class="signature-line">Dibuat Oleh</div>
-                <div style="font-size:10px; margin-top:5px;">{{ $journal->creator->name ?? '...........................' }}</div>
+                <div style="font-size:10px; margin-top:5px; color: #4b5563;">{{ $journal->creator->name ?? '-' }}</div>
             </td>
             <td>
                 <div class="signature-line">Diperiksa Oleh</div>
-                <div style="font-size:10px; margin-top:5px;">(Penyelia Keuangan)</div>
+                <div style="font-size:10px; margin-top:5px; color: #4b5563;">(Penyelia Keuangan)</div>
             </td>
             <td>
                 <div class="signature-line">Disetujui Oleh</div>
-                <div style="font-size:10px; margin-top:5px;">(Manajer Keuangan)</div>
+                <div style="font-size:10px; margin-top:5px; color: #4b5563;">(Manajer Keuangan)</div>
             </td>
         </tr>
     </table>
 
-    <div style="font-size: 10px; margin-top: 30px; color: #666; text-align:right;">
-        Dicetak pada: {{ now()->format('d/m/Y H:i:s') }}
-    </div>
-
+    <script type="text/php">
+        if ( isset($pdf) ) {
+            $x = $pdf->get_width() / 2 - 40;
+            $y = $pdf->get_height() - 35;
+            $text = "Halaman {PAGE_NUM} dari {PAGE_COUNT} | Dicetak: {{ now()->format('d/m/Y H:i') }}";
+            $font = $fontMetrics->get_font("helvetica", "normal");
+            $size = 8;
+            $color = array(0.5, 0.5, 0.5);
+            $pdf->page_text($x, $y, $text, $font, $size, $color);
+        }
+    </script>
 </body>
 </html>
